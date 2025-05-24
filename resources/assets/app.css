@@ -1,0 +1,156 @@
+@import 'tailwindcss';
+
+@source '../../storage/framework/views/*.php';
+@source "../**/*.blade.php";
+@source "../**/*.js";
+
+@import './components/modal';
+
+
+.root {
+    --border-color: rgb(0 0 0 / 15%);
+}
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-size: 14px;
+    background: #fff;
+}
+
+.ant-card {
+    box-shadow: 0rem 0.0625rem 0rem 0rem rgba(26, 26, 26, .07);
+}
+
+.site-logo {
+    width: 100%;
+    height: auto;
+}
+mark {
+    background-color: #ffe58f;
+}
+
+pre {
+    padding: 0.4em 0.6em;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: rgba(150, 150, 150, .1);
+    border: 1px solid rgba(100, 100, 100, .2);
+    border-radius: 3px;
+}
+.mb-1{
+    margin-bottom: 1rem;
+}
+
+.container,
+.container-fluid,
+.container-xxl,
+.container-xl,
+.container-lg,
+.container-md,
+.container-sm {
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 0;
+  width: 100%;
+  padding-right: 20px;
+  padding-left: 20px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.ant-dropdown .ant-dropdown-menu {
+    min-width: 180px;
+}
+
+ul,
+ol {
+    margin-block-start: 5px;
+    margin-block-end: 5px;
+}
+
+.ant-typography {
+    margin: 0;
+}
+
+svg {
+    vertical-align: middle !important;
+    max-height: 20px;
+    width: auto;
+}
+
+.ant-menu {
+    font-weight: 600;
+}
+
+.ant-input-number,
+.ant-input-number-outlined,
+.ant-select {
+    width: 100%;
+}
+
+/* 
+  ##Device = Desktops
+  ##Screen = 1281px to higher resolution desktops
+*/
+
+@media (min-width: 1281px) {
+    /* CSS */
+}
+
+
+/* 
+    ##Device = Laptops, Desktops
+    ##Screen = B/w 1025px to 1280px
+  */
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+    /* CSS */
+}
+
+
+/* 
+    ##Device = Tablets, Ipads (portrait)
+    ##Screen = B/w 768px to 1024px
+  */
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    /* CSS */
+}
+
+
+/* 
+    ##Device = Tablets, Ipads (landscape)
+    ##Screen = B/w 768px to 1024px
+  */
+
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    /* CSS */
+}
+
+
+/* 
+    ##Device = Low Resolution Tablets, Mobiles (Landscape)
+    ##Screen = B/w 481px to 767px
+  */
+
+@media (min-width: 481px) and (max-width: 767px) {
+
+    /* CSS */
+    .nav-item {
+        display: none;
+    }
+}
+
+
+/* 
+    ##Device = Most of the Smartphones Mobiles (Portrait)
+    ##Screen = B/w 320px to 479px
+  */
+
+@media (min-width: 320px) and (max-width: 480px) {
+    .panel {
+        width: 80%;
+    }
+}
