@@ -1,0 +1,52 @@
+---
+import { Picture } from "astro:assets";
+
+const { media = [], alt = '' } = Astro.props;
+const hasMedia = Array.isArray(media) && media.length > 0;
+---
+
+{hasMedia && (
+  <div class="relative w-full">
+    <!-- Main Gallery -->
+    <div class="swiper gallery-media w-full aspect-video md:aspect-[4/3] rounded-xl overflow-hidden">
+      <div class="swiper-wrapper">
+        {media.map((image) => (
+          <div class="swiper-slide">
+            <Picture
+              width={1920}
+              height={1080}
+              class="w-full h-full object-cover"
+              src={image?.url}
+              alt={alt}
+              
+            />
+          </div>
+        ))}
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="swiper-button-prev !text-white !left-2"></div>
+      <div class="swiper-button-next !text-white !right-2"></div>
+    </div>
+
+    <!-- Thumbnails -->
+    <div
+      thumbsSlider
+      class="swiper gallery-thumbs mt-4 px-1 w-full max-w-full overflow-hidden"
+    >
+      <div class="swiper-wrapper">
+        {media.map((image) => (
+          <div class="swiper-slide w-20 h-20 md:w-24 md:h-24 rounded-md overflow-hidden border border-gray-200">
+            <Picture
+              width={200}
+              height={200}
+              class="w-full h-full object-cover"
+              src={image?.url}
+              alt="Thumbnail"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}

@@ -1,0 +1,52 @@
+---
+const { lat, lon, zoom = 14 } = Astro.props
+---
+<leaflet-map
+  data-lat={lat}
+  data-lon={lon}
+  data-zoom={zoom}
+>
+  <!-- Il container è fisso con id "map-container" -->
+  <div id="map-container" class="h-[400px] w-full rounded-lg border border-outline"></div>
+</leaflet-map>
+<script>
+  import L from "leaflet";
+  import "leaflet/dist/leaflet.css";
+  
+  class LeafletMap extends HTMLElement {
+    constructor() {
+      super();
+    }
+
+    connectedCallback() {
+      const containerId = "map-container";
+      const mapContainer = document.getElementById(containerId);
+
+      if (mapContainer) {
+        const lat = parseFloat(this.dataset.lat);
+        const lon = parseFloat(this.dataset.lon);
+        const zoomLevel = parseInt(this.dataset.zoom) || 13;
+        
+        const map = L.map(containerId).setView([lat, lon], zoomLevel);
+
+        // Aggiungi il tile layer
+        L.tileLayer(
+          this.dataset.tiles || "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          { attribution: this.dataset.attribution || "&copy; OpenStreetMap contributors" }
+        ).addTo(map);
+
+        // Raggio di 500m
+        L.circle([lat, lon], {
+          color: '#3C86E4',
+          fillColor: '#3C86E4',
+          fillOpacity: 0.3,
+          radius: 500 
+        }).addTo(map);
+      } else {
+        console.error(`Map container with ID ${containerId} not found.`);
+      }
+    }
+  }
+
+  window.customElements.define("leaflet-map", LeafletMap);
+</script>

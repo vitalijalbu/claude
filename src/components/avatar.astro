@@ -1,0 +1,21 @@
+---
+import { Image } from "astro:assets";
+
+const { src, size = 'md', class: customClass = '', alt = 'Avatar' } = Astro.props;
+
+const sizeClasses = {
+  sm: 'w-8 h-8',
+  md: 'w-16 h-16',
+  lg: 'w-30 h-30',
+};
+
+const sizeClass = sizeClasses[size] || sizeClasses['md'];
+---
+
+<Image 
+    class={`${customClass} ${sizeClass} rounded-full object-cover object-center`} 
+    src={src || '/images/placeholder.svg'} 
+    alt={alt} 
+    width={size === 'lg' ? 160 : 40}
+    height={size === 'lg' ? 160 : 40}
+/>

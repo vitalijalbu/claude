@@ -1,0 +1,88 @@
+---
+import MainLayout from '@/layouts/main-layout.astro';
+import { Card, Button, Form, FormItem, Input } from '@/components/index';
+
+if (Astro.request.method === 'POST') {
+	try {
+		const data = await Astro.request.formData();
+		const name = data.get('name');
+		const email = data.get('email');
+		const password = data.get('password');
+		// Do something with the data
+		console.log('form-data:', data);
+	} catch (error) {
+		if (error instanceof Error) {
+			console.error(error.message);
+		}
+	}
+}
+---
+
+<MainLayout title="Crea un account">
+	<div class="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+		<div class="w-full max-w-md">
+			<Card>
+				<div slot="content">
+					<div class="flex flex-col items-center text-center mb-6">
+						<h1 class="text-2xl font-bold">Bentornato</h1>
+						<p class="text-balance text-muted-foreground">Accedi al tuo account OnlyEscort</p>
+					</div>
+					<form
+						method="post"
+						class="flex flex-col gap-4">
+						<FormItem
+							label="Email"
+							name="email"
+							required>
+							<Input
+								id="email"
+								type="email"
+								placeholder="m@example.com"
+								required
+							/>
+							<FormItem
+								label="Nome"
+								name="email"
+								required>
+								<Input
+									id="first_name"
+									type="ematextil"
+									placeholder="m@example.com"
+									required
+								/>
+							</FormItem>
+							<FormItem
+								label="Password"
+								name="password"
+								required>
+								<Input
+									id="password"
+									type="password"
+									required
+								/>
+							</FormItem>
+
+							<Button
+								type="submit"
+								class="w-full">
+								Accedi
+							</Button>
+							<div class="text-center text-sm my-4">
+								Hai già un account?{' '}
+								<a
+									href="/login"
+									class="underline underline-offset-4">
+									 Accedi
+								</a>
+							</div>
+						</FormItem>
+					</form>
+				</div>
+			</Card>
+			<div class="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
+				By clicking continue, you agree to our <a href="#">Terms of Service</a>{' '}
+				and <a href="#">Privacy Policy</a>.
+			</div>
+		</div>
+	</div></MainLayout
+>

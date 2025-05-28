@@ -1,0 +1,107 @@
+---
+import MainLayout from '@/layouts/main-layout.astro';
+import { Card, Button, Input } from '@/components/index';
+
+// Variabili per eventuali messaggi di errore o successo
+let formMessage = '';
+let formSuccess = false;
+
+if (Astro.request.method === 'POST') {
+	try {
+		const data = await Astro.request.formData();
+		const email = data.get('email');
+		const password = data.get('password');
+		
+		// Log dei dati ricevuti (per debug)
+		console.log('Form data ricevuti:', { email, password });
+		
+		// Qui andrebbe la logica di autenticazione
+		// Per ora simuliamo solo il successo
+		formSuccess = true;
+		formMessage = 'Login effettuato con successo!';
+		
+		// Redirect dopo login (da decommentare quando pronto)
+		return Astro.redirect('/account');
+		
+	} catch (error) {
+		formSuccess = false;
+		formMessage = error instanceof Error ? error.message : 'Si è verificato un errore durante il login';
+		console.error('Errore durante il login:', formMessage);
+	}
+}
+---
+
+<MainLayout title="Accedi al tuo account">
+	<div class="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+		<div class="w-full max-w-md">
+			<Card>
+				<div slot="content">
+					<div class="flex flex-col items-center text-center mb-6">
+						<h1 class="text-2xl font-bold">Bentornato</h1>
+						<p class="text-balance text-muted-foreground">Accedi al tuo account OnlyEscort</p>
+					</div>
+					
+					{formMessage && (
+						<div class={`mb-4 p-3 rounded-md text-sm ${formSuccess ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+							{formMessage}
+						</div>
+					)}
+					
+					<form method="POST" class="flex flex-col gap-4">
+						<div class="space-y-2">
+							<label 
+								for="email" 
+								class="text-sm font-medium">
+								Email
+								<span class="text-red-500">*</span>
+							</label>
+							<Input
+								id="email"
+								name="email"
+								type="email"
+								placeholder="m@example.com"
+								required
+							/>
+						</div>
+						
+						<div class="space-y-2">
+							<label 
+								for="password" 
+								class="text-sm font-medium">
+								Password
+								<span class="text-red-500">*</span>
+							</label>
+							<Input
+								id="password"
+								name="password"
+								type="password"
+								required
+							/>
+						</div>
+						
+						<div class="pt-2">
+							<Button
+								type="submit"
+								class="w-full">
+								Accedi
+							</Button>
+						</div>
+						
+						<div class="text-center text-sm my-4">
+							Non hai un account?{' '}
+							<a
+								href="/register"
+								class="underline underline-offset-4 hover:text-primary">
+								Creane uno
+							</a>
+						</div>
+					</form>
+				</div>
+			</Card>
+		</div>
+		<div class="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
+			By clicking continue, you agree to our <a href="#">Terms of Service</a>{' '}
+			and <a href="#">Privacy Policy</a>.
+		</div>
+	</div>
+</MainLayout>

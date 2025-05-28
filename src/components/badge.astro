@@ -1,0 +1,32 @@
+---
+const {
+  class: className = '',
+  variant = 'default',
+  size = 'md',
+  icon,
+  ...props
+} = Astro.props;
+
+
+const variantClasses = {
+  default: "bg-white border-outline text-black hover:bg-primary/90",
+  secondary: "border-outline bg-secondary text-secondary-foreground hover:bg-secondary/90",
+  destructive: "border-outline bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+  outline: "text-foreground hover:bg-accent hover:text-accent-foreground",
+};
+
+const sizeClasses = {
+  sm: "text-xs",
+  md: "text-base",
+  lg: "text-base",
+};
+
+
+const baseClasses = "inline-flex items-center justify-center rounded-full border px-3 py-1 font-medium w-fit whitespace-nowrap shrink-0 gap-1 pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden";
+
+const classes = `${baseClasses} ${variantClasses[variant] || ''} ${sizeClasses[size] || ''} ${className}`;
+---
+
+<span class={classes} data-slot="badge" role="status" aria-live="polite" {...props}>
+  <slot />
+</span>

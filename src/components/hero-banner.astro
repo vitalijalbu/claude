@@ -1,0 +1,25 @@
+---
+import { Button } from '@/components/index';
+
+const { title, subTitle, primaryAction, secondaryAction } = Astro.props;
+---
+<section class="py-16 bg-primary text-primary-foreground">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto text-center">
+      {title && <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h2>}
+      {subTitle && <p class="mt-4 text-lg">{subTitle}</p>}
+      <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+        {primaryAction && primaryAction.href && primaryAction.label && (
+          <Button size="lg" variant={primaryAction.variant || "secondary"}>
+            <a href={primaryAction.href}>{primaryAction.label}</a>
+          </Button>
+        )}
+        {secondaryAction && secondaryAction.href && secondaryAction.label && (
+          <Button size="lg" variant={secondaryAction.variant || "outline"}>
+            <a href={secondaryAction.href}>{secondaryAction.label}</a>
+          </Button>
+        )}
+      </div>
+    </div>
+  </div>
+</section>

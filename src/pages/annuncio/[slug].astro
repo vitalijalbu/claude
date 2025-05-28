@@ -1,0 +1,208 @@
+---
+import { Button, Card, Breadcrumb, Separator, ReportCard, User, Result, Badge } from '@/components/index';
+import { IconWhatsapp, IconPhone, IconHeart } from '@/icons/index';
+import MainLayout from '@/layouts/main-layout.astro';
+import { fetchData } from '@/lib/api';
+import Gallery from '@/shared/listings/gallery.astro';
+import SimilarListings from '@/shared/sections/similar-listings.astro';
+import { getBreadcrumbSchema } from '@/utils/schema/page';
+import Map from '@/components/map.astro';
+import Taxonomies from '@/shared/taxonomies.astro';
+import ShareButton from '@/components/share-button.astro';
+
+const { params } = Astro;
+const currentPath = Astro.url.pathname;
+const slug = params.slug;
+
+// API Request
+const { data, isLoading, isError, errorCode } = await fetchData(`/listings/${slug}`);
+
+// Set HTTP status code based on error condition
+if (isError) {
+	Astro.response.status = errorCode && typeof errorCode === 'number' ? errorCode : 404;
+}
+
+// Safely access data properties only if data exists
+const listing = data?.data || null;
+const similarListings = data?.similar_listings || [];
+
+// Create breadcrumbs only if data exists
+const breadcrumbs =
+	listing ?
+		[
+			{ name: 'Home', url: '/' },
+			{ name: listing?.province?.name || 'Province', url: `/${listing?.province?.slug || ''}` },
+			{ name: listing?.category?.title || 'Category', url: `/${listing?.province?.slug || ''}/${listing?.category?.slug || ''}` },
+			{ name: listing?.title || 'Listing', url: listing?.slug || '' },
+		]
+	:	[];
+
+// schema.org
+const schemaORG = getBreadcrumbSchema([
+	{ url: 'https://it.onlyescort.vip/', name: 'OnlyEscort' },
+	{ url: `https://it.onlyescort.vip${currentPath}`, name: listing?.title || 'Annuncio' },
+]);
+---
+
+<MainLayout
+	title={listing?.title ?? 'Annuncio'}
+	schema={schemaORG}>
+	<div class="container mx-auto px-4 py-6">
+		{
+			isLoading && (
+				<div class="flex justify-center items-center py-12">
+					<p class="text-center text-gray-400">Caricamento in corso...</p>
+				</div>
+			)
+		}
+
+		{
+			!isLoading && isError && (
+				<Result
+					code={errorCode}
+					title={errorCode === 404 ? 'Annuncio non trovato' : "Errore nel caricamento dell'annuncio"}
+					description={
+						errorCode === 404 ?
+							"L'annuncio che stai cercando potrebbe essere stato rimosso."
+						:	"Si è verificato un problema durante il caricamento dell'annuncio. Riprova più tardi."
+					}
+				/>
+			)
+		}
+
+		{
+			data && (
+				<>
+					<div class="mb-6 flex justify-between items-center">
+						<Breadcrumb links={breadcrumbs} />
+						<div class="flex items-center gap-2 self-start sm:self-center mt-2 sm:mt-0">
+							<Button
+								variant="outline"
+								class="text-sm sm:text-base">
+								<IconHeart/>
+								Salva
+							</Button>
+							<ShareButton 
+								title="Guarda questo annuncio incredibile!" 
+								text="Ho trovato questo annuncio e penso possa interessarti." 
+								url={currentPath}
+								/>
+						</div>
+					</div>
+					<Separator />
+					<div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+						<div>
+							<div class="flex flex-wrap gap-2 mb-2">
+								{listing?.category?.title && <Badge>{listing?.category?.title}</Badge>}
+								{listing?.city?.name && <Badge>{listing?.city?.name}</Badge>}
+							</div>
+							<h1 class="text-2xl md:text-3xl font-bold dark:hover:text-gray-300">{listing?.title}</h1>
+						</div>
+					</div>
+
+					<section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+						<div class="lg:col-span-2 space-y-6">
+							{/* Gallery Section */}
+							<section
+								id="listing-gallery"
+								class="mb-6">
+								{listing?.media && (
+									<Gallery
+										media={listing?.media}
+										alt={listing?.title}
+										meta={listing}
+									/>
+								)}
+							</section>
+
+							<Separator />
+
+							{/* Description Section */}
+							<section
+								id="listing-description"
+								class="mb-6">
+								<p class="leading-relaxed text-muted-foreground break-words">{listing?.description}</p>
+							</section>
+
+							<Separator />
+
+							{/* Details Section */}
+							{listing?.taxonomies.length > 0 && (
+								<section
+									id="listing-details"
+									class="mb-6">
+									<span class="text-xl block font-semibold mb-4">Dettagli</span>
+									{listing?.taxonomies && <Taxonomies data={listing?.taxonomies} />}
+								</section>
+							)}
+
+							{/* Map Section */}
+							{listing?.lon && listing?.lat && (
+								<section
+									id="listing-map"
+									class="py-6">
+									<span class="text-xl block font-semibold mb-4">Location</span>
+									<Map
+										lon={listing?.lon}
+										lat={listing?.lat}
+									/>
+								</section>
+							)}
+						</div>
+
+						{/* Right Side (Sticky Card) */}
+						<div class="lg:sticky top-6 self-start flex flex-col space-y-4">
+							<Card>
+								<div slot="title">
+									<span class="text-lg font-bold">Informazioni sul profilo</span>
+								</div>
+								<div
+									slot="content"
+									class="rounded-2xl flex flex-col space-y-4">
+									{listing?.profile && (
+										<User
+											size="md"
+											withRating={true}
+											data={listing?.profile}
+										/>
+									)}
+									<Separator />
+									<Button
+										as="a"
+										href={`tel:${listing?.phone_number || ''}`}>
+										<IconPhone />
+										{listing?.phone_number || 'Chiama ora'}
+									</Button>
+									<Button
+										variant="whatsapp"
+										as="a"
+										href={`https://api.whatsapp.com/send/?phone_number=${listing?.whatsapp_number || ''}&text=Ciao ho visto il tuo annuncio su ${encodeURIComponent(currentPath)}&type=phone_number&app_absent=0`}>
+										<IconWhatsapp />
+										Whatsapp
+									</Button>
+									{/* <Button 
+                  variant="secondary" 
+                  as="a" 
+                  href={`/profilo/${listing?.phone_number || ""}/recensioni`}
+                >
+                  <IconStarBold color="#FFBF00" />Recensioni
+                </Button> */}
+								</div>
+							</Card>
+							<ReportCard />
+						</div>
+					</section>
+
+					{/* Similar Listings */}
+					{similarListings && similarListings.length > 0 && (
+						<SimilarListings
+							title="Annunci simili"
+							metaDescription="Scopri altri annunci che potrebbero interessarti."
+							data={similarListings}
+						/>
+					)}
+				</>
+			)
+		}
+	</div>
+</MainLayout>

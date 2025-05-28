@@ -1,0 +1,22 @@
+---
+const { title, subtitle, extra, as = 'h1' } = Astro.props;
+const Tag = as;
+---
+
+<div class="page-header mb-4 flex items-start justify-between">
+  <div>
+    <Tag class="text-3xl font-semibold">
+      {title}
+    </Tag>
+    {subtitle && (
+      <p class="mt-2 text-lg text-gray-600">
+        {subtitle}
+      </p>
+    )}
+  </div>
+  {extra && (
+    <div class="extra-content" aria-label="Extra content">
+      <slot name="extra" />
+    </div>
+  )}
+</div>

@@ -1,0 +1,64 @@
+---
+import { Image } from "astro:assets";
+import Button from "./button.astro";
+import Separator from "./separator.astro";
+---
+
+<div id="age-modal" class="fixed inset-0 bg-black flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-xl shadow-xl p-8 max-w-lg text-center">
+    <Image 
+      src="/images/plus-18.png"
+      alt="Plus 18"
+      class="w-10 h-auto mx-auto mb-4"
+      width={50}
+      height={50}/>
+    <h2 class="text-2xl font-bold mb-4">Questo è un sito per adulti</h3>
+    <p class="mb-4 text-gray-700">Questo sito contiene materiale vietato ai minori, tra cui nudità e rappresentazioni esplicite di attività sessuali. Entrando, dichiari di avere almeno 18 anni o la maggiore età nella giurisdizione da cui accedi al sito e acconsenti alla visualizzazione di contenuti sessualmente espliciti.</p>
+    <Separator/>
+    <div class="flex flex-col gap-6">
+      <Button id="accept-age" class="block">
+        Ho 18 anni o più - Entra
+      </button>
+      <Button id="decline-age" class="text-sm block" variant="link">
+        Ho meno di 18 anni - Esci
+      </Button>
+    </div>
+  </div>
+</div>
+
+<script is:client>
+  function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days*24*60*60*1000));
+    const expires = "expires="+ d.toUTCString();
+    document.cookie = `${name}=${value};${expires};path=/`;
+  }
+
+  function getCookie(name) {
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const ca = decodedCookie.split(';');
+    name = name + "=";
+    for(let i = 0; i < ca.length; i++) {
+      let c = ca[i].trim();
+      if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
+    }
+    return "";
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("age-modal");
+
+    if (getCookie("age_verified") !== "true") {
+      modal.classList.remove("hidden");
+    }
+
+    document.getElementById("accept-age").addEventListener("click", () => {
+      setCookie("age_verified", "true", 30);
+      modal.classList.add("hidden");
+    });
+
+    document.getElementById("decline-age").addEventListener("click", () => {
+      window.location.href = "https://www.google.com";
+    });
+  });
+</script>

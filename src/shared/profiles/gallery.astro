@@ -1,0 +1,109 @@
+---
+import Button from '@/components/button.astro';
+import { IconCamera, IconX } from '@/icons/index';
+import { Picture } from 'astro:assets';
+import Carousel from '../carousel.astro';
+import { MEDIA_URL } from '@/utils/constants';
+
+const { media = [], alt = '' } = Astro.props;
+---
+
+<div x-data="{modalIsOpen: false}">
+	<div class="relative mb-4">
+		<!-- Galleria -->
+		<div class="relative md:grid md:h-[500px] md:grid-cols-6 md:grid-rows-2 md:gap-2 lg:h-[600px]">
+			<div
+				class="rounded-2xl col-span-3 row-span-2 cursor-pointer overflow-hidden"
+				x-on:click="modalIsOpen = true">
+				<Picture
+					class="w-full h-full object-cover transition duration-100 ease-out rounded-2xl"
+					src={`${MEDIA_URL}${media?.[0]?.url}`  || '/images/placeholder.svg'}
+					alt={alt}
+					width={500}
+					height={500}
+					loading="lazy"
+					
+				/>
+			</div>
+
+			<div
+				class="rounded-2xl col-span-3 cursor-pointer overflow-hidden"
+				x-on:click="modalIsOpen = true">
+				<Picture
+					class="w-full h-full object-cover transition duration-100 ease-out rounded-2xl"
+					src={`${MEDIA_URL}${media?.[1]?.url}` || '/images/placeholder.svg'}
+					alt={alt}
+					width={500}
+					height={500}
+					loading="lazy"
+					
+				/>
+			</div>
+
+			<div
+				class="rounded-2xl col-span-3 cursor-pointer overflow-hidden"
+				x-on:click="modalIsOpen = true">
+				<Picture
+					class="w-full h-full object-cover transition duration-100 ease-out rounded-2xl"
+					src={`${MEDIA_URL}${media?.[2]?.url}` || '/images/placeholder.svg'}
+					alt={alt}
+					width={500}
+					height={500}
+					loading="lazy"
+					
+				/>
+			</div>
+
+			<div class="absolute bottom-0 right-0 z-10 p-3">
+				<Button
+					variant="outline"
+					x-on:click="modalIsOpen = true">
+					<IconCamera />
+					Vedi tutte le foto
+				</Button>
+			</div>
+		</div>
+		<!-- Modal -->
+		<div
+			x-cloak
+			x-show="modalIsOpen"
+			x-transition.opacity.duration.100ms
+			x-trap.inert.noscroll="modalIsOpen"
+			x-on:keydown.esc.window="modalIsOpen = false"
+			x-on:click.self="modalIsOpen = false"
+			class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="defaultModalTitle">
+			<div
+				x-show="modalIsOpen"
+				x-transition:enter="transition ease-out duration-100 delay-100 motion-reduce:transition-opacity"
+				x-transition:enter-start="opacity-0 scale-90"
+				x-transition:enter-end="opacity-100 scale-100"
+				class="relative w-full h-full flex flex-col bg-transparent text-on-surface">
+				<!-- Close Button (top-right) -->
+				<div class="absolute top-4 right-4 z-10">
+					<Button
+						type="button"
+						size="icon"
+						variant="outline"
+						x-on:click="modalIsOpen = false"
+						aria-label="Close gallery">
+						<IconX />
+					</Button>
+				</div>
+
+				<!-- Gallery Body -->
+				<div class="flex-1 flex items-center justify-center px-4 py-8">
+					<div class="container">
+						<Carousel
+							class="w-full"
+							media={media}
+							alt={alt}
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

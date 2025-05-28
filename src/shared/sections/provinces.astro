@@ -1,0 +1,30 @@
+---
+import PageHeader from '@/components/page-header.astro';
+import Result from '@/components/result.astro';
+const { data } = Astro.props; 
+---
+
+<section class="container">
+  <PageHeader title="Escort nelle province Italiane" as="h2"/>
+
+  {data ? (
+    <div class="columns-1 sm:columns-2 md:columns-4 lg:columns-5 gap-6 space-y-6">
+      {data.map((region) => (
+        <div class="break-inside-avoid p-0">
+          <h3 class="text-xl mb-2 font-semibold text-gray-800">{region.name}</h3>
+          <ul class="space-y-1 text-gray-500">
+            {region.provinces.map((province) => (
+              <li>
+                <a href={`/${province?.slug}`} class="hover:underline">
+                  {province.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <Result title="Nessun dato disponibile" />
+  )}
+</section>

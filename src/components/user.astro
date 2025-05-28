@@ -1,0 +1,41 @@
+---
+import Avatar from './avatar.astro';
+import { IconStarBold } from '@/icons/index';
+
+const { data, size = 'md', class: className, withRating } = Astro.props;
+---
+
+<a
+	target="_blank"
+	href={`/profilo/${data?.phone_number}`}
+	class={`user-link flex items-center justify-between ${size === 'sm' ? 'text-base' : ''}`}
+	aria-label={`Vai al profilo di ${data?.name || 'utente'}`}>
+	<div class={`flex gap-2 items-center ${size === 'sm' ? 'text-base' : ''}`}>
+		<Avatar
+			src={data?.avatar || '/images/placeholder.svg'}
+			size={size}
+			class={className}
+			alt={data?.phone_number || 'Avatar utente'}
+			role="img"
+		/>
+		<span class={size === 'sm' ? 'text-base' : ''}>
+			{data?.name}
+		</span>
+	</div>
+
+	{
+		withRating && data?.rating > 0 && (
+			<span
+				class={`flex gap-1 items-center ${size === 'sm' ? 'text-base' : ''}`}
+				aria-label={`Valutazione utente: ${data?.rating} stelle`}
+				title={`Valutazione: ${data?.rating} stelle`}>
+				<IconStarBold
+					width={size === 'sm' ? 16 : 18}
+					color="#FFBF00"
+					aria-hidden="true"
+				/>
+				{data?.rating}
+			</span>
+		)
+	}
+</a>

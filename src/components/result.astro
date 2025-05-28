@@ -1,0 +1,56 @@
+---
+import Button from "./button.astro";
+
+const { title, description, code, hasLink = true } = Astro.props;
+
+const statusEmojis = {
+  400: '🤨',   // Bad Request
+  401: '🔒',   // Unauthorized
+  403: '⛔️',   // Forbidden
+  404: '🔍',   // Not Found
+  500: '❗',   // Internal Server Error
+  502: '🚧',   // Bad Gateway
+  503: '🛠️',   // Service Unavailable
+  504: '⏱️',   // Gateway Timeout
+};
+
+const statusDescriptions = {
+  400: 'La richiesta non può essere elaborata. Verifica i dati inseriti e riprova.',
+  401: 'Accesso non autorizzato. Effettua il login per continuare.',
+  403: 'Non hai i permessi necessari per accedere a questa risorsa.',
+  404: 'La risorsa che stai cercando non è stata trovata o potrebbe essere stata rimossa.',
+  500: 'Si è verificato un errore sul nostro server. Ci scusiamo per il disagio.',
+  502: 'Il server ha ricevuto una risposta non valida dal server upstream.',
+  503: 'Il servizio non è al momento disponibile. Riprova più tardi.',
+  504: 'Il server non ha risposto in tempo. Riprova più tardi.',
+};
+
+const emoji = code && statusEmojis[code] ? statusEmojis[code] : '❗';
+const defaultDescription = description || (code && statusDescriptions[code]) || 'Si è verificato un errore imprevisto.';
+
+// Titoli personalizzati basati sul contesto se non è stato fornito un titolo personalizzato
+const contextualTitles = {
+  400: 'Richiesta non valida',
+  401: 'Autenticazione richiesta',
+  403: 'Accesso negato',
+  404: 'Risorsa non trovata',
+  500: 'Errore del server',
+  502: 'Errore di gateway',
+  503: 'Servizio non disponibile',
+  504: 'Timeout del server',
+};
+
+const displayTitle = title || (code && contextualTitles[code]) || 'Si è verificato un errore';
+---
+
+<section class="container mx-auto py-12 text-center">
+  <div class="max-w-xl mx-auto">
+    {code && <div class="text-5xl mb-4">{emoji}</div>}
+    {code && <div class="text-gray-400 mb-2">Errore {code}</div>}
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">{displayTitle}</h2>
+    <p class="text-gray-500">{defaultDescription}</p>
+    {hasLink && <Button as="a" href="/" variant="outline" class="mt-6">
+      Torna alla Home
+    </Button>}
+  </div>
+</section>

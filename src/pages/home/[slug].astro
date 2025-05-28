@@ -1,0 +1,66 @@
+---
+const { params, url } = Astro;
+const slug = params.slug;
+import { Result, PageHeader } from '@/components/index';
+import MainLayout from '@/layouts/main-layout.astro';
+import { fetchData } from '@/lib/api';
+import Provinces from '@/shared/sections/provinces.astro';
+import ListingCard from '@/shared/snippets/listing-card.astro';
+
+const { data, isError, isLoading } = await fetchData('/home');
+
+
+const breadcrumbs = data ? [
+  { name: "Home", url: "/" },
+  { name: slug, url: `/home/${slug}` },
+] : [];
+// SEO
+const schemaORG = {
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@id": "https://it.onlyescort.vip/#organization",
+            "@type": "Organization",
+            "name": "OnlyEscort",
+            "logo": "/images/logo.svg",
+            "url": "https://it.onlyescort.vip/",
+            "slogan": "Il 1° sito con annunci e profili di Escort",
+            "description": "OnlyEscort è il primo sito che permette agli utenti di trovare le migliori escort da incontrare, attraverso gli annunci e le recensioni sui profili"
+        }
+    ]
+};
+---
+
+<MainLayout title={`Home | ${slug}`} schema={schemaORG} metaDescription="Il 1° sito con annunci e profili">
+  <div>
+    {!isLoading && !isError && (
+      <>
+
+        {data?.provinces?.length
+          ? <Provinces data={data?.provinces} />
+          : <Result title="Nessun dato disponibile"/>
+        }
+
+
+        <section class="container py-10">
+          <PageHeader title="In primo piano" />
+
+          {data?.listings?.length
+            ? (
+              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+                {data.listings.map((post) => (
+                  <ListingCard
+                    href={`/annuncio/${post?.slug}`}
+                    data={post}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Result title="Nessun annuncio disponibile"/>
+            )
+          }
+        </section>
+      </>
+    )}
+  </div>
+</MainLayout>

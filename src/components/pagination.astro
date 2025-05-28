@@ -1,0 +1,63 @@
+---
+const { data } = Astro.props;
+const { current_page, last_page } = data;
+
+const basePath = Astro.url.pathname;
+
+function buildPageLink(page) {
+  const params = new URLSearchParams(Astro.url.searchParams);
+  params.set("page", page);
+  return `${basePath}?${params.toString()}`;
+}
+
+// Limita a max 3-4 pagine visibili
+const visiblePages = [];
+const start = Math.max(1, current_page - 1);
+const end = Math.min(last_page, current_page + 2);
+
+for (let i = start; i <= end; i++) {
+  visiblePages.push(i);
+}
+---
+
+{last_page > 1 && (
+  <nav class="flex justify-center mt-8">
+    <ul class="inline-flex items-center space-x-1 text-sm">
+      
+      {/* Previous */}
+      <li>
+        <a
+          href={current_page > 1 ? buildPageLink(current_page - 1) : "#"}
+          class={`px-3 py-2 rounded-md ${current_page > 1 ? 'border border-outline bg-white text-gray-700 hover:bg-gray-100' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+          aria-label="Previous page"
+        >
+          Prev
+        </a>
+      </li>
+
+      {/* Page numbers limitati */}
+      {visiblePages.map((page) => (
+        <li>
+          <a
+            href={buildPageLink(page)}
+            class={`px-3 py-2 rounded-md ${current_page === page ? 'bg-gray-200 text-gray-800 font-medium' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+            aria-current={current_page === page ? "page" : undefined}
+          >
+            {page}
+          </a>
+        </li>
+      ))}
+
+      {/* Next */}
+      <li>
+        <a
+          href={current_page < last_page ? buildPageLink(current_page + 1) : "#"}
+          class={`px-3 py-2 rounded-md ${current_page < last_page ? 'border border-outline bg-white text-gray-700 hover:bg-gray-100' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+          aria-label="Next page"
+        >
+          Next
+        </a>
+      </li>
+    </ul>
+  </nav>
+)}

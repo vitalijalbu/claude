@@ -1,0 +1,66 @@
+---
+import Pagination from '@/components/pagination.astro';
+import Filters from '@/shared/search/filters.astro';
+import MainLayout from '@/layouts/main-layout.astro';
+import { fetchData } from '@/lib/api';
+import ListingItem from '@/shared/snippets/listing-item.astro';
+import { Result, Separator, PageHeader } from '@/components/index';
+
+const { params, url } = Astro;
+const slug = params.province;
+const currentPage = Number(url.searchParams.get('page') || 1);
+
+// Fetch data from API with pagination
+
+const { data, isLoading, isError } = await fetchData(`/listings?page=${currentPage}&filter[province.slug]=${slug}`, {
+	method: 'GET',
+	headers: {
+		'Content-Type': 'application/json',
+	},
+});
+
+const { data: listings, links, meta } = data || {};
+---
+
+<MainLayout
+	title={`Risultati per ${slug}`}
+	description={`Risultati per ${slug}`}
+	schema="">
+	<div class="container max-w-6xl">
+		<Filters />
+		<Separator class="my-4" />
+
+		<section class="container py-10">
+			{isLoading && <p class="text-center text-gray-400 py-6">Caricamento in corso...</p>}
+
+			{
+				isError && (
+					<Result
+						code={500}
+						title="Errore nel caricamento dei dati"
+					/>
+				)
+			}
+
+			{
+				!isLoading && !isError && (
+					<>
+						<PageHeader title={`${meta?.total || 0} risultati trovati per ${slug}`} />
+
+						<div class="relative grid grid-cols-1 gap-4">
+							{listings?.length ?
+								listings.map((listing) => (
+									<ListingItem
+										href={`/annuncio/${listing?.slug}`}
+										data={listing}
+									/>
+								))
+							:	<Result title="Nessun risultato disponibile" />}
+						</div>
+						<Pagination data={meta} />
+					</>
+				)
+			}
+		</section>
+	</div>
+</MainLayout>

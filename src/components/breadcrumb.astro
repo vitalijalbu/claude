@@ -1,0 +1,31 @@
+---
+const { links } = Astro.props;
+---
+
+<nav class="my-4 text-sm font-medium text-on-surface dark:text-on-surface-dark" aria-label="breadcrumb">
+  <ol class="flex flex-wrap items-center gap-1">
+    {links.map((link, index: number) => (
+      <li class="flex items-center gap-1">
+        {index < links.length - 1 ? (
+          <>
+            <a
+              href={link?.url}
+              class="hover:text-on-surface-strong dark:hover:text-on-surface-dark-strong"
+              aria-label={`Go to ${link?.name} page`}
+            >
+              {link?.name}
+            </a>
+            <span class="mx-1 text-gray-400">/</span>
+          </>
+        ) : (
+          <span
+            class="text-on-surface-strong dark:text-on-surface-dark-strong font-bold"
+            aria-current="page"
+          >
+            {link?.name}
+          </span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>

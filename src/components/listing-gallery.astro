@@ -1,0 +1,36 @@
+---
+// Astro component script section
+const { images = [], alt = '' } = Astro.props;
+const hasImages = images.length > 0;
+---
+
+<div class="swiper listing-carousel w-[300px] md:w-[360px] h-[400px] md:h-[420px]">
+  <div class="swiper-wrapper">
+    {
+      hasImages
+        ? images.map((image) => (
+            <div class="swiper-slide">
+              <img
+                loading="lazy"
+                class="object-cover transition duration-300 !h-full !w-full ease-out"
+                src={`/uploads/${image?.url}`}
+                alt={alt}
+              />
+            </div>
+          ))
+        : (
+            <div class="swiper-slide">
+              <img
+                loading="lazy"
+                class="object-cover transition duration-300 !h-full !w-full ease-out"
+                src="/images/placeholder.svg"
+                alt={alt}
+              />
+            </div>
+          )
+    }
+  </div>
+  <div class="swiper-button-next"></div>
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-pagination"></div>
+</div>

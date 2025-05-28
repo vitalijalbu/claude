@@ -1,0 +1,47 @@
+---
+const { label = 'Apri menu', items = [] } = Astro.props;
+---
+
+<div
+  x-data="{ isOpen: false, openedWithKeyboard: false }"
+  x-on:keydown.esc.window="isOpen = false; openedWithKeyboard = false"
+  class="relative w-fit"
+>
+  <button
+    type="button"
+    x-on:click="isOpen = !isOpen"
+    x-on:keydown.space.prevent="openedWithKeyboard = true"
+    x-on:keydown.enter.prevent="openedWithKeyboard = true"
+    x-on:keydown.down.prevent="openedWithKeyboard = true"
+    class="inline-flex items-center gap-2 whitespace-nowrap rounded border px-4 py-2 text-sm font-medium transition"
+    :class="isOpen || openedWithKeyboard ? 'text-black' : 'text-gray-700'"
+    :aria-expanded="isOpen || openedWithKeyboard"
+    aria-haspopup="true"
+  >
+    {label}
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
+
+  <div
+    x-cloak
+    x-show="isOpen || openedWithKeyboard"
+    x-transition
+    x-on:click.outside="isOpen = false; openedWithKeyboard = false"
+    x-on:keydown.down.prevent="$focus.wrap().next()"
+    x-on:keydown.up.prevent="$focus.wrap().previous()"
+    class="absolute z-10 mt-2 w-48 bg-white border border-gray-300 rounded shadow"
+    role="menu"
+  >
+    {items.map(item => (
+      <a
+        href={item.href}
+        class="block px-4 py-2 hover:bg-gray-100"
+        role="menuitem"
+      >
+        {item.label}
+      </a>
+    ))}
+  </div>
+</div>

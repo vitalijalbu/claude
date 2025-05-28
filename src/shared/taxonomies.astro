@@ -1,0 +1,26 @@
+---
+import Badge from "@/components/badge.astro";
+import { Separator } from "../components";
+
+const { data = [] } = Astro.props;
+---
+{data.length > 0 && (
+  <div aria-labelledby="taxonomies-heading">
+    <div class="space-y-4">
+      {data.map((group) => (
+        <div>
+          <h3 class="text-md mb-2 font-medium text-primary dark:text-gray-200 flex items-center gap-2">
+            {group.icon && <img src={group.icon} alt="" class="w-4 h-4" />}
+            {group.name}
+          </h3>
+          <Separator/>
+          <ul class="flex flex-wrap gap-2 text-sm text-gray-700 dark:text-gray-300">
+            {group.children.map((item) => (
+              <li class="py-2"><Badge>{item.name}</Badge></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+)}

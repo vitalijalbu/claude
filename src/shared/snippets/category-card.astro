@@ -1,0 +1,40 @@
+---
+import { Picture } from "astro:assets";
+const { data } = Astro.props;
+---
+
+<article
+  class="group flex w-full flex-col overflow-hidden border rounded-lg border-outline bg-white"
+  aria-labelledby={`category-${data?.slug}-title`}
+>
+  <a
+    href={`/home/${data?.slug}`}
+    aria-label={`Vai alla pagina della categoria: ${data?.title}`}
+  >
+    <div class="h-44 md:h-50 overflow-hidden">
+      <Picture
+        width={400}
+        height={400}
+        src="/images/placeholder.svg"
+        class="object-cover transition duration-300 !h-full !w-full ease-out group-hover:scale-105"
+        alt={data?.title || 'Anteprima categoria'}
+        
+      />
+    </div>
+
+    <div class="flex flex-col gap-4 p-6">
+      <h2
+        id={`category-${data?.slug}-title`}
+        class="text-balance text-xl lg:text-2xl font-bold text-on-surface-strong dark:text-on-surface-dark-strong"
+        aria-describedby={data?.description ? `categoryDescription-${data?.slug}` : undefined}
+      >
+        {data?.title}
+      </h2>
+      {data?.description && (
+        <p id={`categoryDescription-${data?.slug}`} class="text-pretty text-sm">
+          {data.description}
+        </p>
+      )}
+    </div>
+  </a>
+</article>

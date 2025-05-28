@@ -1,0 +1,131 @@
+---
+import { Result, PageHeader } from '@/components/index';
+import MainLayout from '@/layouts/main-layout.astro';
+import { fetchData } from '@/lib/api';
+import HeroSearch from '@/shared/search/hero-search.astro';
+import Categories from '@/shared/sections/categories.astro';
+import Provinces from '@/shared/sections/provinces.astro';
+import ListingCard from '@/shared/snippets/listing-card.astro';
+
+const { data, isError, isLoading } = await fetchData('/home');
+
+// SEO
+const schemaORG = {
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@id": "https://it.onlyescort.vip/#organization",
+            "@type": "Organization",
+            "name": "OnlyEscort",
+            "logo": "/images/logo.svg",
+            "url": "https://it.onlyescort.vip/",
+            "slogan": "Il 1° sito con annunci e profili di Escort",
+            "description": "OnlyEscort è il primo sito che permette agli utenti di trovare le migliori escort da incontrare, attraverso gli annunci e le recensioni sui profili"
+        }
+    ]
+};
+---
+
+<MainLayout title="Home | OnlyEscort" schema={schemaORG} metaDescription="Il 1° sito con annunci e profili">
+<div class="accordion divide-neutral/20 divide-y">
+  <div class="accordion-item active" id="payment-basic">
+    <button class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="payment-basic-collapse" aria-expanded="true" >
+      <span class="icon-[tabler--plus] accordion-item-active:hidden text-base-content size-4.5 block shrink-0"></span>
+      <span class="icon-[tabler--minus] accordion-item-active:block text-base-content size-4.5 hidden shrink-0"></span>
+      When is payment taken for my order?
+    </button>
+    <div id="payment-basic-collapse" class="accordion-content w-full overflow-hidden transition-[height] duration-300" aria-labelledby="payment-basic" role="region" >
+      <div class="px-5 pb-4">
+        <p class="text-base-content/80 font-normal">
+          Payment is taken during the checkout process when you pay for your order. The order number that appears on the
+          confirmation screen indicates payment has been successfully processed.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item" id="delivery-basic">
+    <button class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="delivery-basic-collapse" aria-expanded="false" >
+      <span class="icon-[tabler--plus] accordion-item-active:hidden text-base-content size-4.5 block shrink-0"></span>
+      <span class="icon-[tabler--minus] accordion-item-active:block text-base-content size-4.5 hidden shrink-0"></span>
+      How would you ship my order?
+    </button>
+    <div id="delivery-basic-collapse" class="accordion-content hidden w-full overflow-hidden transition-[height] duration-300" aria-labelledby="delivery-basic" role="region" >
+      <div class="px-5 pb-4">
+        <p class="text-base-content/80 font-normal">
+          For large products, we deliver your product via a third party logistics company offering you the “room of
+          choice” scheduled delivery service. For small products, we offer free parcel delivery.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item" id="cancel-basic">
+    <button class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="cancel-basic-collapse" aria-expanded="false" >
+      <span class="icon-[tabler--plus] accordion-item-active:hidden text-base-content size-4.5 block shrink-0"></span>
+      <span class="icon-[tabler--minus] accordion-item-active:block text-base-content size-4.5 hidden shrink-0"></span>
+      Can I cancel my order?
+    </button>
+    <div id="cancel-basic-collapse" class="accordion-content hidden w-full overflow-hidden transition-[height] duration-300" aria-labelledby="cancel-basic" role="region" >
+      <div class="px-5 pb-4">
+        <p class="text-base-content/80 font-normal">
+          Scheduled delivery orders can be cancelled 72 hours prior to your selected delivery date for full refund.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="btn">Default</button>
+<button class="btn btn-primary">Primary</button>
+<button class="btn btn-secondary">Secondary</button>
+<button class="btn btn-accent">Accent</button>
+<button class="btn btn-info">Info</button>
+<button class="btn btn-success">Success</button>
+<button class="btn btn-warning">Warning</button>
+<button class="btn btn-error">Error</button>
+
+<div class="dropdown relative inline-flex">
+  <button id="dropdown-default" type="button" class="dropdown-toggle btn btn-primary" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+    Dropdown
+    <span class="icon-[tabler--chevron-down] dropdown-open:rotate-180 size-4"></span>
+  </button>
+  <ul class="dropdown-menu dropdown-open:opacity-100 hidden min-w-60" role="menu" aria-orientation="vertical" aria-labelledby="dropdown-default">
+    <li><a class="dropdown-item" href="#">My Profile</a></li>
+    <li><a class="dropdown-item" href="#">Settings</a></li>
+    <li><a class="dropdown-item" href="#">Billing</a></li>
+    <li><a class="dropdown-item" href="#">FAQs</a></li>
+  </ul>
+</div>
+
+  <HeroSearch />
+    {!isLoading && !isError && (
+      <>
+        {data?.categories?.length
+          ? <Categories data={data.categories} />
+          : <p class="text-center text-gray-500 my-4">Nessuna categoria disponibile</p>
+        }
+
+        {data?.regions?.length && <Provinces data={data.regions} />}
+
+
+        <section class="container py-10">
+          <PageHeader title="In primo piano" as="h2"/>
+
+          {data?.listings?.length
+            ? (
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {data.listings.map((post) => (
+                  <ListingCard
+                    href={`/annuncio/${post?.slug}`}
+                    data={post}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Result title="Nessun annuncio disponibile"/>
+            )
+          }
+        </section>
+      </>
+    )}
+
+</MainLayout>

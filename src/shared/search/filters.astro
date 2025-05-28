@@ -1,0 +1,18 @@
+---
+import { Button } from '@/components/index';
+import { IconFilter, IconCamera } from '@/icons/index';
+import FiltersModal from './filters-modal.astro';
+import Checkbox from '@/components/form/checkbox.astro';
+
+const toggleModalFitlers = () => {
+    // Function to toggle the modal filters
+    alert('Toggle modal filters');
+};
+---
+<section id="search-filters">
+    <div class="flex gap-4 py-2">
+        <FiltersModal/>
+        <Checkbox/>Foto reali
+        <Checkbox/>Verificato
+    </div>
+</section>

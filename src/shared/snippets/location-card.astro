@@ -1,0 +1,27 @@
+---
+import { IconHeart } from "@/icons/index";
+
+const { data } = Astro.props;
+const titleId = `fav-title-${data?.id}`;
+---
+
+<article
+  class="group flex w-full flex-col overflow-hidden border rounded-lg border-outline bg-white hover:shadow-sm"
+  aria-labelledby={titleId}
+>
+  <a
+    href={data?.slug}
+    class="p-4 flex items-center gap-2"
+    aria-labelledby={titleId}
+    aria-label={`Vai alla pagina della città: ${data?.name}`}
+  >
+    <IconHeart class="shrink-0" aria-hidden="true" focusable="false" />
+    <h5
+      id={titleId}
+      class="font-semibold text-gray-900 dark:text-white truncate"
+      itemprop="name"
+    >
+      {data?.name}
+    </h5>
+  </a>
+</article>

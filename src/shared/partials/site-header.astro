@@ -1,0 +1,87 @@
+---
+import { Button } from "@/components/index";
+import SearchAutocomplete from "@/components/search-autocomplete.astro";
+import { IconHeart, IconUserCircle } from '@/icons/index';
+
+const { isHomePage = false } = Astro.props;
+
+const isAuthenticated = false;
+const userData = isAuthenticated ? {
+  name: "IconUserCircle Name",
+  email: "user@example.com",
+} : null;
+
+const t = (key: string) => {
+  const translations = {
+    "site.my_account": "My Account",
+    "site.settings": "Settings",
+    "site.logout": "Esci"
+  };
+  return translations[key] || key;
+};
+
+const route = (name: string) => {
+  const routes = {
+    "login": "/login",
+    "register": "/register",
+    "account.index": "/account",
+    "account.favorites.index": "/account/favorites",
+    "settings.index": "/settings",
+    "logout": "/logout"
+  };
+  return routes[name] || "#";
+};
+---
+
+<header class="relative flex flex-none items-center py-2 bg-white border-b border-outline">
+  <div class="container mx-auto flex items-center justify-between px-4">
+    <!-- Logo -->
+    <a href="/" class="text-xl font-bold">
+      <span class="hidden sm:inline">OnlyEscort</span>
+      <span class="sm:hidden">0E</span>
+    </a>
+
+    {!isHomePage && (
+      <div class="hidden lg:flex flex-1 justify-center">
+        <SearchAutocomplete/>
+      </div>
+    )}
+
+    <!-- Right Section -->
+    <div class="flex items-center gap-2">
+      <!-- Favorites Button (Desktop only) -->
+      <Button size="icon" variant="ghost" class="hidden lg:inline-flex">
+        <a href={route("account.favorites.index")}>
+          <IconHeart class="h-5 w-5" />
+        </a>
+      </Button>
+
+      <!-- User Dropdown -->
+      <div class="relative group">
+        {isAuthenticated ? <Button variant="ghost">
+          <span class="hidden sm:inline"></span>
+        </Button> : (
+          <Button variant="ghost" as="a" href="/login">
+            <IconUserCircle class="h-5 w-5" />
+            <span class="hidden sm:inline">Accedi</span>
+          </Button>
+        )}
+
+        <div class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md border bg-white shadow-lg hidden">
+          {!isAuthenticated ? (
+            <div class="flex flex-col py-1">
+              <a href={route("login")} class="block px-4 py-2 text-sm hover:bg-gray-100">Login</a>
+              <a href={route("register")} class="block px-4 py-2 text-sm hover:bg-gray-100">Register</a>
+            </div>
+          ) : (
+            <div class="flex flex-col py-1">
+              <a href={route("account.index")} class="block px-4 py-2 text-sm hover:bg-gray-100">{t("site.my_account")}</a>
+              <a href={route("settings.index")} class="block px-4 py-2 text-sm hover:bg-gray-100">{t("site.settings")}</a>
+              <a href={route("logout")} class="block px-4 py-2 text-sm hover:bg-gray-100">{t("site.logout")}</a>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
