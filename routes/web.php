@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Route::statamic('example', 'example-view', [
-//    'title' => 'Example'
-// ]);
+Route::statamic('properties.search', 'example-view', [
+   'title' => 'Example'
+]);
+
+
