@@ -1,0 +1,129 @@
+---
+import '@/assets/css/app.css';
+import AgeGate from '@/components/age-gate.astro';
+import SiteFooter from '@/shared/partials/site-footer.astro';
+import SiteHeader from '@/shared/partials/site-header.astro';
+
+interface Props {
+	title?: string;
+	metaDescription?: string;
+	metaKeywords?: string;
+	ogTitle?: string;
+	ogDescription?: string;
+	ogImage?: string;
+	ogImageAlt?: string;
+	twitterTitle?: string;
+	twitterDescription?: string;
+	twitterImage?: string;
+	twitterImageAlt?: string;
+	schema?: object;
+	noIndex?: boolean;
+	canonicalUrl?: string;
+	alternateLanguages?: { hreflang: string; href: string }[];
+}
+
+const {
+	title = 'OnlyEscort - Trova le migliori escort nella tua città',
+	metaDescription = 'Scopri le migliori escort disponibili con annunci aggiornati e verificati nella tua zona. Servizio discreto e professionale.',
+	metaKeywords,
+	ogTitle = title,
+	ogDescription = metaDescription,
+	ogImage = '/images/default-og-image.jpg',
+	ogImageAlt = 'OnlyEscort - Servizio escort professionale',
+	twitterTitle = title,
+	twitterDescription = metaDescription,
+	twitterImage = '/images/default-twitter-image.jpg',
+	twitterImageAlt = ogImageAlt,
+	schema = null,
+	noIndex = false,
+	canonicalUrl,
+	alternateLanguages,
+} = Astro.props;
+
+// Generate absolute URLs for social media
+const siteUrl = Astro.url.origin;
+const currentUrl = Astro.url.href;
+const absoluteOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
+const absoluteTwitterImage = twitterImage.startsWith('http') ? twitterImage : `${siteUrl}${twitterImage}`;
+const finalCanonicalUrl = canonicalUrl || `${siteUrl}${Astro.url.pathname}`;
+---
+
+<html lang="it" data-theme="light" class="scroll-smooth">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+		
+		<!-- Basic SEO -->
+		<title>{title}</title>
+		<meta name="description" content={metaDescription} />
+		{metaKeywords && <meta name="keywords" content={metaKeywords} />}
+		
+		<!-- Robots and Indexing -->
+		<meta name="robots" content={noIndex ? 'noindex, nofollow' : 'index, follow'} />
+		<meta name="googlebot" content={noIndex ? 'noindex, nofollow' : 'index, follow'} />
+		
+		<!-- Canonical URL -->
+		<link rel="canonical" href={finalCanonicalUrl} />
+		
+		<!-- Alternate Languages -->
+		{alternateLanguages && alternateLanguages.map(({ hreflang, href }) => (
+			<link rel="alternate" hreflang={hreflang} href={href} />
+		))}
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="OnlyEscort" />
+		<meta property="og:locale" content="it_IT" />
+		<meta property="og:url" content={currentUrl} />
+		<meta property="og:title" content={ogTitle} />
+		<meta property="og:description" content={ogDescription} />
+		<meta property="og:image" content={absoluteOgImage} />
+		<meta property="og:image:alt" content={ogImageAlt} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:site" content="@onlyescort" />
+		<meta name="twitter:creator" content="@onlyescort" />
+		<meta name="twitter:url" content={currentUrl} />
+		<meta name="twitter:title" content={twitterTitle} />
+		<meta name="twitter:description" content={twitterDescription} />
+		<meta name="twitter:image" content={absoluteTwitterImage} />
+		<meta name="twitter:image:alt" content={twitterImageAlt} />
+		
+		<!-- Additional Meta Tags -->
+		<meta name="theme-color" content="#ff2d20" />
+		<meta name="msapplication-TileColor" content="#ff2d20" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="format-detection" content="telephone=no" />
+		
+		<!-- Favicons -->
+		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png" />
+		<link rel="manifest" crossorigin="use-credentials" href="/manifest.json" />
+		
+		<!-- Security Headers -->
+		<meta http-equiv="X-Content-Type-Options" content="nosniff" />
+		<meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+		
+		<!-- Structured Data Schema -->
+		{schema && (
+			<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+		)}
+	</head>
+	<body>
+		<main id="main-content">
+			<SiteHeader />
+			<slot />
+			<AgeGate />
+			<SiteFooter />
+		</main>
+	<script src="@/lib/app.js"></script>
+	<script is:inline src="../../node_modules/flyonui/flyonui.js" type="module"></script>
+	</body>
+</html>

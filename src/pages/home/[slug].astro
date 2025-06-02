@@ -1,0 +1,364 @@
+---
+import MainLayout from '@/layouts/main-layout.astro';
+import { fetchData } from '@/lib/api';
+
+const { slug } = Astro.params;
+
+// Fetch category data and listings
+const { data: categoryData, isError: categoryError } = await fetchData(`/categories/${slug}`);
+const { data: listingsData, isError: listingsError } = await fetchData(`/listings?category=${slug}&page=1&limit=12`);
+
+const category = categoryData?.data;
+const listings = listingsData?.data || [];
+const meta = listingsData?.meta;
+
+// Handle 404
+if (categoryError && !category) {
+  Astro.response.status = 404;
+}
+
+// SEO
+const pageTitle = category ? `${category.title} - OnlyEscort` : `Categoria ${slug} - OnlyEscort`;
+const pageDescription = category?.description || `Trova le migliori escort nella categoria ${category?.title || slug}. Annunci verificati e recensioni reali.`;
+
+const breadcrumbs = category ? [
+  { name: "Home", url: "/" },
+  { name: "Categorie", url: "/categorie" },
+  { name: category.title, url: `/home/${slug}` },
+] : [];
+
+// Schema.org
+const schemaORG = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": pageTitle,
+  "description": pageDescription,
+  "url": `https://it.onlyescort.vip/home/${slug}`,
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": meta?.total || 0,
+    "itemListElement": listings.map((listing, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "Product",
+        "name": listing.title,
+        "description": listing.description,
+        "url": `https://it.onlyescort.vip/annuncio/${listing.slug}`
+      }
+    }))
+  }
+};
+---
+
+<MainLayout title={pageTitle} metaDescription={pageDescription} schema={schemaORG}>
+  
+  {!categoryError && category ? (
+    <div class="container mx-auto px-4 py-8">
+      
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs text-sm mb-6">
+        <ul>
+          {breadcrumbs.map((crumb) => (
+            <li>
+              <a href={crumb.url} class="hover:text-primary">{crumb.name}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Category Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold mb-4">{category.title}</h1>
+        {category.description && (
+          <p class="text-xl text-base-content/70 max-w-3xl mx-auto">{category.description}</p>
+        )}
+        {meta?.total && (
+          <div class="mt-4">
+            <div class="stats shadow">
+              <div class="stat">
+                <div class="stat-title">Annunci disponibili</div>
+                <div class="stat-value text-primary">{meta.total}</div>
+                <div class="stat-desc">nella categoria {category.title}</div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Filters Section -->
+      <div class="mb-8">
+        <div class="card bg-base-100 shadow-lg">
+          <div class="card-body">
+            <h2 class="card-title mb-4">Filtra risultati</h2>
+            <div class="flex flex-wrap gap-4 items-center">
+              <button class="btn btn-outline btn-sm" data-filter-trigger>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                Tutti i filtri
+              </button>
+              
+              <label class="label cursor-pointer">
+                <input type="checkbox" class="checkbox checkbox-primary checkbox-sm mr-2" data-quick-filter="verified" />
+                <span class="label-text">Solo verificati</span>
+              </label>
+              
+              <label class="label cursor-pointer">
+                <input type="checkbox" class="checkbox checkbox-primary checkbox-sm mr-2" data-quick-filter="realPhotos" />
+                <span class="label-text">Foto reali</span>
+              </label>
+              
+              <select class="select select-bordered select-sm">
+                <option>Tutte le città</option>
+                <option>Milano</option>
+                <option>Roma</option>
+                <option>Napoli</option>
+                <option>Torino</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div data-results-container>
+        {!listingsError && listings.length > 0 ? (
+          <>
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-semibold">
+                {meta.total} {meta.total === 1 ? 'annuncio trovato' : 'annunci trovati'}
+              </h2>
+              
+              <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-outline btn-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                  </svg>
+                  Ordina per
+                </div>
+                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                  <li><a>Più recenti</a></li>
+                  <li><a>Più popolari</a></li>
+                  <li><a>Meglio recensiti</a></li>
+                  <li><a>Alfabetico A-Z</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {listings.map((listing) => (
+                <article class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+                  <figure class="relative">
+                    <div class="absolute top-2 right-2 z-10">
+                      <button 
+                        class="btn btn-circle btn-sm btn-ghost bg-base-100/80"
+                        data-favorite-button
+                        data-listing-id={listing.id}
+                        aria-label="Salva annuncio"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    {listing.media?.length > 0 && (
+                      <div class="absolute top-2 left-2 z-10">
+                        <div class="badge badge-primary badge-sm">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          {listing.media.length}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <img 
+                      src={listing.media?.[0]?.url ? `/uploads/${listing.media[0].url}` : '/images/placeholder.svg'}
+                      alt={listing.title}
+                      class="w-full h-64 object-cover"
+                      loading="lazy"
+                    />
+                  </figure>
+                  
+                  <div class="card-body p-4">
+                    <h3 class="card-title text-lg line-clamp-2">
+                      <a href={`/annuncio/${listing.slug}`} class="hover:text-primary transition-colors">
+                        {listing.title}
+                      </a>
+                    </h3>
+                    
+                    <p class="text-sm text-base-content/70 line-clamp-3">{listing.description}</p>
+                    
+                    <!-- Tags -->
+                    <div class="flex flex-wrap gap-2 mt-2">
+                      {listing.age && (
+                        <div class="badge badge-outline badge-sm">{listing.age} anni</div>
+                      )}
+                      {listing.city?.name && (
+                        <div class="badge badge-outline badge-sm">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          {listing.city.name}
+                        </div>
+                      )}
+                      {listing.verified && (
+                        <div class="badge badge-success badge-sm">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Verificato
+                        </div>
+                      )}
+                    </div>
+                    
+                    <!-- Profile info -->
+                    {listing.profile && (
+                      <div class="flex items-center mt-4 pt-4 border-t">
+                        <div class="avatar">
+                          <div class="w-8 rounded-full">
+                            <img 
+                              src={listing.profile.avatar || '/images/default-avatar.svg'} 
+                              alt={listing.profile.name}
+                            />
+                          </div>
+                        </div>
+                        <div class="ml-2 flex-1">
+                          <div class="text-sm font-medium">{listing.profile.name}</div>
+                          {listing.profile.rating > 0 && (
+                            <div class="flex items-center text-xs text-base-content/70">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                              </svg>
+                              {listing.profile.rating}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <!-- Pagination -->
+            {meta && meta.last_page > 1 && (
+              <div class="mt-12">
+                <nav class="flex flex-col items-center space-y-4" aria-label="Paginazione">
+                  <div class="text-sm text-base-content/70">
+                    Risultati {meta.from}-{meta.to} di {meta.total}
+                  </div>
+                  
+                  <div class="join">
+                    {meta.current_page > 1 ? (
+                      <a href={`/home/${slug}/page/${meta.current_page - 1}`} class="join-item btn btn-outline">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Precedente
+                      </a>
+                    ) : (
+                      <button class="join-item btn btn-outline btn-disabled" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Precedente
+                      </button>
+                    )}
+
+                    {Array.from({ length: Math.min(5, meta.last_page) }, (_, i) => {
+                      const page = Math.max(1, meta.current_page - 2) + i;
+                      if (page > meta.last_page) return null;
+                      
+                      return meta.current_page === page ? (
+                        <button class="join-item btn btn-active" aria-current="page">
+                          {page}
+                        </button>
+                      ) : (
+                        <a href={page === 1 ? `/home/${slug}` : `/home/${slug}/page/${page}`} class="join-item btn btn-outline">
+                          {page}
+                        </a>
+                      );
+                    })}
+
+                    {meta.current_page < meta.last_page ? (
+                      <a href={`/home/${slug}/page/${meta.current_page + 1}`} class="join-item btn btn-outline">
+                        Successiva
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </a>
+                    ) : (
+                      <button class="join-item btn btn-outline btn-disabled" disabled>
+                        Successiva
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </nav>
+              </div>
+            )}
+          </>
+        ) : (
+          <div class="text-center py-16">
+            <div class="max-w-md mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto text-base-content/30 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.529-.901-6.172-2.379C6.996 10.814 8.9 9 12 9s5.004 1.814 6.172 3.621z" />
+              </svg>
+              <h3 class="text-xl font-semibold mb-2">Nessun annuncio trovato</h3>
+              <p class="text-base-content/70 mb-6">
+                Non ci sono annunci disponibili in questa categoria al momento. 
+                Prova a modificare i filtri o torna più tardi.
+              </p>
+              <a href="/" class="btn btn-primary">Torna alla home</a>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Related Categories -->
+      {category?.related_categories?.length > 0 && (
+        <div class="mt-16">
+          <h2 class="text-2xl font-bold text-center mb-8">Categorie correlate</h2>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {category.related_categories.map((relatedCategory) => (
+              <a href={`/home/${relatedCategory.slug}`} class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
+                <div class="card-body p-4 text-center">
+                  <h3 class="card-title text-lg justify-center">{relatedCategory.title}</h3>
+                  {relatedCategory.listings_count && (
+                    <p class="text-sm text-base-content/70">
+                      {relatedCategory.listings_count} annunci
+                    </p>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  ) : (
+    <div class="container mx-auto px-4 py-16">
+      <div class="text-center max-w-lg mx-auto">
+        <div class="text-8xl font-bold text-primary mb-4">404</div>
+        <h1 class="text-3xl font-bold mb-4">Categoria non trovata</h1>
+        <p class="text-base-content/70 mb-8">
+          La categoria che stai cercando non esiste o potrebbe essere stata rimossa.
+        </p>
+        <div class="space-x-4">
+          <a href="/" class="btn btn-primary">Torna alla home</a>
+          <a href="/categorie" class="btn btn-outline">Vedi tutte le categorie</a>
+        </div>
+      </div>
+    </div>
+  )}
+
+</MainLayout>
+
+<script src="/js/filters.js"></script>

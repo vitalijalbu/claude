@@ -1,0 +1,33 @@
+---
+import FiltersModal from './filters-modal.astro';
+---
+
+<section id="search-filters">
+	<div class="flex gap-4 py-2">
+		<FiltersModal />
+		<div class="flex items-center gap-1">
+			<input
+				type="checkbox"
+				class="checkbox"
+				id="defaultCheckbox1"
+			/>
+			<label
+				class="label-text text-base"
+				for="defaultCheckbox1"
+				>Foto reali</label
+			>
+		</div>
+		<div class="flex items-center gap-1">
+			<input
+				type="checkbox"
+				class="checkbox"
+				id="defaultCheckbox2"
+			/>
+			<label
+				class="label-text text-base"
+				for="defaultCheckbox2"
+				>Verificato</label
+			>
+		</div>
+	</div>
+</section>

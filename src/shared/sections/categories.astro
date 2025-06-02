@@ -1,0 +1,22 @@
+---
+import PageHeader from '@/components/page-header.astro';
+import CategoryCard from '../snippets/category-card.astro';
+
+
+const { data } = Astro.props; 
+
+---
+
+<section class="container py-10">
+  <PageHeader title="Categorie in primo piano" as="h2"/>
+
+  {data && data.length > 0 ? (
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+      {data.map((city) => (
+        <CategoryCard data={city} key={city.id}/>
+      ))}
+    </div>
+  ) : (
+    <p>No data</p>
+  )}
+</section>

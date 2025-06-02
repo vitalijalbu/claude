@@ -1,0 +1,46 @@
+---
+const { data } = Astro.props;
+import ListingCard from '../snippets/listing-card.astro';
+import { Button, Result, PageHeader } from '@/components/index';
+import { IconChevron } from '@/icons/index';
+---
+
+<section>
+	<PageHeader
+		as="h2"
+		title="Annunci simili"
+		subtitle="Scopri altri annunci che potrebbero interessarti.">
+		<div
+			slot="extra"
+			class="flex gap-1">
+			<Button
+				variant="outline"
+				size="icon"
+				class="carousel-prev"
+				><IconChevron class='-rotate-90'/></Button
+			>
+			<Button
+				variant="outline"
+				size="icon"
+				class="carousel-next"
+				><IconChevron class='rotate-90'/></Button
+			>
+		</div>
+	</PageHeader>
+	{
+		data && data.length > 0 ?
+			<div class="swiper carousel-listings">
+				<div class="swiper-wrapper">
+					{data.map((listing) => (
+						<div class="swiper-slide">
+							<ListingCard data={listing} />
+						</div>
+					))}
+				</div>
+			</div>
+		:	<Result
+				title="Nessun annuncio disponibile"
+				description="Attualmente non ci sono annunci simili da mostrare. Riprova più tardi!"
+			/>
+	}
+</section>

@@ -1,0 +1,18 @@
+---
+ const {
+  variant = 'solid',
+  color = 'gray-200',
+  width = 'full',
+  thickness = '1',
+  spacing = '4'
+} = Astro.props;
+
+// Calculate styles based on props
+const borderStyle = variant === 'solid' ? '' : `border-${variant}`;
+const borderColor = `border-${color}`;
+const borderWidth = `border-${thickness}`;
+const dividerWidth = `w-${width}`;
+const marginY = `my-${spacing}`;
+---
+
+<hr class={`${dividerWidth} ${borderWidth} ${borderStyle} ${borderColor} ${marginY}`} />

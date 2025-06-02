@@ -1,0 +1,174 @@
+---
+import Map from '@/components/map.astro';
+import MainLayout from '@/layouts/main-layout.astro';
+import { Button, Breadcrumb, Card, ReportCard, Result } from '@/components/index';
+import { fetchData } from '@/lib/api';
+import Avatar from '@/components/avatar.astro';
+import Listings from '@/shared/profiles/listings.astro';
+import { IconStarBold, IconPhone, IconWhatsapp } from '@/icons/index';
+import Gallery from '@/shared/profiles/gallery.astro';
+import WorkingHours from '@/shared/profiles/working-hours.astro';
+import Taxonomies from '@/shared/taxonomies.astro';
+import ShareButton from '@/components/share-button.astro';
+
+const { id } = Astro.params;
+const currentPath = Astro.url.pathname;
+
+// Fetch profile data
+const { data, isLoading, isError, errorCode } = await fetchData(`/profiles/${id}`);
+// Set HTTP status code based on error condition
+if (isError) {
+  Astro.response.status = errorCode && typeof errorCode === 'number' ? errorCode : 404;
+}
+
+
+const breadcrumbs =
+	data ?
+		[
+			{ name: 'Home', url: '/' },
+			{ name: data?.province?.name, url: `/${data?.province?.slug}` },
+			{ name: data?.category?.name, url: `/${data?.province?.slug}/${data?.category?.slug}` },
+			{ name: data?.name || id, url: currentPath },
+		]
+	:	[];
+---
+
+<MainLayout title={data?.name ?? 'Profilo'}>
+	<div class="container">
+		{isLoading && <p class="text-center text-gray-400 py-6">Caricamento in corso...</p>}
+		{
+			!isLoading && isError && (
+				<Result
+					code={errorCode}
+					title={errorCode === 404 ? 'Profilo non trovato' : "Errore nel caricamento dell'profilo"}
+					description={
+						errorCode === 404 ?
+							"Il profilo che stai cercando potrebbe essere stato rimosso."
+						:	"Si è verificato un problema durante il caricamento dell'profilo. Riprova più tardi."
+					}
+				/>
+			)
+		}
+
+		{
+			!isLoading && !isError && data && (
+				<>
+				<div class="flex justify-between items-center mb-4">
+					<Breadcrumb links={breadcrumbs} />
+					<ShareButton
+						title={data?.name}
+						text={`Guarda il profilo di ${data?.name} su OnlyEscort`}
+						url={currentPath}
+					/>
+				</div>
+					{/* Hero Section */}
+
+					<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+						{/* Right Section: Profile Card */}
+						<div class="lg:col-span-1">
+							<Card className="mb-4">
+								<div
+									class="flex items-center space-x-4 mb-6"
+									slot="content">
+									<Avatar
+										src={data?.avatar}
+										size="lg"
+									/>
+									<div>
+										<h1 class="text-3xl font-semibold text-gray-800">{data?.name}</h1>
+										<p class="font-medium text-gray-500">{`Età: ${data?.age}`}</p>
+										<p class="font-medium text-gray-500">Nazionalità: IT</p>
+									</div>
+								</div>
+
+								<div
+									class="flex flex-col space-y-4"
+									slot="footer">
+									<Button
+										as="a"
+										href={`tel:${data?.phone_number}`}
+										class="w-full">
+										<IconPhone />
+										{data?.phone_number || 'Chiama ora'}
+									</Button>
+									<Button
+										variant="whatsapp"
+										as="a"
+										href={`https://api.whatsapp.com/send/?phone_number=${data?.whatsapp_number}&text=Ciao ho visto il tuo profilo su ${encodeURIComponent(currentPath)}&type=phone_number&app_absent=0`}
+										class="w-full">
+										<IconWhatsapp />
+										Whatsapp
+									</Button>
+									{/* <Button
+										variant="secondary"
+										as="a"
+										href="#reviews"
+										class="w-full">
+										<IconStarBold
+											width="18"
+											color="#FFBF00"
+										/>
+										Recensioni
+									</Button> */}
+								</div>
+							</Card>
+							<ReportCard type="profile" />
+						</div>
+						{/* Left Section */}
+						<div class="lg:col-span-2 space-y-6">
+							{/* Media */}
+							{data?.media && (
+								<section id="profile-gallery">
+									<Gallery
+										media={data?.media}
+										alt={data?.title}
+										meta={data}
+									/>
+								</section>
+							)}
+							{/* Bio */}
+							<section
+								id="profile-details"
+								class="py-4 text-gray-500">
+								<p>{data?.bio}</p>
+							</section>
+							{/* Taxonomies */}
+							{data?.taxonomies.length > 0 && <section id="profile-details">
+								<span class="text-xl block font-semibold mb-2">Dettagli</span>
+								<Taxonomies data={data?.taxonomies} />
+							</section>}
+							{/* Working Hours */}
+							{data?.working_hours && (
+								<section id="profile-details">
+									<span class="text-xl block font-semibold mb-2">Disponibilità</span>
+									<WorkingHours data={data?.working_hours} />
+								</section>
+							)}
+							{/* Listings */}
+							{data?.listings &&
+							<section
+								id="profile-listings"
+								class="py-4">
+								<span class="text-xl block font-semibold mb-2">Annunci</span>
+								<Listings data={data?.listings} />
+							</section>
+							}
+							{/* Map */}
+							{data?.lon && data?.lat && (
+								<section
+									id="profile-map"
+									class="py-6">
+									<span class="text-xl block font-semibold mb-2">Location</span>
+									<Map
+										lat={data?.lat}
+										lon={data?.lon}
+									/>
+								</section>
+							)}
+						</div>
+					</div>
+				</>
+			)
+		}
+	</div>
+</MainLayout>

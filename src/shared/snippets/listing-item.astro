@@ -1,0 +1,109 @@
+---
+import { Badge, Button, User } from '@/components/index';
+import GalleryItem from './gallery-item.astro';
+const { data } = Astro.props;
+const titleId = `listing-title-${data?.id}`;
+const descriptionId = `listing-description-${data?.id}`;
+const mediaCount = data?.media?.length ?? 0;
+---
+
+<article
+	class="group flex flex-col md:flex-row w-full overflow-hidden rounded-lg border border-outline bg-white"
+	aria-labelledby={titleId}
+	aria-describedby={descriptionId}
+	itemtype="https://schema.org/Product">
+	<!-- Media Section -->
+	<a
+		href={`/annuncio/${data?.slug}`}
+		class="relative w-full md:w-[420px] aspect-square md:aspect-square shrink-0 overflow-hidden"
+		aria-label={`Visualizza l'annuncio: ${data?.title}`}>
+		<GalleryItem
+			media={data?.media}
+			slug={data?.slug}
+			alt={data?.title}
+			class="!h-full !w-full object-cover transition duration-200 ease-out"
+		/>
+
+		<div class="absolute top-2 left-2 z-10 space-y-1">
+			{
+				mediaCount > 0 && (
+					<Badge
+						class="badge-light flex items-center gap-1"
+						aria-label={`Contiene ${mediaCount} immagini`}>
+						<img src="/images/icons/camera.svg" alt="Tot foto" width={18} height={18} />
+						{mediaCount}
+					</Badge>
+				)
+			}
+		</div>
+			<Button
+				variant="outline"
+				size="icon"
+				class="absolute right-2 top-2 z-10"
+				aria-label="Salva annuncio"
+			>
+				<img src="/images/icons/heart.svg" alt="Salva annuncio" width={18} height={18} />
+			</Button>
+	</a>
+
+	<!-- Content Section -->
+	<div class="flex flex-col flex-1 p-4 space-y-2">
+		{data?.category && <Badge size="lg" aria-label={`Categoria: ${data?.category?.name}`}>{data?.category?.name}</Badge>}
+		<a
+			href={`/annuncio/${data?.slug}`}
+			aria-labelledby={titleId}
+			aria-describedby={descriptionId}
+			aria-label={`Dettagli annuncio: ${data?.title}`}
+			class="relative overflow-hidden">
+			<div
+				id={titleId}
+				class="text-3xl font-semibold leading-snug line-clamp-2 mb-4">
+				{data?.title}
+			</div>
+			<p
+				id={descriptionId}
+				class="text-sm text-muted-foreground line-clamp-4 mb-4 break-all">
+				{data?.description}
+			</p>
+		</a>
+
+		<!-- Tag info -->
+		<section
+			class="flex-col flex-wrap"
+			aria-label="Informazioni aggiuntive">
+			<div class="flex flex-wrap gap-2 pt-1 mb-2">
+				<Badge aria-label={`Età dell'inserzionista: ${data?.age} anni`}>{`${data?.age} anni`}</Badge>
+				<Badge aria-label="Nazionalità dell'inserzionista: Italiana"> 🇮🇹 Italiana </Badge>
+			</div>
+		</section>
+
+		<!-- Footer Info -->
+		<footer class="mt-auto flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center text-xs text-muted-foreground pt-2">
+			<div
+				class="flex gap-4"
+				aria-label="Dettagli geografici e temporali">
+				{
+					data?.city?.name && (
+						<div
+							class="flex items-center gap-1"
+							aria-label={`Luogo: ${data?.city?.name}`}>
+							<img src="/images/icons/map-point.svg" alt="Mappa" width={18} height={18} />
+							{data?.city?.name}
+						</div>
+					)
+				}
+				<Badge>{data?.nationality}</Badge>
+			</div>
+
+			<div
+				class="flex items-center gap-1.5"
+				aria-label="Profilo inserzionista">
+				<User
+					withRating={true}
+					data={data?.profile}
+					size="sm"
+				/>
+			</div>
+		</footer>
+	</div>
+</article>

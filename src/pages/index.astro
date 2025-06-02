@@ -1,0 +1,65 @@
+---
+import { Result, PageHeader } from '@/components/index';
+import MainLayout from '@/layouts/main-layout.astro';
+import { fetchData } from '@/lib/api';
+import HeroSearch from '@/shared/search/hero-search.astro';
+import Categories from '@/shared/sections/categories.astro';
+import Provinces from '@/shared/sections/provinces.astro';
+import ListingCard from '@/shared/snippets/listing-card.astro';
+import { IconChevron } from '../icons';
+
+const { data, isError, isLoading } = await fetchData('/home');
+
+// SEO
+const schemaORG = {
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@id": "https://it.onlyescort.vip/#organization",
+            "@type": "Organization",
+            "name": "OnlyEscort",
+            "logo": "/images/logo.svg",
+            "url": "https://it.onlyescort.vip/",
+            "slogan": "Il 1° sito con annunci e profili di Escort",
+            "description": "OnlyEscort è il primo sito che permette agli utenti di trovare le migliori escort da incontrare, attraverso gli annunci e le recensioni sui profili"
+        }
+    ]
+};
+---
+
+<MainLayout title="Home | OnlyEscort" schema={schemaORG} metaDescription="Il 1° sito con annunci e profili">
+  <HeroSearch />
+
+
+    {!isLoading && !isError && (
+      <>
+        {data?.categories?.length
+          ? <Categories data={data.categories} />
+          : <p class="text-center text-gray-500 my-4">Nessuna categoria disponibile</p>
+        }
+
+        {data?.regions?.length && <Provinces data={data.regions} />}
+
+
+        <section class="container py-10">
+          <PageHeader title="In primo piano" as="h2"/>
+
+          {data?.listings?.length
+            ? (
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {data.listings.map((post) => (
+                  <ListingCard
+                    href={`/annuncio/${post?.slug}`}
+                    data={post}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Result title="Nessun annuncio disponibile"/>
+            )
+          }
+        </section>
+      </>
+    )}
+
+</MainLayout>

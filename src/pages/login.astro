@@ -1,0 +1,216 @@
+---
+import MainLayout from '@/layouts/main-layout.astro';
+import { Card, Button, input } from '@/components/index';
+
+// Variabili per eventuali messaggi di errore o successo
+let formMessage = '';
+let formSuccess = false;
+
+if (Astro.request.method === 'POST') {
+	try {
+		const data = await Astro.request.formData();
+		const email = data.get('email');
+		const password = data.get('password');
+
+		// Log dei dati ricevuti (per debug)
+		console.log('Form data ricevuti:', { email, password });
+
+		// Qui andrebbe la logica di autenticazione
+		// Per ora simuliamo solo il successo
+		formSuccess = true;
+		formMessage = 'Login effettuato con successo!';
+
+		// Redirect dopo login (da decommentare quando pronto)
+		return Astro.redirect('/account');
+	} catch (error) {
+		formSuccess = false;
+		formMessage = error instanceof Error ? error.message : 'Si è verificato un errore durante il login';
+		console.error('Errore durante il login:', formMessage);
+	}
+}
+---
+
+<MainLayout title="Accedi al tuo account">
+	<div class="accordion divide-neutral/20 divide-y" data-accordion-always-open="">
+  <div class="accordion-item active" id="payment-always">
+    <button class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="payment-always-collapse" aria-expanded="true">
+      <span class="icon-[tabler--plus] accordion-item-active:hidden text-base-content size-4.5 block shrink-0"></span>
+      <span class="icon-[tabler--minus] accordion-item-active:block text-base-content size-4.5 hidden shrink-0"></span>
+      When is payment taken for my order?
+    </button>
+    <div id="payment-always-collapse" class="accordion-content w-full overflow-hidden transition-[height] duration-300" aria-labelledby="payment-always" role="region">
+      <div class="px-5 pb-4">
+        <p class="text-base-content/80 font-normal">
+          Payment is taken during the checkout process when you pay for your order. The order number that appears on the
+          confirmation screen indicates payment has been successfully processed.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item" id="delivery-always">
+    <button class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="delivery-always-collapse" aria-expanded="false">
+      <span class="icon-[tabler--plus] accordion-item-active:hidden text-base-content size-4.5 block shrink-0"></span>
+      <span class="icon-[tabler--minus] accordion-item-active:block text-base-content size-4.5 hidden shrink-0"></span>
+      How would you ship my order?
+    </button>
+    <div id="delivery-always-collapse" class="accordion-content hidden w-full overflow-hidden transition-[height] duration-300" aria-labelledby="delivery-always" role="region">
+      <div class="px-5 pb-4">
+        <p class="text-base-content/80 font-normal">
+          For large products, we deliver your product via a third party logistics company offering you the “room of
+          choice” scheduled delivery service. For small products, we offer free parcel delivery.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item" id="cancel-always">
+    <button class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="cancel-always-collapse" aria-expanded="false">
+      <span class="icon-[tabler--plus] accordion-item-active:hidden text-base-content size-4.5 block shrink-0"></span>
+      <span class="icon-[tabler--minus] accordion-item-active:block text-base-content size-4.5 hidden shrink-0"></span>
+      Can I cancel my order?
+    </button>
+    <div id="cancel-alawys-collapse" class="accordion-content hidden w-full overflow-hidden transition-[height] duration-300" aria-labelledby="cancel-alawys" role="region">
+      <div class="px-5 pb-4">
+        <p class="text-base-content/80 font-normal">
+          Scheduled delivery orders can be cancelled 72 hours prior to your selected delivery date for full refund.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button type="button" class="btn btn-primary" aria-haspopup="dialog" aria-expanded="false" aria-controls="overlay-example" data-overlay="#overlay-example">Open drawer</button>
+
+<div id="overlay-example" class="overlay overlay-open:translate-x-0 drawer drawer-start hidden" role="dialog" tabindex="-1">
+  <div class="drawer-header">
+    <h3 class="drawer-title">Drawer Title</h3>
+    <button type="button" class="btn btn-text btn-circle btn-sm absolute end-3 top-3" aria-label="Close" data-overlay="#overlay-example">
+      <span class="icon-[tabler--x] size-5"></span>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <p>
+      Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
+    </p>
+  </div>
+  <div class="drawer-footer">
+    <button type="button" class="btn btn-soft btn-secondary" data-overlay="#overlay-example">Close</button>
+    <button type="button" class="btn btn-primary">Save changes</button>
+  </div>
+</div>
+	<div class="min-h-screen flex items-center justify-center bg-base-200 py-12 px-4 sm:px-6 lg:px-8">
+		<div class="max-w-md w-full space-y-8">
+			<div class="dropdown relative inline-flex">
+				<div class="dropdown relative inline-flex">
+					<button
+						id="dropdown-default"
+						type="button"
+						class="dropdown-toggle btn btn-primary"
+						aria-haspopup="menu"
+						aria-expanded="false"
+						aria-label="Dropdown">
+						Dropdown
+						<span class="icon-[tabler--chevron-down] dropdown-open:rotate-180 size-4"></span>
+					</button>
+					<ul
+						class="dropdown-menu dropdown-open:opacity-100 hidden min-w-60"
+						role="menu"
+						aria-orientation="vertical"
+						aria-labelledby="dropdown-default">
+						<li
+							><a
+								class="dropdown-item"
+								href="#"
+								>My Profile</a
+							></li
+						>
+						<li
+							><a
+								class="dropdown-item"
+								href="#"
+								>Settings</a
+							></li
+						>
+						<li
+							><a
+								class="dropdown-item"
+								href="#"
+								>Billing</a
+							></li
+						>
+						<li
+							><a
+								class="dropdown-item"
+								href="#"
+								>FAQs</a
+							></li
+						>
+					</ul>
+				</div>
+				<Card>
+					<div slot="content">
+						<div class="flex flex-col items-center text-center mb-6">
+							<h1 class="text-2xl font-bold">Bentornato</h1>
+							<p class="text-balance text-muted-foreground">Accedi al tuo account OnlyEscort</p>
+						</div>
+
+						{formMessage && <div class={`mb-4 p-3 rounded-md text-sm ${formSuccess ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>{formMessage}</div>}
+
+						<form
+							method="POST"
+							class="flex flex-col gap-4">
+							<div class="space-y-2">
+								<label
+									for="email"
+									class="text-sm font-medium">
+									Email
+									<span class="text-red-500">*</span>
+								</label>
+								<input
+									id="email"
+									name="email"
+									type="email"
+									class="input w-full"
+									placeholder="m@example.com"
+									required
+								/>
+							</div>
+
+							<div class="space-y-2">
+								<label
+									for="password"
+									class="text-sm font-medium">
+									Password
+									<span class="text-red-500">*</span>
+								</label>
+								<input
+									id="password"
+									name="password"
+									type="password"
+									class="input w-full"
+									required
+								/>
+							</div>
+
+							<div class="pt-2">
+								<button
+									type="submit"
+									class="btn btn-primary w-full">
+									Accedi
+								</button>
+							</div>
+
+							<div class="text-center text-sm my-4">
+								Non hai un account?{' '}
+								<a
+									href="/register"
+									class="underline underline-offset-4 hover:text-primary">
+									Creane uno
+								</a>
+							</div>
+						</form>
+					</div>
+				</Card>
+			</div>
+		</div>
+	</div>
+</MainLayout>

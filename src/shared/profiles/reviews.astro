@@ -1,0 +1,35 @@
+---
+const { data } = Astro.props;
+import { Result } from '@/components/index';
+import { Picture } from 'astro:assets';
+
+---
+  {data?.length > 0 ? (
+    <ul class="divide-y divide-gray-200">
+      {data.map((listing: any) => (
+        <li class="py-3 sm:pb-4">
+          <a href={`/annuncio/${listing?.slug}`} target="_blank">
+            <div class="flex items-center space-x-4 rtl:space-x-reverse">
+              <div class="shrink-0">
+                <Picture class="w-30 h-30 rounded-lg object-cover" width={200} height={200} src={listing?.media?.[0]?.url || '/images/placeholder.svg'} alt={listing?.title} />
+              </div>
+              <div class="flex-1 min-w-0">
+                <h5 class="mb-2 font-semibold text-gray-900 truncate">
+                  {listing?.title}
+                </h5>
+                <p class="text-sm text-gray-500 truncate">
+                  {listing?.description}
+                </p>
+              </div>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <Result
+      title="Nessun annuncio disponibile"
+      description="Attualmente non ci sono annunci da mostrare."
+    />
+  )}
+

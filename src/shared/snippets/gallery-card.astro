@@ -1,0 +1,45 @@
+---
+import { Picture } from 'astro:assets';
+import { MEDIA_URL } from '@/utils/constants';
+
+const { media = [], alt = 'Image' } = Astro.props;
+---
+
+<div class="swiper listing-carousel w-full h-full">
+  <div class="swiper-wrapper">
+    {media.length > 0 ? (
+      media.map((image) => (
+        <div class="swiper-slide">
+          <Picture
+            loading="lazy"
+            decoding="async"
+            class="object-cover transition duration-300 ease-out !h-full !w-full"
+            src={MEDIA_URL + image.url}
+            srcset={image.srcset.map((src) => `${src.url} ${src.width}w`).join(', ')}
+            sizes="(max-width: 600px) 480px, (max-width: 1200px) 800px, 1200px"
+            alt={alt}
+            width={1200}
+            height={800}
+            
+          />
+        </div>
+      ))
+    ) : (
+      <div class="swiper-slide">
+        <Picture
+          loading="lazy"
+          decoding="async"
+          class="object-cover transition duration-300 ease-out !h-full !w-full"
+          src="/images/placeholder.svg"
+          alt={alt}
+          width={1200}
+          height={800}
+          
+        />
+      </div>
+    )}
+  </div>
+  <div class="swiper-button-next"></div>
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-pagination"></div>
+</div>

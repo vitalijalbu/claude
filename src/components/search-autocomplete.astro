@@ -1,0 +1,79 @@
+---
+// index.astro
+import { API_URL } from '../utils/constants.js';
+---
+
+<div
+  id="search-container"
+  data-api-url={API_URL}
+  class="relative w-full max-w-xl mx-auto"
+>
+  <input
+    id="search-input"
+    type="text"
+    placeholder="Cerca città, profilo o annuncio..."
+    class="input w-full"
+    autocomplete="off"
+  />
+  <ul
+    id="autocomplete-results"
+    class="absolute z-10 w-full bg-white border border-gray-200 rounded-md mt-1 shadow-md hidden"
+  ></ul>
+</div>
+
+<script type="module">
+  const container = document.getElementById('search-container');
+  const API_URL = container.dataset.apiUrl;
+
+  const input = document.getElementById('search-input');
+  const resultsBox = document.getElementById('autocomplete-results');
+  let debounceTimer;
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const query = input.value.trim();
+
+    if (query.length < 2) {
+      resultsBox.classList.add('hidden');
+      resultsBox.innerHTML = '';
+      return;
+    }
+
+    debounceTimer = setTimeout(() => {
+      fetch(`${API_URL}/explore?q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(results => {
+          resultsBox.innerHTML = '';
+
+          if (!Array.isArray(results) || results.length === 0) {
+            resultsBox.classList.add('hidden');
+            return;
+          }
+
+          results.forEach(item => {
+            const li = document.createElement('li');
+            li.className = "p-3 hover:bg-gray-100 cursor-pointer border-b last:border-0";
+
+            let href = '#';
+            switch (item.type) {
+              case 'city': href = `/${item.slug}`; break;
+              case 'profile': href = `/profilo/${item?.slug}`; break;
+              case 'listing': href = `/annuncio/${item?.slug}`; break;
+            }
+
+            li.innerHTML = `<a href="${href}" class="block">${item?.label}</a>`;
+            resultsBox.appendChild(li);
+          });
+
+          resultsBox.classList.remove('hidden');
+        })
+        .catch(() => resultsBox.classList.add('hidden'));
+    }, 200);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!resultsBox.contains(e.target) && e.target !== input) {
+      resultsBox.classList.add('hidden');
+    }
+  });
+</script>

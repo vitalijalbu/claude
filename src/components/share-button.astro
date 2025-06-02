@@ -1,0 +1,76 @@
+---
+import Button from "./button.astro";
+import { IconShare } from "../icons";
+
+const { 
+  title = document.title,
+  text = "Guarda questo contenuto interessante!",
+  url = Astro.url.href,
+  class: className = "",
+  variant = "outline"
+} = Astro.props;
+---
+
+<Button
+  variant="outline"
+  class={`share-button ${className}`}
+  data-title={title}
+  data-text={text}
+  data-url={url}
+>
+  <IconShare />
+  <span>Condividi</span>
+</Button>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const shareButtons = document.querySelectorAll('.share-button');
+    
+    shareButtons.forEach(button => {
+      button.addEventListener('click', async () => {
+        const title = button.getAttribute('data-title');
+        const text = button.getAttribute('data-text');
+        const url = button.getAttribute('data-url');
+        
+        // Verifica se l'API di condivisione è supportata
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title,
+              text,
+              url
+            });
+            console.log('Contenuto condiviso con successo');
+          } catch (error) {
+            if (error.name !== 'AbortError') {
+              console.error('Errore durante la condivisione:', error);
+              // Mostra un fallback in caso di errore (opzionale)
+              fallbackShare(url);
+            }
+          }
+        } else {
+          // Fallback per browser che non supportano l'API Share
+          fallbackShare(url);
+        }
+      });
+    });
+    
+    // Funzione di fallback che copia l'URL negli appunti
+    function fallbackShare(url) {
+      // Crea un elemento di input temporaneo
+      const input = document.createElement('input');
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      input.value = url;
+      document.body.appendChild(input);
+      
+      // Seleziona e copia il testo
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      
+      // Mostra una notifica all'utente (potrebbe essere sostituita con un toast o una notifica più elegante)
+      alert('URL copiato negli appunti!');
+    }
+  });
+</script>

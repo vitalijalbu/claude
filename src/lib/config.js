@@ -1,0 +1,1 @@
+export const baseUrl = "https://onlyesc-admin.test/api";

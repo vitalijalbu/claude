@@ -1,0 +1,38 @@
+---
+import { Badge, Card } from "@/components/index";
+
+const { data }  = Astro.props;
+
+const dayLabels = {
+  monday: "Lunedì",
+  tuesday: "Martedì",
+  wednesday: "Mercoledì",
+  thursday: "Giovedì",
+  friday: "Venerdì",
+  saturday: "Sabato",
+  sunday: "Domenica",
+};
+---
+<ul slot="content" class="space-y-4 divide-y divide-gray-200" role="list">
+    {data.map((day) => (
+      <li class="py-2" role="listitem">
+        <div class="flex justify-between items-center" aria-label={`Orari del ${dayLabels[day.day]}`}>
+          <span class="font-medium text-sm text-on-surface">
+            {dayLabels[day.day]}
+          </span>
+
+          {day.hours.length > 0 ? (
+            <span class="text-sm text-on-surface/90" aria-hidden="true">
+              {day.hours.map((interval, i) => (
+                <time datetime={`${interval.open}-${interval.close}`} class="not-sr-only">
+                  {interval.open} - {interval.close}{i < day.hours.length - 1 ? ', ' : ''}
+                </time>
+              ))}
+            </span>
+          ) : (
+            <Badge aria-label="Closed">Chiuso</Badge>
+          )}
+        </div>
+      </li>
+    ))}
+  </ul>
