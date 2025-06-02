@@ -1,61 +1,72 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Geo\IndexCities;
+use App\Actions\Geo\IndexCountries;
+use App\Actions\Geo\IndexNationalities;
+use App\Actions\Geo\IndexProvinces;
+use App\Actions\Geo\IndexRegions;
 use App\Http\Resources\Api\CityResource;
 use App\Http\Resources\Api\CountryResource;
-use App\Services\Api\GeoService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 final class GeoController extends ApiController
 {
-    protected GeoService $geoService;
-
-    public function __construct(GeoService $geoService)
+    public function countries(Request $request, IndexCountries $action): JsonResponse
     {
-        $this->geoService = $geoService;
-    }
-
-    public function countries(Request $request)
-    {
-        $params = $request->all();
-        $data = $this->geoService->findAllCountries($params);
-
-        return CountryResource::collection($data);
-    }
-
-    public function regions(Request $request)
-    {
-        $params = $request->all();
-        $data = $this->geoService->findAllRegions($params);
-
-        return CityResource::collection($data);
-    }
-
-    public function provinces(Request $request)
-    {
-        $params = $request->all();
-        $data = $this->geoService->findAllProvinces($params);
-
-        return CityResource::collection($data);
-    }
-
-    public function cities(Request $request)
-    {
-        $params = $request->all();
-        $data = $this->geoService->findAllCities($params);
-
-        return CityResource::collection($data);
-    }
-
-    public function nationalities(Request $request): JsonResponse
-    {
-        $params = $request->all();
-        $data = $this->geoService->findAllNationalities($params);
+        $data = $action->handle($request->all());
 
         return response()->json([
-            'data' => $data,
+            'success' => true,
+            'data' => CountryResource::collection($data),
+        ]);
+    }
+
+    public function regions(Request $request, IndexRegions $action): JsonResponse
+    {
+        $data = $action->handle($request->all());
+
+        return response()->json([
+            'success' => true,
+            'data' => CityResource::collection($data),
+        ]);
+    }
+
+    public function provinces(Request $request, IndexProvinces $action): JsonResponse
+    {
+        $data = $action->handle($request->all());
+
+        return response()->json([
+            'success' => true,
+            'data' => CityResource::collection($data),
+        ]);
+    }
+
+    public function cities(Request $request, IndexCities $action): JsonResponse
+    {
+        $data = $action->handle($request->all());
+
+        return response()->json([
+            'success' => true,
+            'data' => CityResource::collection($data),
+        ]);
+    }
+
+    public function nationalities(Request $request, IndexNationalities $action): JsonResponse
+    {
+        $data = $action->handle();
+
+        return response()->json([
+            'success' => true,
+            'data' => $data->map(fn($nationality) => [
+                'id' => $nationality->id,
+                'name' => $nationality->name,
+                'country' => $nationality->country?->name,
+            ]),
         ]);
     }
 }

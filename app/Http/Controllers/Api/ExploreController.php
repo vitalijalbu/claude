@@ -1,26 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Search\SearchAll;
 use App\Http\Resources\Api\ExploreResource;
-use App\Services\Api\ExploreService;
 use Illuminate\Http\Request;
 
 class ExploreController extends ApiController
 {
-    protected ExploreService $exploreService;
-
-    public function __construct(ExploreService $exploreService)
-    {
-        $this->exploreService = $exploreService;
-    }
-
-    public function index(Request $request)
+    public function index(Request $request, SearchAll $action)
     {
         $query = $request->get('query', null);
+        $results = $action->handle($query);
 
-        $results = $this->exploreService->searchAll($query);
-
-        return ExploreResource::collection($results);
+        return response()->json([
+            'success' => true,
+            'data' => ExploreResource::collection($results),
+        ]);
     }
 }

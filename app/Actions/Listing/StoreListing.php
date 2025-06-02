@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Listing;
 
 use App\DTO\Listing\ListingDTO;
@@ -21,7 +23,7 @@ class StoreListing
 
         // Attach taxonomies if provided
         if ($dto->taxonomies) {
-            $attachTaxonomies = new AttachTaxonomies;
+            $attachTaxonomies = new AttachTaxonomies();
             $attachTaxonomies->handle($listing, $dto->taxonomies);
         }
 

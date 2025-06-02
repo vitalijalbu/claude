@@ -1,47 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Category\FindCategoryBySlug;
+use App\Actions\Geo\FindCity;
+use App\Actions\Listing\AttachTaxonomies;
+use App\Actions\Listing\UpdateOrCreateListing;
+use App\Actions\Profile\UpdateOrCreateProfile;
 use App\Http\Requests\StoreGrabber;
-use App\Services\Api\CategoryService;
-use App\Services\Api\GeoService;
-use App\Services\Api\ListingService;
-use App\Services\Api\ProfileService;
-use App\Services\MediaService;
+use App\Services\OptimizedMediaService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 final class GrabberController extends ApiController
 {
-    protected ListingService $listingService;
-
-    protected ProfileService $profileService;
-
-    protected GeoService $geoService;
-
-    protected MediaService $mediaService;
-
-    protected CategoryService $categoryService;
-
-    public function __construct(
-        ListingService $listingService,
-        ProfileService $profileService,
-        GeoService $geoService,
-        MediaService $mediaService,
-        CategoryService $categoryService,
-    ) {
-        $this->listingService = $listingService;
-        $this->profileService = $profileService;
-        $this->geoService = $geoService;
-        $this->mediaService = $mediaService;
-        $this->categoryService = $categoryService;
-    }
-
-    public function store(StoreGrabber $request): JsonResponse
-    {
+    public function store(
+        StoreGrabber $request,
+        FindCity $findCity,
+        FindCategoryBySlug $findCategory,
+        UpdateOrCreateProfile $updateOrCreateProfile,
+        UpdateOrCreateListing $updateOrCreateListing,
+        AttachTaxonomies $attachTaxonomies,
+        OptimizedMediaService $mediaService
+    ): JsonResponse {
         $validated = $request->validated();
 
         if ($validated['is_verified'] === false) {
@@ -50,183 +35,104 @@ final class GrabberController extends ApiController
             ], 403);
         }
 
-        try {
-            // Trova città
-            $city = $this->geoService->findCity($validated['city']);
-            if (! $city) {
-                Log::error('City not found', ['city' => $validated['city']]);
+        return DB::transaction(function () use (
+            $validated,
+            $findCity,
+            $findCategory,
+            $updateOrCreateProfile,
+            $updateOrCreateListing,
+            $attachTaxonomies,
+            $mediaService
+        ) {
+            try {
+                // Find city and category
+                $city = $findCity->handle($validated['city']);
+                $category = $findCategory->handle($validated['category']);
 
-                return response()->json(['error' => 'City not found'], 404);
-            }
+                if (!$city || !$category) {
+                    return response()->json([
+                        'error' => !$city ? 'City not found' : 'Category not found'
+                    ], 404);
+                }
 
-            // Trova categoria
-            $category = $this->categoryService->findOne($validated['category']);
-            if (! $category) {
-                Log::error('Category not found', ['category' => $validated['category']]);
+                // Create or update profile
+                $profile = $updateOrCreateProfile->handle([
+                    'name' => $validated['phone_number'],
+                    'email' => $validated['email'] ?? null,
+                    'phone_number' => $validated['phone_number'],
+                    'whatsapp_number' => $validated['whatsapp_number'],
+                    'rating' => $validated['rating'] ?? null,
+                    'bio' => $this->cleanText($validated['description']),
+                    'date_birth' => $validated['date_birth'] ?? null,
+                    'city_id' => $city->id,
+                ]);
 
-                return response()->json(['error' => 'Category not found'], 404);
-            }
+                // Create or update listing
+                $listing = $updateOrCreateListing->handle([
+                    'title' => $this->cleanText($validated['title'], 60),
+                    'description' => $this->cleanText($validated['description']),
+                    'category_id' => $category->id,
+                    'city_id' => $city->id,
+                    'date_birth' => $validated['date_birth'] ?? null,
+                    'slug' => Str::slug($this->cleanText($validated['title'], 60)),
+                    'profile_id' => $profile->id,
+                    'phone_number' => $validated['phone_number'],
+                    'whatsapp_number' => $validated['whatsapp_number'],
+                    'location' => $validated['location'] ?? null,
+                    'ref_site' => $validated['ref_site'] ?? null,
+                    'is_verified' => $validated['is_verified'] ?? false,
+                    'lon' => $this->addRandomOffset($validated['lon'] ?? null),
+                    'lat' => $this->addRandomOffset($validated['lat'] ?? null),
+                ]);
 
-            // Profile Data
-            $profileData = [
-                'name' => $validated['phone_number'],
-                'email' => $validated['email'] ?? null,
-                'phone_number' => $validated['phone_number'],
-                'whatsapp_number' => $validated['whatsapp_number'],
-                'rating' => $validated['rating'] ?? null,
-                'bio' => Str::of($validated['description'])
-                    ->replaceMatches('/[\p{So}\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}]/u', ''),
-                'date_birth' => $validated['date_birth'] ?? null,
-                'city_id' => $city->id,
-            ];
+                // Attach taxonomies
+                if (!empty($validated['taxonomies'])) {
+                    $attachTaxonomies->handle($listing, $validated['taxonomies']);
+                }
 
-            $profile = $this->profileService->updateOrCreate($profileData);
+                // Process media
+                if (!empty($validated['media'])) {
+                    $mediaService->attachImagesFromLocalRaw($profile, $listing, $validated['media']);
+                }
 
-            $formattedTitle = Str::of($validated['title'])
-                ->replaceMatches('/[\p{So}\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}]/u', '')
-                ->limit(60, '');
-            // Listing Data
-            $listingData = [
-                'title' => $formattedTitle,
-                'description' => Str::of($validated['description'])
-                    ->replaceMatches('/[\p{So}\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}]/u', ''),
-                'category_id' => $category->id,
-                'city_id' => $city->id,
-                'date_birth' => $validated['date_birth'] ?? null,
-                'slug' => Str::slug($formattedTitle),
-                'profile_id' => $profile->id,
-                'phone_number' => $validated['phone_number'],
-                'whatsapp_number' => $validated['whatsapp_number'],
-                'location' => $validated['location'] ?? null,
-                'media' => $validated['media'] ?? null,
-                'ref_site' => $validated['ref_site'] ?? null,
-                'is_verified' => $validated['is_verified'] ?? false,
-                'lon' => isset($validated['lon'])
-                    ? $validated['lon'] + random_int(-9, 9) / 100000
-                    : null,
-                'lat' => isset($validated['lat'])
-                ? $validated['lat'] + random_int(-9, 9) / 100000
-                : null,
-            ];
+                Log::info('Listing processed successfully', [
+                    'listing_id' => $listing->id,
+                    'action' => $listing->wasRecentlyCreated ? 'created' : 'updated',
+                ]);
 
-            if (empty($listingData['title']) || empty($listingData['profile_id'])) {
                 return response()->json([
-                    'error' => "Missing controller fields: 'title' and 'profile_id'",
-                ], 400);
+                    'status' => 'success',
+                    'message' => $listing->wasRecentlyCreated ? 'Listing created successfully' : 'Listing updated successfully',
+                    'data' => $listing->load(['profile', 'category', 'city', 'taxonomies']),
+                ]);
+
+            } catch (\Throwable $e) {
+                Log::error('Error storing listing', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
+                return response()->json([
+                    'error' => "Internal server error: {$e->getMessage()}",
+                ], 500);
             }
-
-            // Check if listing is new or updated
-            $listing = $this->listingService->updateOrCreate($listingData);
-
-            if (! empty($validated['taxonomies'])) {
-                $this->listingService->attachTaxonomies($listing, $validated['taxonomies']);
-            }
-
-            // Media
-            if (! empty($validated['media'])) {
-                $this->mediaService->attachImagesFromLocalRaw($profile, $listing, $validated['media']);
-
-                // // Set first image as avatar
-                // $firstImage = $validated['media'][0] ?? null;
-
-                // if ($firstImage) {
-                //     $profile->clearMediaCollection('avatar');
-
-                //     $avatarPath = storage_path("media/{$profile->phone_number}/{$firstImage}");
-
-                //     if (File::exists($avatarPath)) {
-                //         $profile->addMedia($avatarPath)
-                //             ->toMediaCollection('avatar');
-                //     }
-                // }
-            }
-
-            // Determine success message based on whether it's a new or updated listing
-            $message = $listing->wasRecentlyCreated ? 'Listing created successfully' : 'Listing updated successfully';
-
-            // Log the result
-            Log::info('Listing action', [
-                'listing_id' => $listing->id,
-                'status' => $message,
-                'action' => $listing->wasRecentlyCreated ? 'created' : 'updated',
-            ]);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => $message,
-                'data' => $listing->load([
-                    'profile',
-                    'category',
-                    'city',
-                    'taxonomies',
-                ]),
-            ]);
-        } catch (\Throwable $e) {
-            // Log the error
-            Log::error('Error storing listing', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return response()->json([
-                'error' => "Internal server error: {$e->getMessage()}",
-            ], 500);
-        }
-    }
-
-    // Grabber S3
-    public function s3(): JsonResponse
-    {
-        $disk = Storage::disk('s3');
-
-        // Recupera ricorsivamente tutti i file
-        $allFiles = $disk->allFiles();
-
-        // Filtra solo immagini (opzionale)
-        $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        $images = array_filter($allFiles, function ($file) use ($imageExtensions) {
-            return in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), $imageExtensions);
         });
-
-        // Organizza per cartelle
-        $grouped = [];
-
-        foreach ($images as $image) {
-            $pathParts = pathinfo($image);
-            $folder = $pathParts['dirname'] === '.' ? '/' : $pathParts['dirname'];
-            $grouped[$folder][] = $pathParts['basename'];
-        }
-
-        return response()->json($grouped);
     }
 
-    public function s3_clone(string $phoneNumber): JsonResponse
+    private function cleanText(string $text, ?int $limit = null): string
     {
-        $disk = Storage::disk('s3');
+        $cleaned = Str::of($text)
+            ->replaceMatches('/[\p{So}\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}]/u', '');
 
-        // Percorsi
-        $sourceDir = "raw/{$phoneNumber}";
-        $targetDir = "media/{$phoneNumber}";
+        return $limit ? $cleaned->limit($limit, '') : $cleaned;
+    }
 
-        // Recupera i file da raw/{phoneNumber}
-        $files = $disk->files($sourceDir);
-
-        $cloned = [];
-
-        foreach ($files as $file) {
-            $filename = basename($file);
-            $newPath = "{$targetDir}/{$filename}";
-
-            // Clona solo se il file non esiste già nella destinazione
-            if (! $disk->exists($newPath)) {
-                $disk->copy($file, $newPath);
-                $cloned[] = $newPath;
-            }
+    private function addRandomOffset(?float $coordinate): ?float
+    {
+        if ($coordinate === null) {
+            return null;
         }
 
-        return response()->json([
-            'cloned' => $cloned,
-            'count' => count($cloned),
-        ]);
+        return $coordinate + random_int(-9, 9) / 100000;
     }
 }

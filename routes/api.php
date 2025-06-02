@@ -32,22 +32,22 @@ Route::get('/home', [HomeController::class, 'index'])->name('explore.api');
 // Settings
 Route::prefix('listings')->name('api.listings.')->group(function () {
     Route::get('/', [ListingController::class, 'index'])->name('index');
-    Route::get('/{slug}', [ListingController::class, 'show'])->name('show');
+    Route::get('/{listing:slug}', [ListingController::class, 'show'])->name('show');
 });
 // Categories
 Route::prefix('categories')->name('api.categories.')->group(function () {
     Route::get('/', [CategoryController::class, 'index'])->name('index');
-    Route::get('/{slug}', [CategoryController::class, 'show'])->name('show');
+    Route::get('/{category}', [CategoryController::class, 'show'])->name('show');
 });
 // Taxonomies
 Route::prefix('taxonomies')->name('api.taxonomies.')->group(function () {
     Route::get('/', [TaxonomyController::class, 'index'])->name('index');
-    Route::get('/{slug}', [TaxonomyController::class, 'show'])->name('show');
+    Route::get('/{taxonomy}', [TaxonomyController::class, 'show'])->name('show');
 });
 // Profiles
 Route::prefix('profiles')->name('api.profiles.')->group(function () {
     Route::get('/', [ProfileController::class, 'index'])->name('index');
-    Route::get('/{phone_number}', [ProfileController::class, 'show'])->name('show');
+    Route::get('/{profile:phone_number}', [ProfileController::class, 'show'])->name('show');
 });
 
 // Account routes

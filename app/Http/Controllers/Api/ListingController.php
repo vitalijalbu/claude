@@ -4,50 +4,91 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Actions\Listing\IndexListings;
-use App\Actions\Listing\ShowListing;
-use App\DTO\Listing\ListingFilterDTO;
-use App\Http\Resources\Api\ListingResource;
-use App\Models\Listing;
+use App\Actions\Profile\IndexProfiles;
+use App\Actions\Profile\StoreProfile;
+use App\Actions\Profile\UpdateProfile;
+use App\DTO\Profile\ProfileDTO;
+use App\DTO\Profile\ProfileFilterDTO;
+use App\DTO\Profile\UpdateProfileDTO;
+use App\Http\Requests\Profile\StoreProfileRequest;
+use App\Http\Requests\Profile\UpdateProfileRequest;
+use App\Http\Resources\Api\ProfileCollectionResource;
+use App\Http\Resources\Api\ProfileSingleResource;
+use App\Models\Profile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
-class ListingController extends ApiController
+final class ProfileController extends ApiController
 {
-    public function index(Request $request, IndexListings $action): JsonResponse
+    public function index(Request $request, IndexProfiles $action): JsonResponse
     {
-        $filters = ListingFilterDTO::fromRequest($request->all());
-        $listings = $action->handle($filters);
+        $filters = ProfileFilterDTO::fromRequest($request->all());
+        $profiles = $action->handle($filters);
 
         return response()->json([
             'success' => true,
-            'data' => ListingResource::collection($listings),
+            'data' => ProfileCollectionResource::collection($profiles),
             'meta' => [
                 'pagination' => [
-                    'current_page' => $listings->currentPage(),
-                    'per_page' => $listings->perPage(),
-                    'total' => $listings->total(),
-                    'last_page' => $listings->lastPage(),
+                    'current_page' => $profiles->currentPage(),
+                    'per_page' => $profiles->perPage(),
+                    'total' => $profiles->total(),
+                    'last_page' => $profiles->lastPage(),
                 ],
             ],
         ]);
     }
 
-    public function show(Request $request, ShowListing $action): JsonResponse
+    public function store(StoreProfileRequest $request, StoreProfile $action): JsonResponse
     {
-        $listing = $action->handle($request->slug);
-
-        // Get similar listings
-        $similarListings = Listing::where('category_id', $listing->category_id)
-            ->where('id', '!=', $listing->id)
-            ->with(['city', 'category', 'profile'])
-            ->limit(10)
-            ->get();
+        $dto = ProfileDTO::fromRequest($request->validated());
+        $profile = $action->handle($dto);
 
         return response()->json([
             'success' => true,
-            'data' => (new ListingResource($listing))->toSingle($request),
-            'similar_listings' => ListingResource::collection($similarListings),
+            'message' => 'Profile created successfully',
+            'data' => new ProfileSingleResource($profile),
+        ], Response::HTTP_CREATED);
+    }
+
+    public function show(Profile $profile): JsonResponse
+    {
+        $profile->load([
+            'listings' => function ($query) {
+                $query->latest()->take(5);
+            },
+            'taxonomies.group',
+            'city',
+            'province',
+            'category',
+        ])->loadCount('listings');
+
+        return response()->json([
+            'success' => true,
+            'data' => new ProfileSingleResource($profile),
         ]);
     }
+
+    // public function update(UpdateProfileRequest $request, Profile $profile, UpdateProfile $action): JsonResponse
+    // {
+    //     $dto = UpdateProfileDTO::fromRequest($request->validated());
+    //     $profile = $action->handle($profile, $dto);
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Profile updated successfully',
+    //         'data' => new ProfileSingleResource($profile),
+    //     ]);
+    // }
+
+    // public function destroy(Profile $profile): JsonResponse
+    // {
+    //     $profile->delete();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Profile deleted successfully',
+    //     ], Response::HTTP_NO_CONTENT);
+    // }
 }
