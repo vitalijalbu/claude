@@ -10,14 +10,14 @@ const { title, subTitle, primaryAction, secondaryAction } = Astro.props;
       {subTitle && <p class="mt-4 text-lg">{subTitle}</p>}
       <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
         {primaryAction && primaryAction.href && primaryAction.label && (
-          <Button size="lg" variant={primaryAction.variant || "secondary"}>
+          <button class="btn btn-primary" size="lg" variant={primaryAction.variant || "secondary"}>
             <a href={primaryAction.href}>{primaryAction.label}</a>
-          </Button>
+          </button>
         )}
         {secondaryAction && secondaryAction.href && secondaryAction.label && (
-          <Button size="lg" variant={secondaryAction.variant || "outline"}>
+          <button class="btn btn-primary" size="lg" variant={secondaryAction.variant || "outline"}>
             <a href={secondaryAction.href}>{secondaryAction.label}</a>
-          </Button>
+          </button>
         )}
       </div>
     </div>

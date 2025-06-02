@@ -11,7 +11,7 @@ const {
 } = Astro.props;
 ---
 
-<Button
+<button class="btn btn-primary"
   variant="outline"
   class={`share-button ${className}`}
   data-title={title}
@@ -20,7 +20,7 @@ const {
 >
   <IconShare />
   <span>Condividi</span>
-</Button>
+</button>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {

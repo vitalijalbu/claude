@@ -1,13 +1,12 @@
 ---
-import { PageHeader, Result} from '@/components/index';
+import { Result } from '@/components/index';
 import AccountContainer from '@/containers/account-container.astro';
-import MainLayout from '@/layouts/main-layout.astro';
 import { fetchData } from '@/lib/api';
 import ListingCard from '@/shared/snippets/listing-card.astro';
 const { data, isError, isLoading } = await fetchData('/home');
 ---
 
-<AccountContainer title="Il mio account">
+<AccountContainer title="Annunci preferiti">
 	<section>
 		<div title="{{__('site.listings_spotlight_title')}}"></div>
 		{isError && (

@@ -76,12 +76,12 @@ const schemaORG = getBreadcrumbSchema([
 					<div class="mb-6 flex justify-between items-center">
 						<Breadcrumb links={breadcrumbs} />
 						<div class="flex items-center gap-2 self-start sm:self-center mt-2 sm:mt-0">
-							<Button
+							<button class="btn btn-primary"
 								variant="outline"
 								class="text-sm sm:text-base">
 								<IconHeart/>
 								Salva
-							</Button>
+							</button>
 							<ShareButton 
 								title="Guarda questo annuncio incredibile!" 
 								text="Ho trovato questo annuncio e penso possa interessarti." 
@@ -167,26 +167,26 @@ const schemaORG = getBreadcrumbSchema([
 										/>
 									)}
 									<Separator />
-									<Button
+									<button class="btn btn-primary"
 										as="a"
 										href={`tel:${listing?.phone_number || ''}`}>
 										<IconPhone />
 										{listing?.phone_number || 'Chiama ora'}
-									</Button>
-									<Button
+									</button>
+									<button class="btn btn-primary"
 										variant="whatsapp"
 										as="a"
 										href={`https://api.whatsapp.com/send/?phone_number=${listing?.whatsapp_number || ''}&text=Ciao ho visto il tuo annuncio su ${encodeURIComponent(currentPath)}&type=phone_number&app_absent=0`}>
 										<IconWhatsapp />
 										Whatsapp
-									</Button>
-									{/* <Button 
+									</button>
+									{/* <button class="btn btn-primary" 
                   variant="secondary" 
                   as="a" 
                   href={`/profilo/${listing?.phone_number || ""}/recensioni`}
                 >
                   <IconStarBold color="#FFBF00" />Recensioni
-                </Button> */}
+                </button> */}
 								</div>
 							</Card>
 							<ReportCard />

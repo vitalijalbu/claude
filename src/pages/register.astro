@@ -56,7 +56,7 @@ if (result?.data?.success) {
 							<label class="label">
 								<span class="label-text">Nome <span class="text-error">*</span></span>
 							</label>
-							<input
+							<input class="input"
 								type="text"
 								name="name"
 								placeholder="Il tuo nome"
@@ -76,7 +76,7 @@ if (result?.data?.success) {
 							<label class="label">
 								<span class="label-text">Email <span class="text-error">*</span></span>
 							</label>
-							<input
+							<input class="input"
 								type="email"
 								name="email"
 								placeholder="m@example.com"
@@ -96,7 +96,7 @@ if (result?.data?.success) {
 							<label class="label">
 								<span class="label-text">Password <span class="text-error">*</span></span>
 							</label>
-							<input
+							<input class="input"
 								type="password"
 								name="password"
 								class={`input input-bordered w-full ${formErrors?.password ? 'input-error' : ''}`}
@@ -116,8 +116,8 @@ if (result?.data?.success) {
 								<span class="label-text">Conferma Password <span class="text-error">*</span></span>
 							</label>
 							<div class="input">
-							<input id="toggle-password" type="password" placeholder="Enter password" value="Pwd_1242@mA1" />
-							<button type="button" data-toggle-password='{ "target": "#toggle-password" }' class="block cursor-pointer" aria-label="password toggle" >
+							<input class="input" id="toggle-password" type="password" placeholder="Enter password" value="Pwd_1242@mA1" />
+							<button class="btn btn-primary" type="button" data-toggle-password='{ "target": "#toggle-password" }' class="block cursor-pointer" aria-label="password toggle" >
 								<IconEye class="text-base-content/80 password-active:block hidden size-5 shrink-0"/>
 								<IconEye class="text-base-content/80 password-active:hidden block size-5 shrink-0"/>
 							</button>
@@ -132,7 +132,7 @@ if (result?.data?.success) {
 						</div>
 
 						<div class="form-control mt-6">
-							<button
+							<button class="btn btn-primary"
 								type="submit"
 								class="btn btn-primary w-full">
 								Registrati

@@ -84,22 +84,22 @@ const breadcrumbs =
 								<div
 									class="flex flex-col space-y-4"
 									slot="footer">
-									<Button
+									<button class="btn btn-primary"
 										as="a"
 										href={`tel:${data?.phone_number}`}
 										class="w-full">
 										<IconPhone />
 										{data?.phone_number || 'Chiama ora'}
-									</Button>
-									<Button
+									</button>
+									<button class="btn btn-primary"
 										variant="whatsapp"
 										as="a"
 										href={`https://api.whatsapp.com/send/?phone_number=${data?.whatsapp_number}&text=Ciao ho visto il tuo profilo su ${encodeURIComponent(currentPath)}&type=phone_number&app_absent=0`}
 										class="w-full">
 										<IconWhatsapp />
 										Whatsapp
-									</Button>
-									{/* <Button
+									</button>
+									{/* <button class="btn btn-primary"
 										variant="secondary"
 										as="a"
 										href="#reviews"
@@ -109,7 +109,7 @@ const breadcrumbs =
 											color="#FFBF00"
 										/>
 										Recensioni
-									</Button> */}
+									</button> */}
 								</div>
 							</Card>
 							<ReportCard type="profile" />

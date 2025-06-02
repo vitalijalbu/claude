@@ -12,16 +12,16 @@ import AccountContainer from '@/containers/account-container.astro';
        <div class="mb-2 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
         <label for="name">Nome</label>
-        <Input type="text" id="name" name="name" required />
+        <input class="input" class="input" type="text" id="name" name="name" required />
       </div>
 
       <div class="mb-2">
         <label for="email">Email</label>
-        <Input type="email" id="email" name="email" required />
+        <input class="input" type="email" id="email" name="email" required />
       </div>
       </div>
 
-      <Button type="submit">Aggiorna Profilo</Button>
+      <button class="btn btn-primary" type="submit">Aggiorna Profilo</button>
     </form>
   </section>
 
@@ -31,20 +31,20 @@ import AccountContainer from '@/containers/account-container.astro';
     <form action="/api/account/change-password" method="POST">
       <div>
         <label for="current_password">Password attuale</label>
-        <Input type="password" id="current_password" name="current_password" required />
+        <input class="input" type="password" id="current_password" name="current_password" required />
       </div>
 
       <div>
         <label for="new_password">Nuova password</label>
-        <Input type="password" id="new_password" name="new_password" required />
+        <input class="input" type="password" id="new_password" name="new_password" required />
       </div>
 
       <div>
         <label for="confirm_password">Conferma nuova password</label>
-        <Input type="password" id="confirm_password" name="confirm_password" required />
+        <input class="input" type="password" id="confirm_password" name="confirm_password" required />
       </div>
 
-      <Button type="submit">Aggiorna Password</Button>
+      <button class="btn btn-primary" type="submit">Aggiorna Password</button>
     </form>
   </section>
 </AccountContainer>

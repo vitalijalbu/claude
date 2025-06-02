@@ -32,10 +32,10 @@ class AgeGate {
             </p>
             
             <div class="flex flex-col gap-4">
-              <button id="accept-age" class="btn btn-primary btn-lg">
+              <button class="btn btn-primary" id="accept-age" class="btn btn-primary btn-lg">
                 Ho 18 anni o più - Entra
               </button>
-              <button id="decline-age" class="btn btn-ghost btn-sm">
+              <button class="btn btn-primary" id="decline-age" class="btn btn-ghost btn-sm">
                 Ho meno di 18 anni - Esci
               </button>
             </div>

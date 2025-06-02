@@ -18,13 +18,13 @@ const { type } = Astro.props;
 	<div
 		slot="footer"
 		class="flex items-center justify-between">
-		<Button
+		<button class="btn btn-primary"
 			variant="secondary"
 			as="a"
 			href="#"
 			class="w-full">
 			<IconFlagBold />
 			Segnala {type === 'profile' ? 'profilo' : 'annuncio'}
-		</Button>
+		</button>
 	</div>
 </Card>

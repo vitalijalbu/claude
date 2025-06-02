@@ -33,7 +33,7 @@ if (Astro.request.method === 'POST') {
 <MainLayout title="Accedi al tuo account">
 	<div class="accordion divide-neutral/20 divide-y" data-accordion-always-open="">
   <div class="accordion-item active" id="payment-always">
-    <button class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="payment-always-collapse" aria-expanded="true">
+    <button class="btn btn-primary" class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="payment-always-collapse" aria-expanded="true">
       <span class="icon-[tabler--plus] accordion-item-active:hidden text-base-content size-4.5 block shrink-0"></span>
       <span class="icon-[tabler--minus] accordion-item-active:block text-base-content size-4.5 hidden shrink-0"></span>
       When is payment taken for my order?
@@ -48,7 +48,7 @@ if (Astro.request.method === 'POST') {
     </div>
   </div>
   <div class="accordion-item" id="delivery-always">
-    <button class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="delivery-always-collapse" aria-expanded="false">
+    <button class="btn btn-primary" class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="delivery-always-collapse" aria-expanded="false">
       <span class="icon-[tabler--plus] accordion-item-active:hidden text-base-content size-4.5 block shrink-0"></span>
       <span class="icon-[tabler--minus] accordion-item-active:block text-base-content size-4.5 hidden shrink-0"></span>
       How would you ship my order?
@@ -63,7 +63,7 @@ if (Astro.request.method === 'POST') {
     </div>
   </div>
   <div class="accordion-item" id="cancel-always">
-    <button class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="cancel-always-collapse" aria-expanded="false">
+    <button class="btn btn-primary" class="accordion-toggle inline-flex items-center gap-x-4 text-start" aria-controls="cancel-always-collapse" aria-expanded="false">
       <span class="icon-[tabler--plus] accordion-item-active:hidden text-base-content size-4.5 block shrink-0"></span>
       <span class="icon-[tabler--minus] accordion-item-active:block text-base-content size-4.5 hidden shrink-0"></span>
       Can I cancel my order?
@@ -78,12 +78,12 @@ if (Astro.request.method === 'POST') {
   </div>
 </div>
 
-<button type="button" class="btn btn-primary" aria-haspopup="dialog" aria-expanded="false" aria-controls="overlay-example" data-overlay="#overlay-example">Open drawer</button>
+<button class="btn btn-primary" type="button" class="btn btn-primary" aria-haspopup="dialog" aria-expanded="false" aria-controls="overlay-example" data-overlay="#overlay-example">Open drawer</button>
 
 <div id="overlay-example" class="overlay overlay-open:translate-x-0 drawer drawer-start hidden" role="dialog" tabindex="-1">
   <div class="drawer-header">
     <h3 class="drawer-title">Drawer Title</h3>
-    <button type="button" class="btn btn-text btn-circle btn-sm absolute end-3 top-3" aria-label="Close" data-overlay="#overlay-example">
+    <button class="btn btn-primary" type="button" class="btn btn-text btn-circle btn-sm absolute end-3 top-3" aria-label="Close" data-overlay="#overlay-example">
       <span class="icon-[tabler--x] size-5"></span>
     </button>
   </div>
@@ -93,15 +93,15 @@ if (Astro.request.method === 'POST') {
     </p>
   </div>
   <div class="drawer-footer">
-    <button type="button" class="btn btn-soft btn-secondary" data-overlay="#overlay-example">Close</button>
-    <button type="button" class="btn btn-primary">Save changes</button>
+    <button class="btn btn-primary" type="button" class="btn btn-soft btn-secondary" data-overlay="#overlay-example">Close</button>
+    <button class="btn btn-primary" type="button" class="btn btn-primary">Save changes</button>
   </div>
 </div>
 	<div class="min-h-screen flex items-center justify-center bg-base-200 py-12 px-4 sm:px-6 lg:px-8">
 		<div class="max-w-md w-full space-y-8">
 			<div class="dropdown relative inline-flex">
 				<div class="dropdown relative inline-flex">
-					<button
+					<button class="btn btn-primary"
 						id="dropdown-default"
 						type="button"
 						class="dropdown-toggle btn btn-primary"
@@ -165,7 +165,7 @@ if (Astro.request.method === 'POST') {
 									Email
 									<span class="text-red-500">*</span>
 								</label>
-								<input
+								<input class="input"
 									id="email"
 									name="email"
 									type="email"
@@ -182,7 +182,7 @@ if (Astro.request.method === 'POST') {
 									Password
 									<span class="text-red-500">*</span>
 								</label>
-								<input
+								<input class="input"
 									id="password"
 									name="password"
 									type="password"
@@ -192,7 +192,7 @@ if (Astro.request.method === 'POST') {
 							</div>
 
 							<div class="pt-2">
-								<button
+								<button class="btn btn-primary"
 									type="submit"
 									class="btn btn-primary w-full">
 									Accedi

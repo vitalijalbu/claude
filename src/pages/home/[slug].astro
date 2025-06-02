@@ -92,7 +92,7 @@ const schemaORG = {
           <div class="card-body">
             <h2 class="card-title mb-4">Filtra risultati</h2>
             <div class="flex flex-wrap gap-4 items-center">
-              <button class="btn btn-outline btn-sm" data-filter-trigger>
+              <button class="btn btn-primary" class="btn btn-outline btn-sm" data-filter-trigger>
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
@@ -100,12 +100,12 @@ const schemaORG = {
               </button>
               
               <label class="label cursor-pointer">
-                <input type="checkbox" class="checkbox checkbox-primary checkbox-sm mr-2" data-quick-filter="verified" />
+                <input class="input" type="checkbox" class="checkbox checkbox-primary checkbox-sm mr-2" data-quick-filter="verified" />
                 <span class="label-text">Solo verificati</span>
               </label>
               
               <label class="label cursor-pointer">
-                <input type="checkbox" class="checkbox checkbox-primary checkbox-sm mr-2" data-quick-filter="realPhotos" />
+                <input class="input" type="checkbox" class="checkbox checkbox-primary checkbox-sm mr-2" data-quick-filter="realPhotos" />
                 <span class="label-text">Foto reali</span>
               </label>
               
@@ -151,7 +151,7 @@ const schemaORG = {
                 <article class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
                   <figure class="relative">
                     <div class="absolute top-2 right-2 z-10">
-                      <button 
+                      <button class="btn btn-primary" 
                         class="btn btn-circle btn-sm btn-ghost bg-base-100/80"
                         data-favorite-button
                         data-listing-id={listing.id}
@@ -262,7 +262,7 @@ const schemaORG = {
                         Precedente
                       </a>
                     ) : (
-                      <button class="join-item btn btn-outline btn-disabled" disabled>
+                      <button class="btn btn-primary" class="join-item btn btn-outline btn-disabled" disabled>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
@@ -275,7 +275,7 @@ const schemaORG = {
                       if (page > meta.last_page) return null;
                       
                       return meta.current_page === page ? (
-                        <button class="join-item btn btn-active" aria-current="page">
+                        <button class="btn btn-primary" class="join-item btn btn-active" aria-current="page">
                           {page}
                         </button>
                       ) : (
@@ -293,7 +293,7 @@ const schemaORG = {
                         </svg>
                       </a>
                     ) : (
-                      <button class="join-item btn btn-outline btn-disabled" disabled>
+                      <button class="btn btn-primary" class="join-item btn btn-outline btn-disabled" disabled>
                         Successiva
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

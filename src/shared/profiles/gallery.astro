@@ -55,12 +55,12 @@ const { media = [], alt = '' } = Astro.props;
 			</div>
 
 			<div class="absolute bottom-0 right-0 z-10 p-3">
-				<Button
+				<button class="btn btn-primary"
 					variant="outline"
 					x-on:click="modalIsOpen = true">
 					<IconCamera />
 					Vedi tutte le foto
-				</Button>
+				</button>
 			</div>
 		</div>
 		<!-- Modal -->
@@ -83,14 +83,14 @@ const { media = [], alt = '' } = Astro.props;
 				class="relative w-full h-full flex flex-col bg-transparent text-on-surface">
 				<!-- Close Button (top-right) -->
 				<div class="absolute top-4 right-4 z-10">
-					<Button
+					<button class="btn btn-primary"
 						type="button"
 						size="icon"
 						variant="outline"
 						x-on:click="modalIsOpen = false"
 						aria-label="Close gallery">
 						<IconX />
-					</Button>
+					</button>
 				</div>
 
 				<!-- Gallery Body -->

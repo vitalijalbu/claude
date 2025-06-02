@@ -1,87 +1,113 @@
 ---
-import { Button } from "@/components/index";
-import SearchAutocomplete from "@/components/search-autocomplete.astro";
-import { IconHeart, IconUserCircle } from '@/icons/index';
+import { Button } from '@/components/index';
+import SearchAutocomplete from '@/components/search-autocomplete.astro';
+import { IconHeart, IconLogout, IconSettings, IconStar, IconUserCircle } from '@/icons/index';
+import SiteDrawer from './site-drawer.astro';
 
-const { isHomePage = false } = Astro.props;
-
-const isAuthenticated = false;
-const userData = isAuthenticated ? {
-  name: "IconUserCircle Name",
-  email: "user@example.com",
-} : null;
-
-const t = (key: string) => {
-  const translations = {
-    "site.my_account": "My Account",
-    "site.settings": "Settings",
-    "site.logout": "Esci"
-  };
-  return translations[key] || key;
-};
-
-const route = (name: string) => {
-  const routes = {
-    "login": "/login",
-    "register": "/register",
-    "account.index": "/account",
-    "account.favorites.index": "/account/favorites",
-    "settings.index": "/settings",
-    "logout": "/logout"
-  };
-  return routes[name] || "#";
-};
+const isHomePage = Astro.url.pathname === '/';
+const isAuthenticated = true;
+const userData = isAuthenticated
+  ? {
+      name: 'John Doe',
+      email: 'user@example.com',
+      role: 'Admin',
+      avatar: 'https://cdn.flyonui.com/fy-assets/avatar/avatar-1.png',
+    }
+  : null;
 ---
 
-<header class="relative flex flex-none items-center py-2 bg-white border-b border-outline">
-  <div class="container mx-auto flex items-center justify-between px-4">
-    <!-- Logo -->
-    <a href="/" class="text-xl font-bold">
-      <span class="hidden sm:inline">OnlyEscort</span>
-      <span class="sm:hidden">0E</span>
-    </a>
+<header class="relative flex flex-none items-center bg-white border-b border-outline">
+  <div class="container mx-auto w-full px-4">
+    <nav class="navbar w-full flex items-center justify-between gap-4 lg:grid lg:grid-cols-3 lg:items-center">
+      
+      <!-- Colonna Sinistra: Logo + Mobile menu -->
+      <div class="flex items-center gap-2">
+        <!-- Mobile menu button -->
+        <button class="btn btn-primary hidden sm:block"
+          type="button"
+          class="btn btn-primary lg:hidden"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          data-overlay="#mobile-menu">
+          <span class="icon-[tabler--menu-2] size-5.5"></span>
+        </button>
 
-    {!isHomePage && (
-      <div class="hidden lg:flex flex-1 justify-center">
-        <SearchAutocomplete/>
-      </div>
-    )}
-
-    <!-- Right Section -->
-    <div class="flex items-center gap-2">
-      <!-- Favorites Button (Desktop only) -->
-
-        <a href="/account/favorites">
-          <IconHeart class="h-5 w-5" />
+        <!-- Logo -->
+        <a href="/" class="text-xl font-bold">
+          <span class="hidden sm:inline">OnlyEscort</span>
+          <span class="sm:hidden">0E</span>
         </a>
-
-
-      <!-- User Dropdown -->
-      <div class="relative group">
-        {isAuthenticated ? <Button variant="ghost">
-          <span class="hidden sm:inline"></span>
-        </Button> : (
-          <a href="/login" class="flex gap-1 items-center">
-            <IconUserCircle class="h-5 w-5" />
-            <span class="hidden sm:inline">Accedi</span>
-          </a>
-        )}
-
-        <div class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md border bg-white shadow-lg hidden">
-          {!isAuthenticated ? (
-            <div class="flex flex-col py-1">
-              <a href="login" rel="nofollow" class="block px-4 py-2 text-sm hover:bg-gray-100">Accedi</a>
-              <a href="register" rel="nofollow" class="block px-4 py-2 text-sm hover:bg-gray-100">Registrati</a>
-            </div>
-          ) : (
-            <div class="flex flex-col py-1">
-              <a href="/accounnt" class="block px-4 py-2 text-sm hover:bg-gray-100">Il mio account</a>
-              <a href="/account/settings" class="block px-4 py-2 text-sm hover:bg-gray-100">Impostazioni</a>
-              <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Esci</a>
-            </div>
-          )}
-        </div>
       </div>
+
+      <!-- Colonna Centrale: Search bar centrata -->
+    <div class="hidden lg:flex flex-1 justify-center">
+      {!isHomePage && <SearchAutocomplete />}
     </div>
+
+
+      <!-- Colonna Destra: User + Azioni -->
+      <div class="flex items-center justify-end gap-4">
+        <!-- Mobile search button -->
+        <button class="btn btn-primary" class="btn btn-sm btn-text btn-circle size-8.5 lg:hidden">
+          <span class="icon-[tabler--search] size-5.5"></span>
+        </button>
+
+        <!-- Desktop: Preferiti -->
+        <ul class="hidden lg:flex menu menu-horizontal gap-2 p-0 text-base">
+          <li><a href="/account/favorites"><IconHeart /></a></li>
+        </ul>
+
+        <!-- User dropdown -->
+        {
+          userData ? (
+            <div class="z-10 dropdown relative inline-flex [--auto-close:inside] [--offset:8] [--placement:bottom-end]">
+              <button class="btn btn-primary"
+                id="dropdown-scrollable"
+                type="button"
+                class="dropdown-toggle flex items-center"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                aria-label="User menu">
+                <div class="avatar">
+                  <div class="size-9.5 rounded-full">
+                    <img src={userData.avatar} alt={userData.name} />
+                  </div>
+                </div>
+              </button>
+              <ul
+                class="dropdown-menu dropdown-open:opacity-100 hidden min-w-60"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="dropdown-scrollable">
+                <li class="dropdown-header gap-2">
+                  <div class="avatar">
+                    <div class="w-10 rounded-full">
+                      <img src={userData.avatar} alt="avatar" />
+                    </div>
+                  </div>
+                  <div>
+                    <h6 class="text-base font-semibold">{userData.name}</h6>
+                    <small class="text-base-content/50">{userData.role}</small>
+                  </div>
+                </li>
+                <li><a class="dropdown-item" href="/account"><IconUserCircle/>Il mio account</a></li>
+                <li><a class="dropdown-item" href="/account/favorites"><IconHeart />Annunci preferiti</a></li>
+                <li><a class="dropdown-item" href="/account/reviews"><IconStar />Le mie recensioni</a></li>
+                <li><a class="dropdown-item" href="/account/settings"><IconSettings />Impostazioni</a></li>
+              <li class="dropdown-footer gap-2">
+                <a class="btn btn-error btn-soft btn-block" href="#"><IconLogout />Esci</a>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <a href="/login" class="btn btn-primary hidden lg:inline-flex">Login</a>
+        )
+      }
+      </div>
+    </nav>
   </div>
 </header>
+
+<!-- Drawer mobile -->
+<SiteDrawer />
