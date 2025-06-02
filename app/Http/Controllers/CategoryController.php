@@ -1,35 +1,81 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
-use App\Models\Category;
+use App\Actions\Category\DeleteCategory;
+use App\Actions\Category\IndexCategories;
+use App\Actions\Category\ShowCategory;
+use App\Actions\Category\StoreCategory;
+use App\Actions\Category\UpdateCategory;
+use App\DTO\Category\CategoryDTO;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\Category\StoreCategoryRequest;
+use App\Http\Requests\Web\Category\UpdateCategoryRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Spatie\QueryBuilder\QueryBuilder;
 
-final class CategoryController extends Controller
+class CategoryController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, IndexCategories $action)
     {
-        $filters = $request->query();
-        $data = QueryBuilder::for(Category::class)
-            ->allowedFilters(['name', 'email'])
-            ->allowedSorts(['name', 'total_listings'])
-            ->paginate($filters['per_page'] ?? 25)
-            ->appends(request()->query());
+        $filters = $request->all();
+        $categories = $action->handle($filters);
 
         return Inertia::render('categories/index', [
-            'page' => [
-                'data' => $data,
-                'filters' => $filters ?: null,
-            ],
+            'categories' => $categories,
+            'filters' => $filters,
         ]);
     }
 
-    public function show($id)
+    public function show(string $slug, ShowCategory $action)
     {
-        $data = Category::where('id', $id)->firstOrFail();
+        $category = $action->handle($slug);
 
-        return Inertia::render('categories/show', ['data' => $data]);
+        return Inertia::render('categories/show', [
+            'category' => $category,
+        ]);
+    }
+
+    public function create()
+    {
+        return Inertia::render('categories/create');
+    }
+
+    public function store(StoreCategoryRequest $request, StoreCategory $action)
+    {
+        $dto = CategoryDTO::fromRequest($request->validated());
+        $category = $action->handle($dto);
+
+        return redirect()
+            ->route('admin.categories.show', $category->slug)
+            ->with('success', 'Categoria creata con successo.');
+    }
+
+    public function edit(string $slug, ShowCategory $action)
+    {
+        $category = $action->handle($slug);
+
+        return Inertia::render('categories/edit', [
+            'category' => $category,
+        ]);
+    }
+
+    public function update(UpdateCategoryRequest $request, string $slug, UpdateCategory $action)
+    {
+        $dto = CategoryDTO::fromRequest($request->validated());
+        $category = $action->handle($slug, $dto);
+
+        return redirect()
+            ->route('admin.categories.show', $category->slug)
+            ->with('success', 'Categoria aggiornata con successo.');
+    }
+
+    public function destroy(string $slug, DeleteCategory $action)
+    {
+        $action->handle($slug);
+
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'Categoria eliminata con successo.');
     }
 }

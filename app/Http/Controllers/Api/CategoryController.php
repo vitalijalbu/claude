@@ -2,33 +2,41 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Category\IndexCategories;
+use App\Actions\Category\ShowCategory;
+use App\DTO\Category\CategoryFilterDTO;
 use App\Http\Resources\Api\CategoryResource;
-use App\Services\Api\CategoryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 final class CategoryController extends ApiController
 {
-    protected CategoryService $categoryService;
-
-    public function __construct(CategoryService $categoryService)
+    public function index(Request $request, IndexCategories $action): JsonResponse
     {
-        $this->categoryService = $categoryService;
+        $filters = CategoryFilterDTO::fromRequest($request->all());
+        $categories = $action->handle($filters);
+
+        return response()->json([
+            'success' => true,
+            'data' => CategoryResource::collection($categories),
+            'meta' => [
+                'pagination' => [
+                    'current_page' => $categories->currentPage(),
+                    'per_page' => $categories->perPage(),
+                    'total' => $categories->total(),
+                    'last_page' => $categories->lastPage(),
+                ],
+            ],
+        ]);
     }
 
-    public function index(): JsonResponse
+    public function show(Request $request, ShowCategory $action): JsonResponse
     {
+        $category = $action->handle($request->slug);
 
-        $data = $this->categoryService->findAll();
-
-        return response()->json(CategoryResource::collection($data), Response::HTTP_OK);
-    }
-
-    public function show(Request $request): JsonResponse
-    {
-        $data = $this->categoryService->findBySlug($request->slug);
-
-        return response()->json(new CategoryResource($data), Response::HTTP_OK);
+        return response()->json([
+            'success' => true,
+            'data' => new CategoryResource($category),
+        ]);
     }
 }

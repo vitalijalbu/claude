@@ -55,8 +55,8 @@ class ListingResource extends JsonResource
             'nationality' => $this->nationality,
             'title' => $this->title,
             'slug' => $this->slug,
-            'phone_number' => Str::replaceFirst('39', '', $this->phone_number),
-            'whatsapp_number' => Str::replaceFirst('39', '', $this->whatsapp_number),
+            'phone_number' => $this->phone_number,
+            'whatsapp_number' => $this->whatsapp_number,
             'description' => $this->description,
             'lat' => $this->lat,
             'lon' => $this->lon,
@@ -65,15 +65,9 @@ class ListingResource extends JsonResource
             'province' => $this->whenLoaded('province', fn () => new CityResource($this->province)),
             'category' => $this->whenLoaded('category', fn () => new CategoryResource($this->category)),
             'profile' => $this->whenLoaded('profile', fn () => new ProfileResource($this->profile)),
-            'media' => MediaResource::collection(
-                collect($this->media)->map(function ($filename) {
-                    return [
-                        'filename' => $filename,
-                        'phone_number' => $this->phone_number,
-                        'listing_id' => $this->id,
-                    ];
-                })
-            ),
+            'media' => $this->whenLoaded('media', function () {
+                return MediaResource::collection($this->media);
+            }),
             'taxonomies' => $this->whenLoaded('taxonomies', function () {
                 return $this->taxonomies
                     ->load('group')

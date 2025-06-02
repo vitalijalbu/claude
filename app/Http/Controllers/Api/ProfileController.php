@@ -1,31 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Profile\IndexProfiles;
+use App\Actions\Profile\ShowProfile;
+use App\DTO\Profile\ProfileFilterDTO;
 use App\Http\Resources\Api\ProfileResource;
-use App\Services\Api\ProfileService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-final class ProfileController extends ApiController
+class ProfileController extends ApiController
 {
-    protected ProfileService $profileService;
-
-    public function __construct(ProfileService $profileService)
+    public function index(Request $request, IndexProfiles $action): JsonResponse
     {
-        $this->profileService = $profileService;
+        $filters = ProfileFilterDTO::fromRequest($request->all());
+        $profiles = $action->handle($filters);
+
+        return response()->json([
+            'success' => true,
+            'data' => ProfileResource::collection($profiles),
+            'meta' => [
+                'pagination' => [
+                    'current_page' => $profiles->currentPage(),
+                    'per_page' => $profiles->perPage(),
+                    'total' => $profiles->total(),
+                    'last_page' => $profiles->lastPage(),
+                ],
+            ],
+        ]);
     }
 
-    public function index(Request $request)
+    public function show(Request $request, ShowProfile $action): JsonResponse
     {
-        $data = $this->profileService->findAll($request->all());
+        $profile = $action->handle($request->phone_number);
 
-        return ProfileResource::collection($data);
-    }
-
-    public function show(Request $request)
-    {
-        $data = $this->profileService->findByPhone($request->phone_number);
-
-        return response()->json((new ProfileResource($data))->toSingle($request));
+        return response()->json([
+            'success' => true,
+            'data' => (new ProfileResource($profile))->toSingle($request),
+        ]);
     }
 }

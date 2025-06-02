@@ -17,8 +17,8 @@ class ProfileResource extends JsonResource
         return [
             'id' => $this->id,
             'avatar' => $this->avatar,
-            'phone_number' => Str::replaceFirst('39', '', $this->phone_number),
-            'whatsapp_number' => Str::replaceFirst('39', '', $this->whatsapp_number),
+            'phone_number' => $this->phone_number,
+            'whatsapp_number' => $this->whatsapp_number,
             'name' => $this->name,
             'rating' => (float) $this->rating,
             'listings_count' => $this->listings_count,

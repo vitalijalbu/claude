@@ -1,35 +1,52 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Listing\IndexListings;
+use App\Actions\Listing\ShowListing;
+use App\DTO\Listing\ListingFilterDTO;
 use App\Http\Resources\Api\ListingResource;
-use App\Services\Api\ListingService;
+use App\Models\Listing;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-final class ListingController extends ApiController
+class ListingController extends ApiController
 {
-    protected ListingService $listingService;
-
-    public function __construct(ListingService $listingService)
+    public function index(Request $request, IndexListings $action): JsonResponse
     {
-        $this->listingService = $listingService;
-    }
-
-    public function index(Request $request)
-    {
-        $filters = $request->all();
-        $data = $this->listingService->findAll($filters);
-
-        return ListingResource::collection($data);
-    }
-
-    public function show(Request $request)
-    {
-        $data = $this->listingService->findBySlug($request->slug);
-        $similarListings = $this->listingService->getSimilar($data);
+        $filters = ListingFilterDTO::fromRequest($request->all());
+        $listings = $action->handle($filters);
 
         return response()->json([
-            'data' => (new ListingResource($data))->toSingle($request),
+            'success' => true,
+            'data' => ListingResource::collection($listings),
+            'meta' => [
+                'pagination' => [
+                    'current_page' => $listings->currentPage(),
+                    'per_page' => $listings->perPage(),
+                    'total' => $listings->total(),
+                    'last_page' => $listings->lastPage(),
+                ],
+            ],
+        ]);
+    }
+
+    public function show(Request $request, ShowListing $action): JsonResponse
+    {
+        $listing = $action->handle($request->slug);
+
+        // Get similar listings
+        $similarListings = Listing::where('category_id', $listing->category_id)
+            ->where('id', '!=', $listing->id)
+            ->with(['city', 'category', 'profile'])
+            ->limit(10)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => (new ListingResource($listing))->toSingle($request),
             'similar_listings' => ListingResource::collection($similarListings),
         ]);
     }

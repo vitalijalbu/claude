@@ -12,11 +12,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Profile extends Model
+class Profile extends Model implements HasMedia
 {
     // use Cacheable;
-    use SoftDeletes;
+    use InteractsWithMedia, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -29,7 +32,6 @@ class Profile extends Model
         'lat',
         'bio',
         'avatar',
-        'media',
         'website',
         'working_hours',
         'date_birth',
@@ -38,7 +40,7 @@ class Profile extends Model
     protected $casts = [
         'working_hours' => 'json',
         'rating' => 'float',
-        'media' => 'json',
+        'media' => 'array',
     ];
 
     public function user(): BelongsTo

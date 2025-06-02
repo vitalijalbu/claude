@@ -1,38 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
-use App\Enums\UserType;
+use App\Actions\Auth\LoginUser;
+use App\Actions\Auth\RegisterUser;
+use App\DTO\Auth\LoginDTO;
+use App\DTO\Auth\RegisterDTO;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\Api\AuthResource;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
-class AuthController extends ApiController
+final class AuthController extends ApiController
 {
-    // Set CSRF cookie
-    public function csrfCookie(): JsonResponse
+    public function register(RegisterRequest $request, RegisterUser $action): JsonResponse
     {
-        return response()->json(['message' => 'CSRF cookie set'])
-            ->cookie('XSRF-TOKEN', csrf_token(), 60, '/', null, false, true);
-    }
-
-    // User Registration
-    public function register(RegisterRequest $request)
-    {
-        $fields = $request->validated();
-
-        $user = User::create([
-            'type' => UserType::USER,
-            'first_name' => $fields['first_name'],
-            'last_name' => $fields['last_name'],
-            'email' => $fields['email'],
-            'password' => Hash::make($fields['password']),
-        ]);
+        $dto = RegisterDTO::fromRequest($request->validated());
+        $user = $action->handle($dto);
 
         return response()->json([
             'success' => true,
@@ -41,29 +29,20 @@ class AuthController extends ApiController
         ], 201);
     }
 
-    // User Login
-    public function login(LoginRequest $request): JsonResponse
+    public function login(LoginRequest $request, LoginUser $action): JsonResponse
     {
-        $fields = $request->validated();
-        $user = User::where('email', $fields['email'])->first();
+        $dto = LoginDTO::fromRequest($request->validated());
+        $user = $action->handle($dto);
 
-        if (! $user || ! Hash::check($fields['password'], $user->password)) {
-            return response()->json([
-                'message' => 'Invalid credentials.',
-            ], 401);
-        }
-
-        // Autenticazione
-        Auth::login($user);
         $request->session()->regenerate();
 
         return response()->json([
+            'success' => true,
             'message' => 'Login successful',
-            'user' => $user,
+            'data' => new AuthResource($user),
         ]);
     }
 
-    // User Logout
     public function logout(Request $request): JsonResponse
     {
         Auth::logout();
@@ -71,15 +50,16 @@ class AuthController extends ApiController
         $request->session()->regenerateToken();
 
         return response()->json([
+            'success' => true,
             'message' => 'Logged out successfully.',
         ]);
     }
 
-    // Get Authenticated User
     public function me(Request $request): JsonResponse
     {
         return response()->json([
-            'user' => $request->user(),
+            'success' => true,
+            'data' => new AuthResource($request->user()),
         ]);
     }
 }
