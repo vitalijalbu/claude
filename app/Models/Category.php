@@ -2,22 +2,18 @@
 
 namespace App\Models;
 
-use App\Models\Traits\Cacheable;
+namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
 class Category extends Model
 {
-    // use Cacheable;
     use HasTranslations;
 
-    public array $translatable = ['name'];
+    public array $translatable = ['name', 'description'];
 
-    public $timestamps = false;
-
-    /**
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'slug',
@@ -25,4 +21,25 @@ class Category extends Model
         'media',
         'icon',
     ];
+
+    protected $casts = [
+        'media' => 'array',
+        'name' => 'array',
+        'description' => 'array',
+    ];
+
+    public function listings(): HasMany
+    {
+        return $this->hasMany(Listing::class);
+    }
+
+    public function scopeWithListings($query)
+    {
+        return $query->has('listings');
+    }
+
+    public function getLocalizedName(?string $locale = null): string
+    {
+        return $this->getTranslation('name', $locale ?? app()->getLocale());
+    }
 }

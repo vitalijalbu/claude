@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\Geo\City;
 use App\Models\Geo\Province;
-use App\Models\Traits\Cacheable;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -18,23 +18,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Profile extends Model implements HasMedia
 {
-    // use Cacheable;
     use InteractsWithMedia, SoftDeletes;
 
     protected $fillable = [
-        'name',
-        'user_id',
-        'city_id',
-        'phone_number',
-        'nationality',
-        'whatsapp_number',
-        'lon',
-        'lat',
-        'bio',
-        'avatar',
-        'website',
-        'working_hours',
-        'date_birth',
+        'name', 'user_id', 'city_id', 'phone_number', 'nationality', 'whatsapp_number',
+        'lon', 'lat', 'bio', 'avatar', 'website', 'working_hours', 'date_birth', 'rating',
     ];
 
     protected $casts = [
@@ -43,6 +31,32 @@ class Profile extends Model implements HasMedia
         'media' => 'array',
     ];
 
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatar')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(150)
+            ->height(150)
+            ->sharpen(10)
+            ->quality(85)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('medium')
+            ->width(300)
+            ->height(300)
+            ->quality(90)
+            ->format('webp')
+            ->nonQueued();
+    }
+
+    // Relationships
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -70,14 +84,7 @@ class Profile extends Model implements HasMedia
 
     public function province(): HasOneThrough
     {
-        return $this->hasOneThrough(
-            Province::class,
-            City::class,
-            'id',
-            'id',
-            'city_id',
-            'province_id'
-        );
+        return $this->hasOneThrough(Province::class, City::class, 'id', 'id', 'city_id', 'province_id');
     }
 
     public function taxonomies(): BelongsToMany
@@ -85,23 +92,16 @@ class Profile extends Model implements HasMedia
         return $this->belongsToMany(Taxonomy::class, 'profile_taxonomies');
     }
 
-    public function mergedMedia(): Collection
+    // Scopes
+    public function scopeRatingRange($query, $min, $max)
     {
-        // Media propri del profilo (es. avatar, immagini specifiche)
-        $profileMedia = $this->getMedia('profile');
-
-        // Media dai listing
-        $listingMedia = $this->listings->flatMap(function ($listing) {
-            return $listing->getMedia('listing');
-        });
-
-        // Ordina: prima i media del profilo, poi quelli dei listing
-        return $profileMedia->concat($listingMedia);
+        return $query->whereBetween('rating', [$min, $max]);
     }
 
-    public function registerMediaCollections(): void
+    public function scopeWithActiveListings($query)
     {
-        $this->addMediaCollection('avatar')
-            ->singleFile();
+        return $query->whereHas('listings', function ($q) {
+            $q->where('is_active', true);
+        });
     }
 }

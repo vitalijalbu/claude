@@ -2,9 +2,9 @@
 
 namespace App\Actions\Listing;
 
-use App\DTO\Listing\ListingFilterDTO;
 use App\Models\Listing;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -17,7 +17,7 @@ class IndexListings
         'province',
     ];
 
-    public function handle(?ListingFilterDTO $filters = null): LengthAwarePaginator
+    public function handle(?Request $filters = null): LengthAwarePaginator
     {
         $query = QueryBuilder::for(Listing::class)
             ->allowedFilters([

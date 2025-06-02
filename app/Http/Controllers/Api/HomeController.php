@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Actions\Home\IndexHome;
-use App\Http\Resources\Api\CategoryCollectionResource;
+use App\Http\Resources\Api\CategoryResource;
 use App\Http\Resources\Api\CityResource;
-use App\Http\Resources\Api\ListingCollectionResource;
+use App\Http\Resources\Listing\ListingCollectionResource;
 
 class HomeController extends ApiController
 {
@@ -18,9 +18,11 @@ class HomeController extends ApiController
         return response()->json([
             'success' => true,
             'data' => [
-                'categories' => CategoryCollectionResource::collection($data['categories']),
+                'categories' => CategoryResource::collection($data['categories']),
                 'regions' => $data['regions'],
-                'listings' => ListingCollectionResource::collection($data['listings']),
+                'listings' => $data['listings']->isNotEmpty()
+                    ? ListingCollectionResource::collection($data['listings'])
+                    : [],
                 'cities' => CityResource::collection($data['cities']),
             ],
         ]);

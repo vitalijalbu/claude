@@ -62,7 +62,7 @@ final class GeoController extends ApiController
 
         return response()->json([
             'success' => true,
-            'data' => $data->map(fn($nationality) => [
+            'data' => $data->map(fn ($nationality) => [
                 'id' => $nationality->id,
                 'name' => $nationality->name,
                 'country' => $nationality->country?->name,

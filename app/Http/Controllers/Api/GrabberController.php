@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Actions\Category\FindCategoryBySlug;
-use App\Actions\Geo\FindCity;
+use App\Actions\Category\ShowCategory;
+use App\Actions\Geo\ShowCity;
 use App\Actions\Listing\AttachTaxonomies;
 use App\Actions\Listing\UpdateOrCreateListing;
+use App\Actions\Listing\UpsertListing;
 use App\Actions\Profile\UpdateOrCreateProfile;
+use App\Actions\Profile\UpsertProfile;
 use App\Http\Requests\StoreGrabber;
 use App\Services\OptimizedMediaService;
 use Illuminate\Http\JsonResponse;
@@ -20,10 +22,10 @@ final class GrabberController extends ApiController
 {
     public function store(
         StoreGrabber $request,
-        FindCity $findCity,
-        FindCategoryBySlug $findCategory,
-        UpdateOrCreateProfile $updateOrCreateProfile,
-        UpdateOrCreateListing $updateOrCreateListing,
+        ShowCity $findCity,
+        ShowCategory $findCategory,
+        UpsertProfile $updateOrCreateProfile,
+        UpsertListing $updateOrCreateListing,
         AttachTaxonomies $attachTaxonomies,
         OptimizedMediaService $mediaService
     ): JsonResponse {
@@ -49,9 +51,9 @@ final class GrabberController extends ApiController
                 $city = $findCity->handle($validated['city']);
                 $category = $findCategory->handle($validated['category']);
 
-                if (!$city || !$category) {
+                if (! $city || ! $category) {
                     return response()->json([
-                        'error' => !$city ? 'City not found' : 'Category not found'
+                        'error' => ! $city ? 'City not found' : 'Category not found',
                     ], 404);
                 }
 
@@ -86,12 +88,12 @@ final class GrabberController extends ApiController
                 ]);
 
                 // Attach taxonomies
-                if (!empty($validated['taxonomies'])) {
+                if (! empty($validated['taxonomies'])) {
                     $attachTaxonomies->handle($listing, $validated['taxonomies']);
                 }
 
                 // Process media
-                if (!empty($validated['media'])) {
+                if (! empty($validated['media'])) {
                     $mediaService->attachImagesFromLocalRaw($profile, $listing, $validated['media']);
                 }
 
@@ -124,7 +126,7 @@ final class GrabberController extends ApiController
         $cleaned = Str::of($text)
             ->replaceMatches('/[\p{So}\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}]/u', '');
 
-        return $limit ? $cleaned->limit($limit, '') : $cleaned;
+        return $limit ? $cleaned->limit($limit, '')->toString() : $cleaned->toString();
     }
 
     private function addRandomOffset(?float $coordinate): ?float

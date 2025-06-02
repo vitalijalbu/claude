@@ -13,9 +13,8 @@ class UpsertListing
         return Listing::updateOrCreate(
             [
                 'phone_number' => $data['phone_number'],
-                'ref_site' => $data['ref_site'] ?? null
+                'ref_site' => $data['ref_site'] ?? null,
             ],
-
             $data
         );
     }

@@ -13,7 +13,7 @@ class SearchAll
 {
     public function handle(?string $query): Collection
     {
-        if (!$query) {
+        if (! $query) {
             return collect([
                 ...$this->getFeaturedListings(),
                 ...$this->getPopularCities(),
@@ -34,7 +34,7 @@ class SearchAll
             ->with(['city', 'category'])
             ->limit(10)
             ->get()
-            ->map(fn($listing) => [
+            ->map(fn ($listing) => [
                 'id' => $listing->id,
                 'label' => $listing->title,
                 'type' => 'listing',
@@ -50,7 +50,7 @@ class SearchAll
             ->orderBy('listings_count', 'desc')
             ->limit(10)
             ->get()
-            ->map(fn($city) => [
+            ->map(fn ($city) => [
                 'id' => $city->id,
                 'label' => $city->name,
                 'type' => 'city',
@@ -66,7 +66,7 @@ class SearchAll
             ->orderBy('rating', 'desc')
             ->limit(10)
             ->get()
-            ->map(fn($profile) => [
+            ->map(fn ($profile) => [
                 'id' => $profile->id,
                 'label' => $profile->name,
                 'type' => 'profile',
@@ -82,7 +82,7 @@ class SearchAll
             ->with(['city', 'category'])
             ->limit(5)
             ->get()
-            ->map(fn($listing) => [
+            ->map(fn ($listing) => [
                 'id' => $listing->id,
                 'label' => $listing->title,
                 'type' => 'listing',
@@ -96,7 +96,7 @@ class SearchAll
         return City::where('name', 'LIKE', "%{$query}%")
             ->limit(5)
             ->get()
-            ->map(fn($city) => [
+            ->map(fn ($city) => [
                 'id' => $city->id,
                 'label' => $city->name,
                 'type' => 'city',
@@ -110,7 +110,7 @@ class SearchAll
         return Profile::where('name', 'LIKE', "%{$query}%")
             ->limit(5)
             ->get()
-            ->map(fn($profile) => [
+            ->map(fn ($profile) => [
                 'id' => $profile->id,
                 'label' => $profile->name,
                 'type' => 'profile',

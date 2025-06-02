@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Category;
+namespace App\Http\Requests\Taxonomy;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateCategoryRequest extends FormRequest
+class UpdateTaxonomyGroupRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -17,16 +17,17 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|array',
+            'name.*' => 'required|string|max:255',
             'slug' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('categories', 'slug')->ignore($this->route('category')),
+                Rule::unique('taxonomy_groups', 'slug')->ignore($this->route('taxonomyGroup')),
             ],
-            'description' => 'nullable|string|max:1000',
+            'description' => 'nullable|array',
+            'description.*' => 'nullable|string|max:1000',
             'icon' => 'nullable|string|max:255',
-            'media' => 'nullable|array',
         ];
     }
 }

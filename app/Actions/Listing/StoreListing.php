@@ -23,7 +23,7 @@ class StoreListing
 
         // Attach taxonomies if provided
         if ($dto->taxonomies) {
-            $attachTaxonomies = new AttachTaxonomies();
+            $attachTaxonomies = new AttachTaxonomies;
             $attachTaxonomies->handle($listing, $dto->taxonomies);
         }
 

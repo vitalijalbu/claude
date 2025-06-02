@@ -33,7 +33,7 @@ class ListingResource extends JsonResource
             'media' => MediaResource::collection(
                 collect($this->media)->map(function ($filename) {
                     return [
-                        'filename' => $filename,
+                        'media' => $this->media,
                         'phone_number' => $this->phone_number,
                         'listing_id' => $this->id,
                     ];
