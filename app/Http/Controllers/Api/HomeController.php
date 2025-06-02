@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Home\IndexHome;
 use App\Http\Resources\Api\CategoryResource;
 use App\Http\Resources\Api\CityResource;
-use App\Http\Resources\Listing\ListingCollectionResource;
+use App\Http\Resources\Api\ListingCollectionResource;
 
 class HomeController extends ApiController
 {

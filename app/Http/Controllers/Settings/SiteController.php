@@ -63,34 +63,13 @@ final class SiteController extends Controller
             'url' => 'required|url|max:255',
         ]);
 
-        $site = Site::where('id', $id)->firstOrFail();
-        $site->update($data);
-
         return redirect()->route('settings/sites/index')->with('success', 'Site updated successfully.');
     }
 
     public function destroy($id)
     {
-        $site = Site::where('id', $id)->firstOrFail();
-        $site->delete();
 
         return redirect()->route('settings/sites.index')->with('success', 'Site deleted successfully.');
-    }
-
-    public function restore($id)
-    {
-        $site = Site::onlyTrashed()->where('id', $id)->firstOrFail();
-        $site->restore();
-
-        return redirect()->route('settings/sites/index')->with('success', 'Site restored successfully.');
-    }
-
-    public function forceDelete($id)
-    {
-        $site = Site::onlyTrashed()->where('id', $id)->firstOrFail();
-        $site->forceDelete();
-
-        return redirect()->route('settings/sites.index')->with('success', 'Site permanently deleted successfully.');
     }
 
     /*

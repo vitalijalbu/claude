@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Web;
+namespace App\Http\Controllers;
 
 use App\Actions\Category\DeleteCategory;
 use App\Actions\Category\IndexCategories;
@@ -14,7 +14,7 @@ use App\Http\Requests\Web\Category\UpdateCategoryRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class CategoryController extends Controller
+final class CategoryController extends Controller
 {
     public function index(Request $request, IndexCategories $action)
     {

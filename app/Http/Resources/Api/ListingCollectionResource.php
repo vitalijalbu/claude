@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Resources\Listing;
+namespace App\Http\Resources\Api;
 
 use App\Http\Resources\Api\CategoryResource;
 use App\Http\Resources\Api\MediaResource;
 use App\Http\Resources\Api\ProfileResource;
-use App\Http\Resources\Geo\ProvinceResource;
+use App\Http\Resources\Api\ProvinceResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

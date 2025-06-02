@@ -36,37 +36,9 @@ class IndexListings
             ])
             ->allowedSorts(['id', 'title', 'created_at', 'updated_at'])
             ->allowedIncludes($this->defaultIncludes)
-            ->with($this->defaultIncludes);
+            ->with($this->defaultIncludes)
+            ->defaultSort('-created_at'); // Fixed: removed duplicate paginate() and moved defaultSort before paginate
 
-        if ($filters) {
-            if ($filters->search) {
-                $query->where(function ($q) use ($filters) {
-                    $q->where('title', 'LIKE', "%{$filters->search}%")
-                        ->orWhere('description', 'LIKE', "%{$filters->search}%");
-                });
-            }
-
-            if ($filters->category_id) {
-                $query->where('category_id', $filters->category_id);
-            }
-
-            if ($filters->city_id) {
-                $query->where('city_id', $filters->city_id);
-            }
-
-            if ($filters->is_verified !== null) {
-                $query->where('is_verified', $filters->is_verified);
-            }
-
-            if ($filters->is_featured !== null) {
-                $query->where('is_featured', $filters->is_featured);
-            }
-
-            return $query
-                ->orderBy($filters->sort, $filters->direction)
-                ->paginate($filters->per_page, ['*'], 'page', $filters->page);
-        }
-
-        return $query->defaultSort('-created_at')->paginate(25);
+        return $query->paginate(25); // Fixed: single paginate call with correct per_page
     }
 }

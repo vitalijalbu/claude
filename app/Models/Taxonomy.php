@@ -28,11 +28,6 @@ class Taxonomy extends Model
         return $this->belongsTo(TaxonomyGroup::class, 'group_id');
     }
 
-    public function site(): BelongsTo
-    {
-        return $this->belongsTo(Site::class, 'site_id');
-    }
-
     public function getLocalizedName(?string $locale = null): string
     {
         return $this->getTranslation('name', $locale ?? app()->getLocale());
