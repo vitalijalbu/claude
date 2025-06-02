@@ -19,7 +19,7 @@ const { data, isLoading, isError } = await fetchData(`/listings?page=${currentPa
 	},
 });
 
-const { data: listings, links, meta } = data || {};
+const { data: listings, meta } = data || {};
 ---
 
 <MainLayout

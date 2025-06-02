@@ -10,3 +10,4 @@ export { default as Pagination } from './pagination.astro';
 export { default as Card } from './card.astro';
 export { default as ReportCard } from './report-card.astro';
 export { default as User } from './user.astro';
+export { default as Picture } from './picture.astro';

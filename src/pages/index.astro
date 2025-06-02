@@ -9,6 +9,8 @@ import ListingCard from '@/shared/snippets/listing-card.astro';
 import { IconChevron } from '../icons';
 
 const { data, isError, isLoading } = await fetchData('/home');
+const { categories, regions, listings } = data;
+
 
 // SEO
 const schemaORG = {
@@ -33,24 +35,24 @@ const schemaORG = {
 
     {!isLoading && !isError && (
       <>
-        {data?.categories?.length
-          ? <Categories data={data.categories} />
+        {categories?.length
+          ? <Categories data={categories} />
           : <p class="text-center text-gray-500 my-4">Nessuna categoria disponibile</p>
         }
 
-        {data?.regions?.length && <Provinces data={data.regions} />}
+        {regions?.length && <Provinces data={regions} />}
 
 
         <section class="container py-10">
           <PageHeader title="In primo piano" as="h2"/>
 
-          {data?.listings?.length
+          {listings?.length
             ? (
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {data.listings.map((post) => (
+                {listings.map((listing) => (
                   <ListingCard
-                    href={`/annuncio/${post?.slug}`}
-                    data={post}
+                    href={`/annuncio/${listing?.slug}`}
+                    data={listing}
                   />
                 ))}
               </div>

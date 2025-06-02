@@ -1,6 +1,6 @@
 ---
-import { Button, Badge, User } from '@/components/index';
-import { IconCamera, IconHeart, IconMap } from '@/icons/index';
+import { Badge, User } from '@/components/index';
+import { IconMap } from '@/icons/index';
 import GalleryCard from './gallery-card.astro';
 const { data } = Astro.props;
 const titleId = `listing-title-${data?.id}`;
@@ -20,9 +20,7 @@ const mediaCount = data?.media?.length ?? 0;
 		{data?.media?.length}
 	</Badge>}
 
-	<button class="btn btn-primary"
-		variant="outline"
-		size="icon"
+	<button class="btn btn-outline"
 		class="absolute right-2 top-2 z-10"
 		aria-label="Salva annuncio"
 	>

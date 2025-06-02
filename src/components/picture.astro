@@ -1,0 +1,140 @@
+---
+export interface ImageSource {
+  url: string;
+  width: number;
+  format?: string; // 'webp', 'jpg', 'png', etc.
+}
+
+export interface Props {
+  src: string; // URL principale/fallback
+  alt: string;
+  sources?: ImageSource[]; // Array di sources dalle API
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  decoding?: 'async' | 'sync' | 'auto';
+  class?: string;
+  sizes?: string;
+  breakpoints?: number[]; // [480, 768, 1200] - breakpoint per media queries
+}
+
+const {
+  src,
+  alt,
+  sources = [],
+  width = 1200,
+  height = 800,
+  loading = 'lazy',
+  decoding = 'async',
+  class: className = '',
+  sizes = '(max-width: 600px) 480px, (max-width: 1200px) 800px, 1200px',
+  breakpoints = [600, 1200]
+} = Astro.props;
+
+// Funzione per ottenere il tipo MIME dal formato o URL
+function getMimeType(source: ImageSource): string {
+  if (source.format) {
+    const mimeTypes: Record<string, string> = {
+      'webp': 'image/webp',
+      'avif': 'image/avif',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'png': 'image/png'
+    };
+    return mimeTypes[source.format] || 'image/jpeg';
+  }
+  
+  // Fallback: rileva dal URL
+  const url = source.url.toLowerCase();
+  if (url.includes('.webp')) return 'image/webp';
+  if (url.includes('.avif')) return 'image/avif';
+  if (url.includes('.png')) return 'image/png';
+  return 'image/jpeg';
+}
+
+// Raggruppa sources per formato
+const sourcesByFormat = sources.reduce((acc, source) => {
+  const mimeType = getMimeType(source);
+  if (!acc[mimeType]) acc[mimeType] = [];
+  acc[mimeType].push(source);
+  return acc;
+}, {} as Record<string, ImageSource[]>);
+
+// Ordina formati per preferenza (moderni prima)
+const formatPriority = ['image/avif', 'image/webp', 'image/jpeg', 'image/png'];
+const sortedFormats = Object.keys(sourcesByFormat).sort((a, b) => {
+  const aIndex = formatPriority.indexOf(a);
+  const bIndex = formatPriority.indexOf(b);
+  return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
+});
+
+// Funzione per trovare la source più adatta per una larghezza
+function findBestSource(sources: ImageSource[], maxWidth: number): ImageSource | null {
+  return sources
+    .filter(s => s.width <= maxWidth)
+    .sort((a, b) => b.width - a.width)[0] || sources[0] || null;
+}
+
+// Genera media queries
+function generateMediaQueries(breakpoints: number[]) {
+  const queries = [];
+  
+  for (let i = 0; i < breakpoints.length; i++) {
+    if (i === 0) {
+      queries.push(`(max-width: ${breakpoints[i]}px)`);
+    } else {
+      queries.push(`(max-width: ${breakpoints[i]}px)`);
+    }
+  }
+  
+  // Ultima query per schermi più grandi
+  const lastBreakpoint = breakpoints[breakpoints.length - 1];
+  queries.push(`(min-width: ${lastBreakpoint + 1}px)`);
+  
+  return queries;
+}
+
+const mediaQueries = generateMediaQueries(breakpoints);
+---
+
+<picture>
+  {sortedFormats.map((mimeType) => {
+    const formatSources = sourcesByFormat[mimeType];
+    
+    return mediaQueries.map((mediaQuery, index) => {
+      let targetWidth;
+      
+      if (index < breakpoints.length) {
+        // Per i primi breakpoint, usa il breakpoint come larghezza target
+        targetWidth = breakpoints[index];
+      } else {
+        // Per l'ultima media query (schermi grandi), usa la larghezza più grande disponibile
+        targetWidth = Math.max(...formatSources.map(s => s.width));
+      }
+      
+      const bestSource = findBestSource(formatSources, targetWidth);
+      
+      if (!bestSource) return null;
+      
+      return (
+        <source
+          srcset={bestSource.url}
+          type={mimeType}
+          media={mediaQuery}
+        />
+      );
+    }).filter(Boolean);
+  })}
+  
+  <!-- Fallback img -->
+  <img
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    decoding={decoding}
+    sizes={sizes}
+    class={className}
+  />
+</picture>

@@ -1,30 +1,69 @@
 ---
-import { IconFlagBold } from '../icons';
-import Button from './button.astro';
-import Card from './card.astro';
-
+import { IconFlagBold } from '@/icons/index';
 const { type } = Astro.props;
 ---
 
-<Card>
-	<div slot="title">
-		<span>Segnala questo {type === 'profile' ? 'profilo' : 'annuncio'}</span>
+<div class="card">
+	<div class="card-body">
+		<div slot="title">
+			<span>Segnala questo {type === 'profile' ? 'profilo' : 'annuncio'}</span>
+		</div>
+		<div
+			slot="content"
+			class="py-4">
+			<p class="text-gray-500 text-sm">Se hai riscontrato problemi o ritieni che questo {type === 'profile' ? 'profilo' : 'annuncio'} non rispetti le linee guida, segnalalo subito.</p>
+		</div>
+		<div
+			slot="footer"
+			class="flex items-center justify-between">
+			<button
+				aria-haspopup="dialog"
+				aria-expanded="false"
+				aria-controls="slide-up-animated-modal"
+				data-overlay="#slide-up-animated-modal"
+				class="btn btn-primary w-full"
+				class="w-full">
+				<IconFlagBold />
+				Segnala {type === 'profile' ? 'profilo' : 'annuncio'}
+			</button>
+		</div>
 	</div>
-	<div
-		slot="content"
-		class="py-4">
-		<p class="text-gray-500 text-sm">Se hai riscontrato problemi o ritieni che questo {type === 'profile' ? 'profilo' : 'annuncio'} non rispetti le linee guida, segnalalo subito.</p>
+</div>
+
+<div
+	id="slide-up-animated-modal"
+	class="overlay modal overlay-open:opacity-100 overlay-open:duration-300 hidden"
+	role="dialog"
+	tabindex="-1">
+	<div class="overlay-animation-target modal-dialog overlay-open:mt-4 overlay-open:opacity-100 overlay-open:duration-300 mt-12 transition-all ease-out">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title">Dialog Title</h3>
+				<button
+					type="button"
+					class="btn btn-text btn-circle btn-sm absolute end-3 top-3"
+					aria-label="Close"
+					data-overlay="#slide-up-animated-modal">
+					<span class="icon-[tabler--x] size-4"></span>
+				</button>
+			</div>
+			<div class="modal-body">
+				This is some placeholder content to show the scrolling behavior for modals. Instead of repeating the text in the modal, we use an inline style to set a minimum height, thereby extending the
+				length of the overall modal and demonstrating the overflow scrolling. When content becomes longer than the height of the viewport, scrolling will move the modal as needed.
+			</div>
+			<div class="modal-footer">
+				<button
+					type="button"
+					class="btn btn-soft btn-secondary"
+					data-overlay="#slide-up-animated-modal">
+					Close
+				</button>
+				<button
+					type="button"
+					class="btn btn-primary"
+					>Save changes</button
+				>
+			</div>
+		</div>
 	</div>
-	<div
-		slot="footer"
-		class="flex items-center justify-between">
-		<button class="btn btn-primary"
-			variant="secondary"
-			as="a"
-			href="#"
-			class="w-full">
-			<IconFlagBold />
-			Segnala {type === 'profile' ? 'profilo' : 'annuncio'}
-		</button>
-	</div>
-</Card>
+</div>
