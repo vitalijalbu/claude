@@ -1,9 +1,9 @@
-'use client';
+"use client";
 import React from "react";
 import Link from "next/link";
-import { Button, Skeleton } from '@/components/';
+import { Button, Skeleton } from "@heroui/react";
 
-const PageTitle = (props) => {
+const PageTitle = (props: any) => {
   const { loading, backLink, title, subTitle, extra, children } = props;
   return (
     <div className="mb-6">
@@ -13,9 +13,7 @@ const PageTitle = (props) => {
             <div className="flex gap-2 items-center">
               {backLink && (
                 <Link href={backLink}>
-                  <Button type="text">
-                    Indietro
-                  </Button>
+                  <Button type="text">Indietro</Button>
                 </Link>
               )}
               <div>

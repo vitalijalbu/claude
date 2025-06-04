@@ -1,50 +1,47 @@
-import Image from "next/image"
-import Link from "next/link"
-import { Heart } from "lucide-react"
+import Image from "next/image";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Card, CardBody, Chip } from "@heroui/react";
+import { FavoriteButton } from "../product/favorite-button";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "../components/ui/card"
-
-
-export function ProductCard({data}) {
+export function ProductCard({ data }: any) {
   return (
-    <Card className="group relative flex flex-col p-0" key={data?.id}>
-      <div className="relative mb-4 aspect-square overflow-hidden rounded-sm bg-gray-100">
-        <Image
-          src={"/images/placeholder.svg"}
-          alt={`${data?.name} ${data?.description}`}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-        />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-2 top-2 h-8 w-8 rounded-full bg-white/80 text-gray-700 opacity-0 transition-opacity group-hover:opacity-100"
-        >
-          <Heart className="h-4 w-4" />
-          <span className="sr-only">Add to wishlist</span>
-        </Button>
+    <Card shadow="none" className="border" key={data?.id}>
+      <div className="relative mb-4 aspect-square overflow-hidden rounded-t-md bg-gray-100">
+        <Link href={`/prodotto/${data?.id}`}>
+          <Image
+            src={data.thumbnail ? data?.thumbnail : "/images/placeholder.svg"}
+            width={300}
+            height={300}
+            objectFit="cover"
+            loading="lazy"
+            alt={`${data?.name} ${data?.description}`}
+            className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+          />
+        </Link>
+        <FavoriteButton />
         {data?.tag && (
-          <div
+          <Chip
+            size="sm"
             className={cn(
-              "absolute left-0 top-3 px-2 py-1 text-xs font-medium uppercase text-white",
-              data?.tagColor === "green" && "bg-green-600",
-              data?.tagColor === "orange" && "bg-orange-500",
-              data?.tagColor === "black" && "bg-black",
+              "absolute left-3 top-3 px-2 py-1 text-xs font-medium uppercase text-white",
             )}
           >
             {data?.tag}
-          </div>
+          </Chip>
         )}
       </div>
-      <CardContent className="flex flex-col">
-        <Link href="/prodotti/demo" className="text-sm font-medium uppercase hover:underline">
-          {data?.name}
+      <CardBody className="flex flex-col">
+        <Link href={`/prodotto/${data?.id}`}>
+          <span className="block text-muted-foreground mb-1">Viso</span>
+          <span className="block text-sm font-medium uppercase hover:underline mb-2">
+            BJORK & BERRIES
+          </span>
+
+          <span className="block mb-4 text-xl hover:underline">{data?.name}</span>
+          <p className="mt-1 font-medium">{data?.price}</p>
         </Link>
-        <p className="text-sm text-gray-600">{data?.description}</p>
-        <p className="mt-1 font-medium">{data?.price}</p>
-      </CardContent>
+      </CardBody>
     </Card>
-  )
+  );
 }

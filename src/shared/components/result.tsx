@@ -1,10 +1,10 @@
-import React from 'react';
-import {Card, Separator} from '@/shared/components';
-import clsx from 'clsx';
-import {Check, CircleAlert} from 'lucide-react';
+import React from "react";
+import { Card, Divider } from "@heroui/react";
+import clsx from "clsx";
+import { Check, CircleAlert } from "lucide-react";
 
 interface ResultProps {
-  status?: 'success' | 'error';
+  status?: "success" | "error";
   icon?: React.ReactNode;
   title: string;
   subtitle?: string;
@@ -18,7 +18,7 @@ const Result: React.FC<ResultProps> = ({
   subtitle,
   extra,
 }) => {
-  const isSuccess = status === 'success';
+  const isSuccess = status === "success";
   const defaultIcon = isSuccess ? (
     <Check className="text-green-500" />
   ) : (
@@ -26,7 +26,7 @@ const Result: React.FC<ResultProps> = ({
   );
 
   // Use tailwind-merge to handle conditional class merging
-  const cardClasses = clsx('flex flex-col items-center p-4');
+  const cardClasses = clsx("flex flex-col items-center p-4");
 
   return (
     <div className={cardClasses}>
@@ -38,4 +38,4 @@ const Result: React.FC<ResultProps> = ({
   );
 };
 
-export {Result};
+export { Result };

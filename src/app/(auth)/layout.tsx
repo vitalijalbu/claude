@@ -1,5 +1,4 @@
-const Layout = async ({ children }) => {
-
+const Layout = async ({ children }: any) => {
   return <>{children}</>;
 };
 

@@ -1,20 +1,24 @@
-"use client"
-import { useState } from "react"
-import Image from "next/image"
-import { Heart, X, ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+"use client";
+import { useState } from "react";
+import Image from "next/image";
+import { Heart, X, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Chip,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Checkbox,
+  useDisclosure,
+} from "@heroui/react";
 
 // Import Swiper and modules
-import { Swiper, SwiperSlide } from "swiper/react"
-import { FreeMode, Navigation, Thumbs, Zoom } from "swiper/modules"
-
-// Import Swiper styles
-import "swiper/css"
-import "swiper/css/free-mode"
-import "swiper/css/navigation"
-import "swiper/css/thumbs"
-import "swiper/css/zoom"
+import { Swiper, SwiperSlide } from "swiper/react";
+import { FreeMode, Navigation, Thumbs, Zoom } from "swiper/modules";
+import IconHeart from "@/assets/icons/heart";
+import { FavoriteButton } from "./favorite-button";
 
 const productImages = [
   {
@@ -37,27 +41,21 @@ const productImages = [
     src: "/images/placeholder.svg?height=600&width=600&text=Product+Image+4",
     alt: "Acqua Spray Idratante - In use",
   },
-]
+];
 
 export function ProductGallery() {
-  const [thumbsSwiper, setThumbsSwiper] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
     <div className="space-y-4">
       <div className="relative">
-        <div className="absolute left-0 top-3 z-10 bg-black px-2 py-1 text-xs font-medium uppercase text-white">
+        <Chip className="absolute left-3 bg-black text-white top-3 z-10">
           ESAURITO
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-3 top-3 z-10 h-8 w-8 rounded-full bg-white/80 text-red-500"
-        >
-          <Heart className="h-5 w-5 fill-current" />
-          <span className="sr-only">Add to wishlist</span>
-        </Button>
+        </Chip>
+        <FavoriteButton />
 
         <Swiper
           spaceBetween={10}
@@ -65,17 +63,29 @@ export function ProductGallery() {
             nextEl: ".swiper-button-next",
             prevEl: ".swiper-button-prev",
           }}
-          thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+          thumbs={{
+            swiper:
+              thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+          }}
           modules={[FreeMode, Navigation, Thumbs, Zoom]}
           zoom={true}
           className="aspect-square rounded-md bg-gray-100"
           onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
         >
           {productImages.map((image) => (
-            <SwiperSlide key={image.id} className="cursor-pointer" onClick={() => setIsModalOpen(true)}>
+            <SwiperSlide
+              key={image.id}
+              className="cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
+            >
               <div className="swiper-zoom-container relative h-full w-full">
                 <div className="relative h-full w-full">
-                  <Image src={"/images/placeholder.svg"} alt={image.alt} fill className="object-cover" />
+                  <Image
+                    src={"/images/placeholder.svg"}
+                    alt={image.alt}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               </div>
             </SwiperSlide>
@@ -100,20 +110,25 @@ export function ProductGallery() {
             className="cursor-pointer rounded-md border border-gray-200 p-1 hover:border-gray-300"
           >
             <div className="relative aspect-square overflow-hidden rounded-sm bg-gray-100">
-              <Image src={"/images/placeholder.svg"} alt={image.alt} fill className="object-cover" />
+              <Image
+                src={"/images/placeholder.svg"}
+                alt={image.alt}
+                fill
+                className="object-cover"
+              />
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
 
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="w-full h-full border-none bg-black/95 p-0 text-white sm:rounded-lg">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalBody className="w-full h-full border-none bg-black/95 p-0 text-white sm:rounded-lg">
           <div className="relative h-screen max-h-[80vh] w-full">
             <Button
               variant="ghost"
-              size="icon"
+              isIconOnly
               className="absolute right-4 top-4 z-50 h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
-              onClick={() => setIsModalOpen(false)}
+              onPress={() => setIsModalOpen(false)}
             >
               <X className="h-6 w-6" />
               <span className="sr-only">Close</span>
@@ -133,10 +148,18 @@ export function ProductGallery() {
               className="h-full w-full"
             >
               {productImages.map((image) => (
-                <SwiperSlide key={image.id} className="flex items-center justify-center">
+                <SwiperSlide
+                  key={image.id}
+                  className="flex items-center justify-center"
+                >
                   <div className="swiper-zoom-container relative h-full w-full">
                     <div className="relative h-full w-full">
-                      <Image src={"/images/placeholder.svg"} alt={image.alt} fill className="object-contain" />
+                      <Image
+                        src={"/images/placeholder.svg"}
+                        alt={image.alt}
+                        fill
+                        className="object-contain"
+                      />
                     </div>
                   </div>
                 </SwiperSlide>
@@ -145,7 +168,7 @@ export function ProductGallery() {
 
             <Button
               variant="ghost"
-              size="icon"
+              isIconOnly
               className="modal-button-prev absolute left-4 top-1/2 z-10 h-12 w-12 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70"
             >
               <ChevronLeft className="h-8 w-8" />
@@ -153,7 +176,7 @@ export function ProductGallery() {
             </Button>
             <Button
               variant="ghost"
-              size="icon"
+              isIconOnly
               className="modal-button-next absolute right-4 top-1/2 z-10 h-12 w-12 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70"
             >
               <ChevronRight className="h-8 w-8" />
@@ -185,25 +208,29 @@ export function ProductGallery() {
               {productImages.map((image, index) => (
                 <SwiperSlide
                   key={image.id}
-                  className={`cursor-pointer rounded-md border p-1 ${
-                    index === activeIndex ? "border-white" : "border-gray-700"
-                  }`}
+                  className={`cursor-pointer rounded-md border p-1 ${index === activeIndex ? "border-white" : "border-gray-700"}`}
                   onClick={() => {
-                    const modalSwiper = document.querySelector(".modal-swiper")?.swiper
+                    const modalSwiper =
+                      document.querySelector(".modal-swiper")?.swiper;
                     if (modalSwiper) {
-                      modalSwiper.slideTo(index)
+                      modalSwiper.slideTo(index);
                     }
                   }}
                 >
                   <div className="relative aspect-square overflow-hidden rounded-sm bg-gray-800">
-                    <Image src={"/images/placeholder.svg"} alt={image.alt} fill className="object-cover" />
+                    <Image
+                      src={"/images/placeholder.svg"}
+                      alt={image.alt}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                 </SwiperSlide>
               ))}
             </Swiper>
           </div>
-        </DialogContent>
-      </Dialog>
+        </ModalBody>
+      </Modal>
     </div>
-  )
+  );
 }

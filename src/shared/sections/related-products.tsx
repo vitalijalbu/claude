@@ -1,18 +1,11 @@
-"use client"
-import Image from "next/image"
-import Link from "next/link"
-import { Heart, ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-
-// Import Swiper and modules
-import { Swiper, SwiperSlide } from "swiper/react"
-import { Navigation, Pagination } from "swiper/modules"
-
-// Import Swiper styles
-import "swiper/css"
-import "swiper/css/navigation"
-import "swiper/css/pagination"
-import { ProductCard } from "../snippets/product-card"
+"use client";
+import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@heroui/react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import { ProductCard } from "../snippets/product-card";
+import { PageHeader } from "../components";
+import { useRef } from "react";
 
 const relatedProducts = [
   {
@@ -69,16 +62,21 @@ const relatedProducts = [
     category: "Viso",
     tag: "",
   },
-]
+];
 
 export function RelatedProducts() {
+  const swiperRef = useRef<any>(null);
+
   return (
     <section className="mt-16">
-      <h2 className="mb-8 text-center text-2xl font-light">Altri prodotti viso</h2>
+      <PageHeader title="Altri prodotti viso" />
       <div className="relative">
         <Swiper
           spaceBetween={16}
           slidesPerView={2}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+          }}
           modules={[Navigation, Pagination]}
           navigation={{
             nextEl: ".related-button-next",
@@ -100,30 +98,28 @@ export function RelatedProducts() {
         >
           {relatedProducts.map((product) => (
             <SwiperSlide key={product.id}>
-                <ProductCard data={product} />
-              </SwiperSlide>
+              <ProductCard data={product} />
+            </SwiperSlide>
           ))}
         </Swiper>
 
         <Button
-          variant="ghost"
-          size="icon"
-          className="related-button-prev absolute left-0 top-1/2 z-10 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-md"
+          isIconOnly
+          className="related-button-prev absolute left-0 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft />
           <span className="sr-only">Previous</span>
         </Button>
         <Button
-          variant="ghost"
-          size="icon"
-          className="related-button-next absolute right-0 top-1/2 z-10 h-8 w-8 translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-md"
+          isIconOnly
+          className="related-button-next absolute right-0 top-1/2 z-10 translate-x-1/2 -translate-y-1/2"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight />
           <span className="sr-only">Next</span>
         </Button>
 
         <div className="related-pagination mt-4 flex justify-center"></div>
       </div>
     </section>
-  )
+  );
 }
