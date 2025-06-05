@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Region extends Model
 {
+    public $timestamps = false;
+
     protected $table = 'geo_regions';
 
     protected $fillable = ['code', 'name', 'slug', 'phone_code'];

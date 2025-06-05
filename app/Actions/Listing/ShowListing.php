@@ -13,7 +13,7 @@ class ShowListing
         'category',
         'profile',
         'province',
-        'taxonomies.group',
+        'tags.group',
     ];
 
     public function handle(string $slug): Listing

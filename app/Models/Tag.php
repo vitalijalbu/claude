@@ -1,0 +1,46 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Translatable\HasTranslations;
+
+class Tag extends Model
+{
+    use HasTranslations, SoftDeletes;
+
+    public array $translatable = ['name'];
+
+    protected $fillable = [
+        'origin_id',
+        'group_id',
+        'site_id',
+        'name',
+        'slug',
+        'icon',
+    ];
+
+    protected $casts = [
+        'name' => 'array',
+    ];
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(TagGroup::class, 'group_id');
+    }
+
+    public function getLocalizedName(?string $locale = null): string
+    {
+        return $this->getTranslation('name', $locale ?? app()->getLocale());
+    }
+
+    public function listings(): HasMany
+    {
+        return $this->hasMany(Listing::class);
+    }
+}

@@ -31,9 +31,9 @@ class StoreListingRequest extends FormRequest
             'is_verified' => 'nullable|boolean',
             'is_featured' => 'nullable|boolean',
             'media' => 'nullable|array',
-            'taxonomies' => 'nullable|array',
-            'taxonomies.*.group' => 'required_with:taxonomies|string',
-            'taxonomies.*.value' => 'required_with:taxonomies|string',
+            'tags' => 'nullable|array',
+            'tags.*.group' => 'required_with:tags|string',
+            'tags.*.value' => 'required_with:tags|string',
         ];
     }
 }

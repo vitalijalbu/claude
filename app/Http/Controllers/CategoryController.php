@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Category\DeleteCategory;
 use App\Actions\Category\IndexCategories;
 use App\Actions\Category\ShowCategory;
 use App\Actions\Category\StoreCategory;
 use App\Actions\Category\UpdateCategory;
 use App\DTO\Category\CategoryDTO;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\Category\StoreCategoryRequest;
 use App\Http\Requests\Web\Category\UpdateCategoryRequest;
 use Illuminate\Http\Request;
@@ -68,14 +66,5 @@ final class CategoryController extends Controller
         return redirect()
             ->route('admin.categories.show', $category->slug)
             ->with('success', 'Categoria aggiornata con successo.');
-    }
-
-    public function destroy(string $slug, DeleteCategory $action)
-    {
-        $action->handle($slug);
-
-        return redirect()
-            ->route('admin.categories.index')
-            ->with('success', 'Categoria eliminata con successo.');
     }
 }

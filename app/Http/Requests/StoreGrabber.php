@@ -25,9 +25,9 @@ final class StoreGrabber extends FormRequest
                     }
                 }
             }],
-            'taxonomies' => 'nullable|array',
-            'taxonomies.*.group' => 'string|max:255',
-            'taxonomies.*.value' => 'string|max:255',
+            'tags' => 'nullable|array',
+            'tags.*.group' => 'string|max:255',
+            'tags.*.value' => 'string|max:255',
             'nationality' => 'nullable|string|max:50',
             'location' => 'nullable|string|max:255',
             'lat' => 'nullable|numeric',

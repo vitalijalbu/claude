@@ -16,7 +16,7 @@ class ShowProfile
                 'listings' => function ($query) {
                     $query->latest()->take(5);
                 },
-                'taxonomies',
+                'tags',
                 'city',
                 'province',
                 'category',

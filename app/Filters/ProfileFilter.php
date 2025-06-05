@@ -43,8 +43,8 @@ class ProfileFilter
             AllowedInclude::relationship('province'),
             AllowedInclude::relationship('category'),
             AllowedInclude::relationship('listings'),
-            AllowedInclude::relationship('taxonomies'),
-            AllowedInclude::relationship('taxonomies.group'),
+            AllowedInclude::relationship('tags'),
+            AllowedInclude::relationship('tags.group'),
             AllowedInclude::count('listings'),
         ];
     }

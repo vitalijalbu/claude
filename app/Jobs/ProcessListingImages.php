@@ -1,77 +1,100 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Models\Listing;
-use App\Models\Profile;
-use App\Services\MediaService;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
 class ProcessListingImages implements ShouldQueue
 {
-    use InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * The number of times the job may be attempted.
+     */
     public int $tries = 3;
 
-    public int $maxExceptions = 3;
+    /**
+     * The maximum number of seconds the job can run.
+     */
+    public int $timeout = 10;
 
-    public int $timeout = 300; // 5 minutes
-
+    /**
+     * Create a new job instance.
+     */
     public function __construct(
-        public Listing $listing,
-        public Profile $profile,
-        public array $imageFilenames
-    ) {}
+        public int $listingId,
+        public array $mediaFiles,
+        public string $phoneNumber
+    ) {
+        // Set queue connection and queue name
+        $this->onQueue('images');
+    }
 
-    public function handle(MediaService $mediaService): void
+    /**
+     * Execute the job.
+     */
+    public function handle(): void
     {
         try {
-            Log::info('Starting image processing', [
-                'listing_id' => $this->listing->id,
-                'profile_id' => $this->profile->id,
-                'image_count' => count($this->imageFilenames),
+            $listing = Listing::find($this->listingId);
+
+            if (! $listing) {
+                Log::error('Listing not found for image processing', [
+                    'listing_id' => $this->listingId,
+                ]);
+
+                return;
+            }
+
+            Log::info('Starting background image processing', [
+                'listing_id' => $this->listingId,
+                'phone_number' => $this->phoneNumber,
+                'media_count' => count($this->mediaFiles),
             ]);
 
-            $processedImages = $mediaService->attachImagesFromLocalRaw(
-                $this->profile,
-                $this->listing,
-                $this->imageFilenames
+            $processedImages = $listing->processImagesFromS3(
+                $this->mediaFiles,
+                $this->phoneNumber
             );
 
-            // Update listing with processed images info
-            $this->listing->update([
-                'media' => array_column($processedImages, 'original'),
-            ]);
-
-            Log::info('Image processing completed', [
-                'listing_id' => $this->listing->id,
+            Log::info('Background image processing completed', [
+                'listing_id' => $this->listingId,
+                'phone_number' => $this->phoneNumber,
                 'processed_count' => count($processedImages),
+                'media_files' => $this->mediaFiles,
             ]);
 
-        } catch (\Throwable $e) {
-            Log::error('Image processing failed', [
-                'listing_id' => $this->listing->id,
+        } catch (\Exception $e) {
+            Log::error('Background image processing failed', [
+                'listing_id' => $this->listingId,
+                'phone_number' => $this->phoneNumber,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
+            // Re-throw to trigger retry mechanism
             throw $e;
         }
     }
 
+    /**
+     * Handle a job failure.
+     */
     public function failed(\Throwable $exception): void
     {
         Log::error('Image processing job failed permanently', [
-            'listing_id' => $this->listing->id,
-            'profile_id' => $this->profile->id,
+            'listing_id' => $this->listingId,
+            'phone_number' => $this->phoneNumber,
+            'media_files' => $this->mediaFiles,
             'error' => $exception->getMessage(),
         ]);
-
-        // Optionally notify admins or mark listing as having processing issues
-        $this->listing->update(['media_processing_failed' => true]);
     }
 }

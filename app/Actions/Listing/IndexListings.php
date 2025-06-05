@@ -15,11 +15,12 @@ class IndexListings
         'category',
         'profile',
         'province',
+        'tags',
     ];
 
-    public function handle(?Request $filters = null): LengthAwarePaginator
+    public function handle(?Request $request = null): LengthAwarePaginator
     {
-        $query = QueryBuilder::for(Listing::class)
+        return QueryBuilder::for(Listing::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('slug'),
@@ -33,12 +34,13 @@ class IndexListings
                 'category.slug',
                 'city.slug',
                 'province.slug',
+                'tags.slug',
             ])
             ->allowedSorts(['id', 'title', 'created_at', 'updated_at'])
             ->allowedIncludes($this->defaultIncludes)
             ->with($this->defaultIncludes)
-            ->defaultSort('-created_at'); // Fixed: removed duplicate paginate() and moved defaultSort before paginate
-
-        return $query->paginate(25); // Fixed: single paginate call with correct per_page
+            ->defaultSort('-created_at')
+            ->paginate(25)
+            ->appends(request()->query());
     }
 }

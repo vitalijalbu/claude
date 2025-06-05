@@ -5,7 +5,6 @@ namespace App\Http\Resources\Api;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Str;
 
 class ProfileResource extends JsonResource
 {
@@ -17,31 +16,10 @@ class ProfileResource extends JsonResource
         return [
             'id' => $this->id,
             'avatar' => $this->avatar,
-            'phone_number' => $this->phone_number,
-            'whatsapp_number' => $this->whatsapp_number,
-            'name' => $this->name,
-            'rating' => (float) $this->rating,
-            'listings_count' => $this->listings_count,
-            'category' => $this->whenLoaded('category', fn () => new CategoryResource($this->category)),
-            'location' => $this->location,
-            'city' => $this->whenLoaded('city', fn () => new CityResource($this->city)),
-            'province' => $this->whenLoaded('city', fn () => new CityResource($this->province)),
-            'created_at' => $this->created_at,
-        ];
-    }
-
-    /**
-     * Custom transformation for single profile view.
-     */
-    public function toSingle(Request $request): array
-    {
-        return [
-            'id' => $this->id,
-            'avatar' => $this->avatar,
             'age' => Carbon::parse($this->date_birth.'-01-01')->age,
             'name' => $this->name,
-            'phone_number' => Str::replaceFirst('39', '', $this->phone_number),
-            'whatsapp_number' => Str::replaceFirst('39', '', $this->whatsapp_number),
+            'phone_number' => $this->phone_number,
+            'whatsapp_number' => $this->whatsapp_number,
             'bio' => $this->bio,
             'lat' => $this->lat ?? null,
             'lon' => $this->lon ?? null,
@@ -51,10 +29,10 @@ class ProfileResource extends JsonResource
             'location' => $this->location,
             'city' => $this->whenLoaded('city', fn () => new CityResource($this->city)),
             'province' => $this->whenLoaded('city', fn () => new CityResource($this->province)),
-            'taxonomies' => $this->whenLoaded('taxonomies', function () {
-                return $this->taxonomies
+            'tags' => $this->whenLoaded('tags', function () {
+                return $this->tags
                     ->load('group')
-                    ->groupBy(fn ($taxonomy) => $taxonomy->group_id)
+                    ->groupBy(fn ($tag) => $tag->group_id)
                     ->map(function ($items, $groupId) {
                         $group = $items->first()->group;
 

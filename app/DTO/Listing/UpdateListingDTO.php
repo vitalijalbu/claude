@@ -23,7 +23,7 @@ readonly class UpdateListingDTO
         public bool $is_verified = false,
         public bool $is_featured = false,
         public ?array $media = null,
-        public ?array $taxonomies = null
+        public ?array $tags = null
     ) {}
 
     public static function fromRequest(array $data): self
@@ -45,7 +45,7 @@ readonly class UpdateListingDTO
             is_verified: $data['is_verified'] ?? false,
             is_featured: $data['is_featured'] ?? false,
             media: $data['media'] ?? null,
-            taxonomies: $data['taxonomies'] ?? null
+            tags: $data['tags'] ?? null
         );
     }
 

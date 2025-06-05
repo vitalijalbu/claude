@@ -5,7 +5,6 @@ namespace App\Http\Resources\Api;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Str;
 
 class ListingResource extends JsonResource
 {
@@ -20,8 +19,8 @@ class ListingResource extends JsonResource
             'age' => Carbon::parse($this->date_birth.'-01-01')->age,
             'nationality' => $this->nationality,
             'slug' => $this->slug,
-            'phone_number' => Str::replaceFirst('39', '', $this->phone_number),
-            'whatsapp_number' => Str::replaceFirst('39', '', $this->whatsapp_number),
+            'phone_number' => $this->phone_number,
+            'whatsapp_number' => $this->whatsapp_number,
             'description' => $this->description,
             'lat' => $this->lat,
             'lon' => $this->lon,
@@ -68,10 +67,10 @@ class ListingResource extends JsonResource
             'media' => $this->whenLoaded('media', function () {
                 return MediaResource::collection($this->media);
             }),
-            'taxonomies' => $this->whenLoaded('taxonomies', function () {
-                return $this->taxonomies
+            'tags' => $this->whenLoaded('tags', function () {
+                return $this->tags
                     ->load('group')
-                    ->groupBy(fn ($taxonomy) => $taxonomy->group_id)
+                    ->groupBy(fn ($tag) => $tag->group_id)
                     ->map(function ($items, $groupId) {
                         $group = $items->first()->group;
 

@@ -1,0 +1,167 @@
+[
+	{
+		"id": "1",
+		"slug": "where",
+		"site_id": "1",
+		"name": "Dove riceve",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "2",
+		"slug": "contact",
+		"site_id": "1",
+		"name": "Preferenze Contatto",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "3",
+		"slug": "seek",
+		"site_id": "1",
+		"name": "Cerca",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "4",
+		"slug": "ethnicity",
+		"site_id": "1",
+		"name": "Etnia",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "5",
+		"slug": "payment",
+		"site_id": "1",
+		"name": "Accetta pagamenti",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "6",
+		"slug": "body",
+		"site_id": "1",
+		"name": "Corporatura",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "7",
+		"slug": "eyes",
+		"site_id": "1",
+		"name": "Occhi",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "8",
+		"slug": "hair",
+		"site_id": "1",
+		"name": "Capelli",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "9",
+		"slug": "breast",
+		"site_id": "1",
+		"name": "Seno",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "10",
+		"slug": "pubes",
+		"site_id": "1",
+		"name": "Pube",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "11",
+		"slug": "ass",
+		"site_id": "1",
+		"name": "Lato B",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "12",
+		"slug": "smoke",
+		"site_id": "1",
+		"name": "Fumo",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "13",
+		"slug": "tattoo",
+		"site_id": "1",
+		"name": "Tatuaggi",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "14",
+		"slug": "piercing",
+		"site_id": "1",
+		"name": "Pearcing",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	},
+	{
+		"id": "15",
+		"slug": "services",
+		"site_id": "1",
+		"name": "Servizi",
+		"description": null,
+		"is_active": "1",
+		"created_at": "2025-04-30 08:30:17",
+		"updated_at": "2025-04-30 08:30:17",
+		"deleted_at": null
+	}
+]

@@ -6,17 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Country extends Model
 {
+    public $timestamps = false;
+
     protected $table = 'geo_countries';
 
     protected $fillable = ['code', 'name', 'slug', 'phone_code', 'is_active'];
-
-    protected $attributes = [
-        'total_regions' => 0,
-    ];
-
-    protected $casts = [
-        'total_regions' => 'integer',
-    ];
 
     public function regions()
     {

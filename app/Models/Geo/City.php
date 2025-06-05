@@ -11,9 +11,9 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class City extends Model
 {
-    protected $table = 'geo_cities';
-
     public $timestamps = false;
+
+    protected $table = 'geo_cities';
 
     public $fillable = [
         'name',

@@ -12,13 +12,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Profile extends Model implements HasMedia
+class Profile extends Model
 {
-    use InteractsWithMedia, SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = [
         'name', 'user_id', 'city_id', 'phone_number', 'nationality', 'whatsapp_number',
@@ -30,31 +27,6 @@ class Profile extends Model implements HasMedia
         'rating' => 'float',
         'media' => 'array',
     ];
-
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('avatar')
-            ->singleFile()
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
-    }
-
-    public function registerMediaConversions(?Media $media = null): void
-    {
-        $this->addMediaConversion('thumb')
-            ->width(150)
-            ->height(150)
-            ->sharpen(10)
-            ->quality(85)
-            ->format('webp')
-            ->nonQueued();
-
-        $this->addMediaConversion('medium')
-            ->width(300)
-            ->height(300)
-            ->quality(90)
-            ->format('webp')
-            ->nonQueued();
-    }
 
     // Relationships
     public function user(): BelongsTo
@@ -87,9 +59,9 @@ class Profile extends Model implements HasMedia
         return $this->hasOneThrough(Province::class, City::class, 'id', 'id', 'city_id', 'province_id');
     }
 
-    public function taxonomies(): BelongsToMany
+    public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Taxonomy::class, 'profile_taxonomies');
+        return $this->belongsToMany(Tag::class, 'profile_tags');
     }
 
     // Scopes

@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use Dedoc\Scramble\Scramble;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Route;
 use Illuminate\Support\ServiceProvider;

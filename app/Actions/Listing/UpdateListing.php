@@ -13,10 +13,10 @@ class UpdateListing
     {
         $listing->update($dto->toArray());
 
-        // Attach taxonomies if provided
-        if ($dto->taxonomies) {
-            $attachTaxonomies = new AttachTaxonomies;
-            $attachTaxonomies->handle($listing, $dto->taxonomies);
+        // Attach tags if provided
+        if ($dto->tags) {
+            $attachTags = new AttachTags;
+            $attachTags->handle($listing, $dto->tags);
         }
 
         return $listing->fresh()->load(['city', 'category', 'profile']);

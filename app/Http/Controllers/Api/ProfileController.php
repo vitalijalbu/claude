@@ -5,15 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Actions\Profile\IndexProfiles;
-use App\Actions\Profile\StoreProfile;
-use App\Actions\Profile\UpdateProfile;
-use App\DTO\Profile\ProfileDTO;
-use App\DTO\Profile\ProfileFilterDTO;
-use App\DTO\Profile\UpdateProfileDTO;
-use App\Http\Requests\Profile\StoreProfileRequest;
-use App\Http\Requests\Profile\UpdateProfileRequest;
 use App\Http\Resources\Api\ProfileCollectionResource;
-use App\Http\Resources\Api\ProfileSingleResource;
+use App\Http\Resources\Api\ProfileResource;
 use App\Models\Profile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,8 +16,7 @@ final class ProfileController extends ApiController
 {
     public function index(Request $request, IndexProfiles $action): JsonResponse
     {
-        $filters = ProfileFilterDTO::fromRequest($request->all());
-        $profiles = $action->handle($filters);
+        $profiles = $action->handle($request);
 
         return response()->json([
             'success' => true,
@@ -40,17 +32,17 @@ final class ProfileController extends ApiController
         ]);
     }
 
-    public function store(StoreProfileRequest $request, StoreProfile $action): JsonResponse
-    {
-        $dto = ProfileDTO::fromRequest($request->validated());
-        $profile = $action->handle($dto);
+    // public function store(StoreProfileRequest $request, StoreProfile $action): JsonResponse
+    // {
+    //     $dto = ProfileDTO::fromRequest($request->validated());
+    //     $profile = $action->handle($dto);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Profile created successfully',
-            'data' => new ProfileSingleResource($profile),
-        ], Response::HTTP_CREATED);
-    }
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Profile created successfully',
+    //         'data' => new ProfileResource($profile),
+    //     ], Response::HTTP_CREATED);
+    // }
 
     public function show(Profile $profile): JsonResponse
     {
@@ -58,7 +50,7 @@ final class ProfileController extends ApiController
             'listings' => function ($query) {
                 $query->latest()->take(5);
             },
-            'taxonomies.group',
+            'tags.group',
             'city',
             'province',
             'category',
@@ -66,7 +58,7 @@ final class ProfileController extends ApiController
 
         return response()->json([
             'success' => true,
-            'data' => new ProfileSingleResource($profile),
+            'data' => new ProfileResource($profile),
         ]);
     }
 
@@ -78,7 +70,7 @@ final class ProfileController extends ApiController
     //     return response()->json([
     //         'success' => true,
     //         'message' => 'Profile updated successfully',
-    //         'data' => new ProfileSingleResource($profile),
+    //         'data' => new ProfileResource($profile),
     //     ]);
     // }
 

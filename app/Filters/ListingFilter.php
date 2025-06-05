@@ -53,8 +53,8 @@ class ListingFilter
             AllowedInclude::relationship('category'),
             AllowedInclude::relationship('profile'),
             AllowedInclude::relationship('province'),
-            AllowedInclude::relationship('taxonomies'),
-            AllowedInclude::relationship('taxonomies.group'),
+            AllowedInclude::relationship('tags'),
+            AllowedInclude::relationship('tags.group'),
             AllowedInclude::relationship('media'),
         ];
     }

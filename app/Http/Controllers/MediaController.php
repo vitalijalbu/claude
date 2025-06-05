@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Image;
 use App\Models\Listing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class MediaController extends Controller
@@ -14,7 +14,7 @@ class MediaController extends Controller
     public function index(Request $request)
     {
         $filters = $request->query();
-        $data = QueryBuilder::for(Media::class)
+        $data = QueryBuilder::for(Image::class)
             ->paginate($filters['per_page'] ?? 25)
             ->appends(request()->query());
 
@@ -28,7 +28,7 @@ class MediaController extends Controller
 
     public function show($id)
     {
-        $data = Media::whereKey($id)->firstOrFail();
+        $data = Image::whereKey($id)->firstOrFail();
 
         return Inertia::render('media/show', ['data' => $data]);
     }

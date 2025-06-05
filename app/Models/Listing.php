@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\Geo\City;
 use App\Models\Geo\Province;
+use App\Traits\Imagiphy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,13 +14,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Listing extends Model implements HasMedia
+class Listing extends Model
 {
-    use InteractsWithMedia, SoftDeletes;
+    use Imagiphy, SoftDeletes;
 
     protected $fillable = [
         'category_id',
@@ -59,59 +57,13 @@ class Listing extends Model implements HasMedia
         'vip_until' => 'datetime',
         'published_at' => 'datetime',
         'expires_at' => 'datetime',
-        'date_birth' => 'date',
+        'date_birth' => 'integer',
         'pricing' => 'decimal:2',
         'lon' => 'decimal:8',
         'lat' => 'decimal:8',
         'views_count' => 'integer',
         'reviews_count' => 'integer',
     ];
-
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        static::creating(function (Listing $listing): void {
-            if (empty($listing->published_at)) {
-                $listing->published_at = now();
-            }
-        });
-    }
-
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('images')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
-            ->singleFile(false);
-    }
-
-    public function registerMediaConversions(?Media $media = null): void
-    {
-        $this->addMediaConversion('thumb')
-            ->width(300)
-            ->height(300)
-            ->crop('crop-center')
-            ->sharpen(10)
-            ->quality(85)
-            ->format('webp')
-            ->nonQueued();
-
-        $this->addMediaConversion('medium')
-            ->width(600)
-            ->height(400)
-            ->crop('crop-center')
-            ->quality(90)
-            ->format('webp')
-            ->nonQueued();
-
-        $this->addMediaConversion('large')
-            ->width(1200)
-            ->height(800)
-            ->crop('crop-center')
-            ->quality(95)
-            ->format('webp')
-            ->nonQueued();
-    }
 
     // Relationships
     public function profile(): BelongsTo
@@ -141,9 +93,9 @@ class Listing extends Model implements HasMedia
         );
     }
 
-    public function taxonomies(): BelongsToMany
+    public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Taxonomy::class, 'listing_taxonomies')
+        return $this->belongsToMany(Tag::class, 'listing_tags')
             ->withTimestamps();
     }
 
@@ -204,7 +156,7 @@ class Listing extends Model implements HasMedia
 
     public function scopeWithinRadius(Builder $query, float $lat, float $lon, float $radiusKm): Builder
     {
-        $earthRadius = 6371; // Earth's radius in kilometers
+        $earthRadius = 6371;
 
         return $query->selectRaw(
             "*, (
@@ -225,7 +177,7 @@ class Listing extends Model implements HasMedia
     // Accessors & Mutators
     public function getAgeAttribute(): ?int
     {
-        return $this->date_birth ? now()->diffInYears($this->date_birth) : null;
+        return $this->date_birth ? (int) now()->diffInYears($this->date_birth) : null;
     }
 
     public function getIsFeaturedActiveAttribute(): bool
@@ -243,43 +195,6 @@ class Listing extends Model implements HasMedia
     public function getIsExpiredAttribute(): bool
     {
         return $this->expires_at !== null && $this->expires_at->isPast();
-    }
-
-    // Helper methods
-    public function getImageUrls(): array
-    {
-        // Fix: Ensure media is properly loaded
-        if (! $this->relationLoaded('media')) {
-            $this->loadMissing('media');
-        }
-
-        return $this->getMedia('images')
-            ->map(function (Media $media): array {
-                return [
-                    'id' => $media->id,
-                    'original' => $media->getUrl(),
-                    'thumb' => $media->getUrl('thumb'),
-                    'medium' => $media->getUrl('medium'),
-                    'large' => $media->getUrl('large'),
-                    'name' => $media->name,
-                    'alt' => $media->getCustomProperty('alt', $this->title),
-                    'order' => $media->getCustomProperty('order', 0),
-                ];
-            })
-            ->sortBy('order')
-            ->values()
-            ->toArray();
-    }
-
-    public function getFeaturedImageUrl(string $conversion = ''): ?string
-    {
-        if (! $this->relationLoaded('media')) {
-            $this->loadMissing('media');
-        }
-
-        $featuredImage = $this->getFirstMedia('images');
-
-        return $featuredImage?->getUrl($conversion);
     }
 
     public function updateRatingStats(): void
@@ -310,7 +225,7 @@ class Listing extends Model implements HasMedia
             'category',
             'city.province',
             'profile',
-            'taxonomies',
+            'tags',
             'reviews' => fn ($q) => $q->latest()->limit(5),
         ]);
     }
