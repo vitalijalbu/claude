@@ -1,22 +1,21 @@
 ---
 import { Picture } from 'astro:assets';
-import Button from '@/components/button.astro';
 import { IconX } from '@/icons/index';
 import Carousel from '../carousel.astro';
 import { MEDIA_URL } from '@/utils/constants';
 
-const { media: rawMedia, alt = '' } = Astro.props;
-const media = Array.isArray(rawMedia) ? rawMedia : [];
+const { images: rawMedia, alt = '' } = Astro.props;
+const images = Array.isArray(rawMedia) ? rawMedia : [];
 ---
 
-{media.length > 0 && (
+{images.length > 0 && (
 	<div x-data="{modalIsOpen: false}">
 		<div class="relative w-full">
 			<!-- Main Gallery -->
-			<div class="swiper gallery-media w-full aspect-video md:aspect-[1/1] rounded-xl overflow-hidden">
+			<div class="swiper gallery-images w-full aspect-video md:aspect-[1/1] rounded-xl overflow-hidden">
 				<div class="swiper-wrapper">
-					{media.map((image) => (
-						<div class="swiper-slide" key={image.url}>
+					{images.map((image) => (
+						<div class="swiper-slide">
 							<Picture
 								width={1920}
 								height={1080}
@@ -32,10 +31,9 @@ const media = Array.isArray(rawMedia) ? rawMedia : [];
 				<div class="swiper-button-next"></div>
 			</div>
 
-			<!-- Thumbnail Gallery -->
-			<div thumbsSlider class="swiper gallery-thumbs mt-4 px-1 w-full max-w-full overflow-hidden">
+			<div class="swiper gallery-thumbs mt-4 px-1 w-full max-w-full overflow-hidden">
 				<div class="swiper-wrapper">
-					{media.map((image) => (
+					{images.map((image) => (
 						<div class="swiper-slide w-[150px] h-[150px] rounded-md overflow-hidden border border-gray-200" key={`thumb-${image.url}`}>
 							<Picture
 								width={150}
@@ -85,7 +83,7 @@ const media = Array.isArray(rawMedia) ? rawMedia : [];
 					<div class="container">
 						<Carousel
 							class="w-full"
-							media={media}
+							images={images}
 							alt={alt}
 						/>
 					</div>

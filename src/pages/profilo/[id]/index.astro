@@ -8,7 +8,7 @@ import Listings from '@/shared/profiles/listings.astro';
 import { IconStarBold, IconPhone, IconWhatsapp } from '@/icons/index';
 import Gallery from '@/shared/profiles/gallery.astro';
 import WorkingHours from '@/shared/profiles/working-hours.astro';
-import Taxonomies from '@/shared/taxonomies.astro';
+import Taxonomies from '@/shared/tags.astro';
 import ShareButton from '@/components/share-button.astro';
 
 const { id } = Astro.params;
@@ -117,10 +117,10 @@ const breadcrumbs =
 						{/* Left Section */}
 						<div class="lg:col-span-2 space-y-6">
 							{/* Media */}
-							{data?.media && (
+							{data?.images && (
 								<section id="profile-gallery">
 									<Gallery
-										media={data?.media}
+										images={data?.images}
 										alt={data?.title}
 										meta={data}
 									/>
@@ -133,9 +133,9 @@ const breadcrumbs =
 								<p>{data?.bio}</p>
 							</section>
 							{/* Taxonomies */}
-							{data?.taxonomies.length > 0 && <section id="profile-details">
+							{data?.tags.length > 0 && <section id="profile-details">
 								<span class="text-xl block font-semibold mb-2">Dettagli</span>
-								<Taxonomies data={data?.taxonomies} />
+								<Taxonomies data={data?.tags} />
 							</section>}
 							{/* Working Hours */}
 							{data?.working_hours && (

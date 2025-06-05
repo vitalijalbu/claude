@@ -1,113 +1,54 @@
 ---
-import { Button } from '@/components/index';
 import SearchAutocomplete from '@/components/search-autocomplete.astro';
-import { IconHeart, IconLogout, IconSettings, IconStar, IconUserCircle } from '@/icons/index';
+import { IconChevron, IconHeart, IconLogout, IconSettings, IconStar, IconUserCircle } from '@/icons/index';
 import SiteDrawer from './site-drawer.astro';
 
 const isHomePage = Astro.url.pathname === '/';
 const isAuthenticated = true;
-const userData = isAuthenticated
-  ? {
-      name: 'John Doe',
-      email: 'user@example.com',
-      role: 'Admin',
-      avatar: 'https://cdn.flyonui.com/fy-assets/avatar/avatar-1.png',
-    }
-  : null;
 ---
 
 <header class="relative flex flex-none items-center bg-white border-b border-outline">
-  <div class="container mx-auto w-full px-4">
-    <nav class="navbar w-full flex items-center justify-between gap-4 lg:grid lg:grid-cols-3 lg:items-center">
-      
-      <!-- Colonna Sinistra: Logo + Mobile menu -->
-      <div class="flex items-center gap-2">
-        <!-- Mobile menu button -->
-        <button class="btn btn-primary hidden sm:block"
-          type="button"
-          class="btn btn-primary lg:hidden"
-          aria-haspopup="dialog"
-          aria-expanded="false"
-          aria-controls="mobile-menu"
-          data-overlay="#mobile-menu">
-          <span class="icon-[tabler--menu-2] size-5.5"></span>
-        </button>
+	<div class="container mx-auto w-full px-4">
+		<nav class="navbar w-full flex items-center justify-between gap-4 lg:grid lg:grid-cols-3 lg:items-center">
+			<div class="flex items-center gap-2">
+				<a
+					href="/"
+					class="text-xl font-bold">
+					<span class="hidden sm:inline">OnlyEscort</span>
+					<span class="sm:hidden">0E</span>
+				</a>
+			</div>
 
-        <!-- Logo -->
-        <a href="/" class="text-xl font-bold">
-          <span class="hidden sm:inline">OnlyEscort</span>
-          <span class="sm:hidden">0E</span>
-        </a>
-      </div>
-
-      <!-- Colonna Centrale: Search bar centrata -->
-    <div class="hidden lg:flex flex-1 justify-center">
-      {!isHomePage && <SearchAutocomplete />}
-    </div>
-
-
-      <!-- Colonna Destra: User + Azioni -->
-      <div class="flex items-center justify-end gap-4">
-        <!-- Mobile search button -->
-        <button class="btn btn-primary" class="btn btn-sm btn-text btn-circle size-8.5 lg:hidden">
-          <span class="icon-[tabler--search] size-5.5"></span>
-        </button>
-
-        <!-- Desktop: Preferiti -->
-        <ul class="hidden lg:flex menu menu-horizontal gap-2 p-0 text-base">
-          <li><a href="/account/favorites"><IconHeart /></a></li>
-        </ul>
-
-        <!-- User dropdown -->
-        {
-          userData ? (
-            <div class="z-10 dropdown relative inline-flex [--auto-close:inside] [--offset:8] [--placement:bottom-end]">
-              <button class="btn btn-primary"
-                id="dropdown-scrollable"
-                type="button"
-                class="dropdown-toggle flex items-center"
-                aria-haspopup="menu"
-                aria-expanded="false"
-                aria-label="User menu">
-                <div class="avatar">
-                  <div class="size-9.5 rounded-full">
-                    <img src={userData.avatar} alt={userData.name} />
-                  </div>
-                </div>
-              </button>
-              <ul
-                class="dropdown-menu dropdown-open:opacity-100 hidden min-w-60"
-                role="menu"
-                aria-orientation="vertical"
-                aria-labelledby="dropdown-scrollable">
-                <li class="dropdown-header gap-2">
-                  <div class="avatar">
-                    <div class="w-10 rounded-full">
-                      <img src={userData.avatar} alt="avatar" />
-                    </div>
-                  </div>
-                  <div>
-                    <h6 class="text-base font-semibold">{userData.name}</h6>
-                    <small class="text-base-content/50">{userData.role}</small>
-                  </div>
-                </li>
-                <li><a class="dropdown-item" href="/account"><IconUserCircle/>Il mio account</a></li>
-                <li><a class="dropdown-item" href="/account/favorites"><IconHeart />Annunci preferiti</a></li>
-                <li><a class="dropdown-item" href="/account/reviews"><IconStar />Le mie recensioni</a></li>
-                <li><a class="dropdown-item" href="/account/settings"><IconSettings />Impostazioni</a></li>
-              <li class="dropdown-footer gap-2">
-                <a class="btn btn-error btn-soft btn-block" href="#"><IconLogout />Esci</a>
-              </li>
-            </ul>
-          </div>
-        ) : (
-          <a href="/login" class="btn btn-primary hidden lg:inline-flex">Login</a>
-        )
-      }
-      </div>
-    </nav>
-  </div>
+			<div class="hidden lg:flex flex-1 justify-center">
+				{!isHomePage && <SearchAutocomplete />}
+			</div>
+			<div class="flex items-center justify-end gap-4">
+				<div class="z-10 dropdown relative inline-flex [--auto-close:inside] [--offset:8] [--placement:bottom-end]">
+					<button
+						class="btn btn-text"
+						id="dropdown-scrollable"
+						type="button"
+						class="dropdown-toggle flex items-center"
+						aria-haspopup="menu"
+						aria-expanded="false"
+						aria-label="User menu">
+						Menu <IconChevron class="rotate-180" />
+					</button>
+					<ul
+						class="dropdown-menu dropdown-open:opacity-100 hidden min-w-60"
+						role="menu"
+						aria-orientation="vertical"
+						aria-labelledby="dropdown-scrollable">
+						<li
+							><a
+								class="dropdown-item"
+								href="/"
+								>Home</a
+							></li
+						>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</div>
 </header>
-
-<!-- Drawer mobile -->
-<SiteDrawer />

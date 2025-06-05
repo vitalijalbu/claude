@@ -1,6 +1,4 @@
 ---
-import { Button } from '@/components/index';
-
 const { title, subTitle, primaryAction, secondaryAction } = Astro.props;
 ---
 <section class="py-16 bg-primary text-primary-foreground">
@@ -10,12 +8,12 @@ const { title, subTitle, primaryAction, secondaryAction } = Astro.props;
       {subTitle && <p class="mt-4 text-lg">{subTitle}</p>}
       <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
         {primaryAction && primaryAction.href && primaryAction.label && (
-          <button class="btn btn-primary" size="lg" variant={primaryAction.variant || "secondary"}>
+          <button class="btn btn-primary">
             <a href={primaryAction.href}>{primaryAction.label}</a>
           </button>
         )}
         {secondaryAction && secondaryAction.href && secondaryAction.label && (
-          <button class="btn btn-primary" size="lg" variant={secondaryAction.variant || "outline"}>
+          <button class="btn btn-outline btn-outline-primary">
             <a href={secondaryAction.href}>{secondaryAction.label}</a>
           </button>
         )}

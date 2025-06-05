@@ -1,5 +1,5 @@
 ---
-import { Button, Card, Breadcrumb, Separator, ReportCard, User, Result, Badge } from '@/components/index';
+import { Card, Breadcrumb, Separator, ReportCard, User, Result, Badge } from '@/components/index';
 import { IconWhatsapp, IconPhone, IconHeart } from '@/icons/index';
 import MainLayout from '@/layouts/main-layout.astro';
 import { fetchData } from '@/lib/api';
@@ -7,7 +7,7 @@ import Gallery from '@/shared/listings/gallery.astro';
 import SimilarListings from '@/shared/sections/similar-listings.astro';
 import { getBreadcrumbSchema } from '@/utils/schema/page';
 import Map from '@/components/map.astro';
-import Taxonomies from '@/shared/taxonomies.astro';
+import Taxonomies from '@/shared/tags.astro';
 import ShareButton from '@/components/share-button.astro';
 
 const { params } = Astro;
@@ -17,7 +17,7 @@ const slug = params.slug;
 // API Request
 const { data, isLoading, isError, errorCode } = await fetchData(`/listings/${slug}`);
 
-const { data: listing, similarListings: similar_listings } = data?.data || {};
+const { data: listing, similarListings: similar_listings } = data || {};
 
 // Set HTTP status code based on error condition
 if (isError) {
@@ -106,9 +106,9 @@ const schemaORG = getBreadcrumbSchema([
 							<section
 								id="listing-gallery"
 								class="mb-6">
-								{listing?.media && (
+								{listing?.images && (
 									<Gallery
-										media={listing?.media}
+										images={listing?.images}
 										alt={listing?.title}
 										meta={listing}
 									/>
@@ -127,12 +127,12 @@ const schemaORG = getBreadcrumbSchema([
 							<Separator />
 
 							{/* Details Section */}
-							{listing?.taxonomies.length > 0 && (
+							{listing?.tags.length > 0 && (
 								<section
 									id="listing-details"
 									class="mb-6">
 									<span class="text-xl block font-semibold mb-4">Dettagli</span>
-									{listing?.taxonomies && <Taxonomies data={listing?.taxonomies} />}
+									{listing?.tags && <Taxonomies data={listing?.tags} />}
 								</section>
 							)}
 

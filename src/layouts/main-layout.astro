@@ -4,24 +4,6 @@ import AgeGate from '@/components/age-gate.astro';
 import SiteFooter from '@/shared/partials/site-footer.astro';
 import SiteHeader from '@/shared/partials/site-header.astro';
 
-interface Props {
-	title?: string;
-	metaDescription?: string;
-	metaKeywords?: string;
-	ogTitle?: string;
-	ogDescription?: string;
-	ogImage?: string;
-	ogImageAlt?: string;
-	twitterTitle?: string;
-	twitterDescription?: string;
-	twitterImage?: string;
-	twitterImageAlt?: string;
-	schema?: object;
-	noIndex?: boolean;
-	canonicalUrl?: string;
-	alternateLanguages?: { hreflang: string; href: string }[];
-}
-
 const {
 	title = 'OnlyEscort - Trova le migliori escort nella tua città',
 	metaDescription = 'Scopri le migliori escort disponibili con annunci aggiornati e verificati nella tua zona. Servizio discreto e professionale.',
@@ -40,7 +22,7 @@ const {
 	alternateLanguages,
 } = Astro.props;
 
-// Generate absolute URLs for social media
+// Generate absolute URLs for social images
 const siteUrl = Astro.url.origin;
 const currentUrl = Astro.url.href;
 const absoluteOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
@@ -112,9 +94,7 @@ const finalCanonicalUrl = canonicalUrl || `${siteUrl}${Astro.url.pathname}`;
 		<meta http-equiv="X-XSS-Protection" content="1; mode=block" />
 		
 		<!-- Structured Data Schema -->
-		{schema && (
-			<script type="application/ld+json" set:html={JSON.stringify(schema)} />
-		)}
+
 	</head>
 	<body>
 		<main id="main-content">
@@ -123,6 +103,9 @@ const finalCanonicalUrl = canonicalUrl || `${siteUrl}${Astro.url.pathname}`;
 			<AgeGate />
 			<SiteFooter />
 		</main>
-	<script src="@/lib/app.js"></script>
+		<script src="@/lib/app.js"></script>
+			{schema && (
+			<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+		)}
 	</body>
 </html>

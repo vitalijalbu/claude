@@ -9,7 +9,7 @@ var profileThumbs = new Swiper('.gallery-thumbs', {
 	watchSlidesProgress: true,
 });
 
-var gallery = new Swiper('.gallery-media', {
+var gallery = new Swiper('.gallery-images', {
 	loop: true,
 	spaceBetween: 10,
 	navigation: {

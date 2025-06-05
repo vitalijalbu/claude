@@ -2,18 +2,35 @@
 const { data } = Astro.props;
 const { current_page, last_page } = data;
 
-const basePath = Astro.url.pathname;
+// Get base path without any existing /page/ segment
+let basePath = Astro.url.pathname;
+// Remove existing /page/x segment if present
+basePath = basePath.replace(/\/page\/\d+$/, '');
+// Ensure no trailing slash
+basePath = basePath.replace(/\/$/, '') || '/';
+
+// Extract current page from URL if present
+let urlCurrentPage = 1;
+const pageMatch = Astro.url.pathname.match(/\/page\/(\d+)$/);
+if (pageMatch) {
+  urlCurrentPage = parseInt(pageMatch[1]);
+}
+
+// Use URL page if data current_page doesn't match
+const actualCurrentPage = urlCurrentPage;
 
 function buildPageLink(page) {
-  const params = new URLSearchParams(Astro.url.searchParams);
-  params.set("page", page);
-  return `${basePath}?${params.toString()}`;
+  if (page === 1) {
+    // For page 1, return the base path without /page/1
+    return basePath === '/' ? '/' : basePath;
+  }
+  return `${basePath}/page/${page}`;
 }
 
 // Limita a max 3-4 pagine visibili
 const visiblePages = [];
-const start = Math.max(1, current_page - 1);
-const end = Math.min(last_page, current_page + 2);
+const start = Math.max(1, actualCurrentPage - 1);
+const end = Math.min(last_page, actualCurrentPage + 2);
 
 for (let i = start; i <= end; i++) {
   visiblePages.push(i);
@@ -21,43 +38,34 @@ for (let i = start; i <= end; i++) {
 ---
 
 {last_page > 1 && (
-  <nav class="flex justify-center mt-8">
-    <ul class="inline-flex items-center space-x-1 text-sm">
-      
-      {/* Previous */}
-      <li>
-        <a
-          href={current_page > 1 ? buildPageLink(current_page - 1) : "#"}
-          class={`px-3 py-2 rounded-md ${current_page > 1 ? 'border border-outline bg-white text-gray-700 hover:bg-gray-100' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
-          aria-label="Previous page"
-        >
-          Precedente
-        </a>
-      </li>
-
+  <nav class="flex items-center gap-x-1 mx-auto w-fit py-4">
+    {/* Previous */}
+    <a
+      href={actualCurrentPage > 1 ? buildPageLink(actualCurrentPage - 1) : "#"}
+      class="btn btn-text"
+    >
+      Precedente
+    </a>
+    
+    <div class="flex items-center gap-x-1">
       {/* Page numbers limitati */}
       {visiblePages.map((page) => (
-        <li>
-          <a
-            href={buildPageLink(page)}
-            class={`px-3 py-2 rounded-md ${current_page === page ? 'bg-gray-200 text-gray-800 font-medium' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-            aria-current={current_page === page ? "page" : undefined}
-          >
-            {page}
-          </a>
-        </li>
-      ))}
-
-      {/* Next */}
-      <li>
         <a
-          href={current_page < last_page ? buildPageLink(current_page + 1) : "#"}
-          class={`px-3 py-2 rounded-md ${current_page < last_page ? 'border border-outline bg-white text-gray-700 hover:bg-gray-100' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
-          aria-label="Next page"
+          href={buildPageLink(page)}
+          class="btn btn-text btn-square aria-[current='page']:text-bg-primary"
+          aria-current={actualCurrentPage === page ? "page" : undefined}
         >
-          Successivo
+          {page}
         </a>
-      </li>
-    </ul>
+      ))}
+    </div>
+
+    {/* Next */}
+    <a
+      href={actualCurrentPage < last_page ? buildPageLink(actualCurrentPage + 1) : "#"}
+      class="btn btn-text"
+    >
+      Successivo
+    </a>
   </nav>
 )}

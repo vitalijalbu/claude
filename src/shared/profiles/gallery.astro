@@ -5,7 +5,7 @@ import { Picture } from 'astro:assets';
 import Carousel from '../carousel.astro';
 import { MEDIA_URL } from '@/utils/constants';
 
-const { media = [], alt = '' } = Astro.props;
+const { images = [], alt = '' } = Astro.props;
 ---
 
 <div x-data="{modalIsOpen: false}">
@@ -17,7 +17,7 @@ const { media = [], alt = '' } = Astro.props;
 				x-on:click="modalIsOpen = true">
 				<Picture
 					class="w-full h-full object-cover transition duration-100 ease-out rounded-2xl"
-					src={`${MEDIA_URL}${media?.[0]?.url}`  || '/images/placeholder.svg'}
+					src={`${MEDIA_URL}${images?.[0]?.url}`  || '/images/placeholder.svg'}
 					alt={alt}
 					width={500}
 					height={500}
@@ -31,7 +31,7 @@ const { media = [], alt = '' } = Astro.props;
 				x-on:click="modalIsOpen = true">
 				<Picture
 					class="w-full h-full object-cover transition duration-100 ease-out rounded-2xl"
-					src={`${MEDIA_URL}${media?.[1]?.url}` || '/images/placeholder.svg'}
+					src={`${MEDIA_URL}${images?.[1]?.url}` || '/images/placeholder.svg'}
 					alt={alt}
 					width={500}
 					height={500}
@@ -45,7 +45,7 @@ const { media = [], alt = '' } = Astro.props;
 				x-on:click="modalIsOpen = true">
 				<Picture
 					class="w-full h-full object-cover transition duration-100 ease-out rounded-2xl"
-					src={`${MEDIA_URL}${media?.[2]?.url}` || '/images/placeholder.svg'}
+					src={`${MEDIA_URL}${images?.[2]?.url}` || '/images/placeholder.svg'}
 					alt={alt}
 					width={500}
 					height={500}
@@ -98,7 +98,7 @@ const { media = [], alt = '' } = Astro.props;
 					<div class="container">
 						<Carousel
 							class="w-full"
-							media={media}
+							images={images}
 							alt={alt}
 						/>
 					</div>

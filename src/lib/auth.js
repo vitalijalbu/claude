@@ -502,5 +502,4 @@ export const auth = {
 // Auto-initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   // Auth manager is already initialized in constructor
-  console.log('Auth system ready');
 });

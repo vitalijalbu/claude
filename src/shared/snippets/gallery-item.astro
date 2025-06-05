@@ -1,9 +1,8 @@
 ---
 import { MEDIA_URL } from '@/utils/constants';
-import { Picture } from 'astro:assets';
+import { Picture } from '@/components/index';
 
-const { media = [], slug, alt = 'Image' } = Astro.props;
-const images = Array.isArray(media) ? media : [];
+const { images = [], slug, alt = 'Image' } = Astro.props;
 ---
 
 <div class="swiper listing-carousel w-full h-full">
@@ -13,17 +12,21 @@ const images = Array.isArray(media) ? media : [];
 				images.map((image) => (
 					<div
 						class="swiper-slide">
-						 <Picture
+						  <Picture
+							src={MEDIA_URL + image.url}
+							alt={alt}
+							sources={image.srcset.map(src => ({
+							url: MEDIA_URL + src.url,
+							width: src.width,
+							format: src.format || (src.url.includes('.webp') ? 'webp' : 'jpg')
+							}))}
+							width={1200}
+							height={800}
 							loading="lazy"
 							decoding="async"
 							class="object-cover transition duration-300 ease-out !h-full !w-full"
-							src={`${MEDIA_URL}${image.url}`}
-							srcset={image.srcset.map((src) => `${src.url} ${src.width}w`).join(', ')}
 							sizes="(max-width: 600px) 480px, (max-width: 1200px) 800px, 1200px"
-							alt={alt}
-							width={1200}
-							height={800}
-							
+							breakpoints={[600, 1200]}
 						/>
 					</div>
 				))

@@ -9,7 +9,7 @@ import ListingCard from '@/shared/snippets/listing-card.astro';
 import { IconChevron } from '../icons';
 
 const { data, isError, isLoading } = await fetchData('/home');
-const { categories, regions, listings } = data;
+const { categories, regions, listings } = data?.data;
 
 
 // SEO

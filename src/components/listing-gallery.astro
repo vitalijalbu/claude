@@ -4,18 +4,18 @@ import { Picture } from 'astro:assets';
 import { Image } from 'astro:assets';
 
 // Astro component script section
-const { media = [], alt = '' } = Astro.props;
+const { images = [], alt = '' } = Astro.props;
 ---
 
 <div class="swiper listing-carousel w-[300px] md:w-[360px] h-[400px] md:h-[420px]">
 	<div class="swiper-wrapper">
 		{
-			media.length ?
-				media.map((media) => (
+			images.length ?
+				images.map((images) => (
 					<div class="swiper-slide">
 						<Picture
 							class="w-full h-full object-cover transition duration-100 ease-out rounded-2xl"
-							src={`${MEDIA_URL}${media?.[0]?.url}` || '/images/placeholder.svg'}
+							src={`${MEDIA_URL}${images?.[0]?.url}` || '/images/placeholder.svg'}
 							alt={alt}
 							width={500}
 							height={500}
@@ -26,7 +26,7 @@ const { media = [], alt = '' } = Astro.props;
 			:	<div class="swiper-slide">
 					<Picture
 						class="w-full h-full object-cover transition duration-100 ease-out rounded-2xl"
-						src={`${MEDIA_URL}${media?.[0]?.url}` || '/images/placeholder.svg'}
+						src={`${MEDIA_URL}${images?.[0]?.url}` || '/images/placeholder.svg'}
 						alt={alt}
 						width={500}
 						height={500}

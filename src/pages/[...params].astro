@@ -1,0 +1,60 @@
+---
+import Pagination from '@/components/pagination.astro';
+import MainLayout from '@/layouts/main-layout.astro';
+import { fetchData } from '@/lib/api';
+import ListingItem from '@/shared/snippets/listing-item.astro';
+import { Result, PageHeader, Breadcrumb } from '@/components/index';
+
+
+// Fetch data - Laravel handles everything!
+const { data, isLoading, isError } = await fetchData(Astro.url.pathname, {
+  method: 'GET',
+  headers: { 'Content-Type': 'application/json' }
+});
+
+const { data: listings } = data || {};
+const { meta, route } = data || {};
+
+// Use data returned by Laravel
+const breadcrumbs = route?.breadcrumbs || [{ name: 'Home', url: '/' }];
+const pageTitle = route?.title || 'Listings';
+
+console.log('Astro.url.pathname', Astro.url.pathname);
+console.log('listings', listings);
+---
+
+<MainLayout title={pageTitle} description={`Risultati per ${pageTitle}`}>
+  <div class="container max-w-6xl">
+    <section class="container py-10">
+      {isLoading && (
+        <p class="text-center text-gray-400 py-6">Caricamento in corso...</p>
+      )}
+
+      {isError && (
+        <Result code={500} title="Errore nel caricamento dei dati" />
+      )}
+
+      {!isLoading && !isError && (
+        <>
+          <Breadcrumb links={breadcrumbs} />
+          <PageHeader title={pageTitle} />
+
+          <div class="relative grid grid-cols-1 gap-4">
+            {listings?.length ? (
+              listings.map((listing) => (
+                <ListingItem
+                  href={`/annuncio/${listing?.slug}`}
+                  data={listing}
+                />
+              ))
+            ) : (
+              <Result title="Nessun risultato disponibile" />
+            )}
+          </div>
+          
+          <Pagination data={meta?.pagination} />
+        </>
+      )}
+    </section>
+  </div>
+</MainLayout>
