@@ -7,7 +7,6 @@ namespace App\Actions\Collection;
 use Illuminate\Http\Request;
 use Lunar\Models\Collection;
 
-
 class IndexCollections
 {
     public function execute(Request $request)

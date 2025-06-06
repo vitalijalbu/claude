@@ -1,8 +1,10 @@
 <?php
-declare(strict_types=1);
-namespace App\DTO;
 
-class BrandDTO
+declare(strict_types=1);
+
+namespace App\DTO\Collection;
+
+class CollectionDTO
 {
     public function __construct(
         public readonly ?string $name = null,

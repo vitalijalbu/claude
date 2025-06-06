@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Actions\Product\IndexProducts;
 use App\Actions\Product\ShowProduct;
-use App\Http\Resources\ProductResource;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Lunar\Models\Product;
 

@@ -11,7 +11,7 @@ class ShowCart
 {
     public function execute(Cart $brand)
     {
-        // $brand->load([            
+        // $brand->load([
         //     'images',
         //     'prices',
         //     'thumbnail',

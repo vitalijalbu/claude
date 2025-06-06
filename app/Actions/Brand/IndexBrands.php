@@ -6,8 +6,6 @@ namespace App\Actions\Brand;
 
 use Lunar\Models\Brand;
 
-
-
 class IndexBrands
 {
     public function execute($request)

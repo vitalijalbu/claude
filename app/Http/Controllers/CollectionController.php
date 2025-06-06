@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Actions\Collection\IndexCollections;
 use App\Actions\Collection\ShowCollection;
-use App\Http\Resources\CollectionResource;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Lunar\Models\Collection;
 

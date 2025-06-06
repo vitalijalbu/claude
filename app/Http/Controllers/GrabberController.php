@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\GrabberRequest;
 use App\Actions\Grabber\ProcessGrabberDataAction;
+use App\Http\Requests\GrabberRequest;
 use App\Models\GrabberLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,14 +31,14 @@ class GrabberController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Data processed successfully',
-                'log_id' => $result['log_id']
+                'log_id' => $result['log_id'],
             ]);
         }
 
         return response()->json([
             'success' => false,
             'error' => $result['error'],
-            'log_id' => $result['log_id']
+            'log_id' => $result['log_id'],
         ], 400);
     }
 
@@ -49,7 +49,7 @@ class GrabberController extends Controller
             'items.*.type' => 'required|in:product,brand,collection',
             'items.*.action' => 'required|in:create,update',
             'items.*.external_id' => 'required|string',
-            'items.*.data' => 'required|array'
+            'items.*.data' => 'required|array',
         ]);
 
         $results = [];
@@ -68,7 +68,7 @@ class GrabberController extends Controller
                 'external_id' => $item['external_id'],
                 'success' => $result['success'],
                 'log_id' => $result['log_id'],
-                'error' => $result['error'] ?? null
+                'error' => $result['error'] ?? null,
             ];
 
             if ($result['success']) {
@@ -83,16 +83,16 @@ class GrabberController extends Controller
             'processed' => count($results),
             'successful' => $successCount,
             'failed' => $failureCount,
-            'results' => $results
+            'results' => $results,
         ]);
     }
 
     public function logs(Request $request): JsonResponse
     {
         $logs = GrabberLog::query()
-            ->when($request->type, fn($q) => $q->where('type', $request->type))
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->external_id, fn($q) => $q->where('external_id', $request->external_id))
+            ->when($request->type, fn ($q) => $q->where('type', $request->type))
+            ->when($request->status, fn ($q) => $q->where('status', $request->status))
+            ->when($request->external_id, fn ($q) => $q->where('external_id', $request->external_id))
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
@@ -102,8 +102,8 @@ class GrabberController extends Controller
                 'current_page' => $logs->currentPage(),
                 'last_page' => $logs->lastPage(),
                 'per_page' => $logs->perPage(),
-                'total' => $logs->total()
-            ]
+                'total' => $logs->total(),
+            ],
         ]);
     }
 }

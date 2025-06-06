@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Actions\Brand\IndexBrands;
 use App\Actions\Brand\ShowBrand;
-use App\Http\Resources\BrandResource;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Lunar\Models\Brand;
 

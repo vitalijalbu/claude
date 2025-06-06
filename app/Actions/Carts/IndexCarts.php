@@ -6,8 +6,6 @@ namespace App\Actions\Cart;
 
 use Lunar\Models\Cart;
 
-
-
 class IndexCarts
 {
     public function execute($request)

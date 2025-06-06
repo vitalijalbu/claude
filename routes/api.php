@@ -4,10 +4,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\GrabberController;
 use App\Http\Controllers\ProductController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Lunar\Models\Product;
-
 
 // Products
 Route::prefix('products')->name('products.')->group(function () {

@@ -11,7 +11,7 @@ class ShowProduct
 {
     public function execute(Product $product)
     {
-        $product->load([            
+        $product->load([
             'images',
             'prices',
             'thumbnail',
@@ -19,7 +19,7 @@ class ShowProduct
             'brand',
             'collections',
             'variants',
-            'tags'
+            'tags',
         ]);
 
         return new ProductResource($product);

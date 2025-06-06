@@ -6,8 +6,6 @@ namespace App\Actions\Discount;
 
 use Lunar\Models\Discount;
 
-
-
 class IndexDiscounts
 {
     public function execute($request)

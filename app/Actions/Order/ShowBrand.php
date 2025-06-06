@@ -11,7 +11,7 @@ class ShowBrand
 {
     public function execute(Brand $brand)
     {
-        // $brand->load([            
+        // $brand->load([
         //     'images',
         //     'prices',
         //     'thumbnail',

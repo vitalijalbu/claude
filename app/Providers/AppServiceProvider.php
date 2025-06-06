@@ -3,11 +3,11 @@
 namespace App\Providers;
 
 use Dedoc\Scramble\Scramble;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Lunar\Admin\Support\Facades\LunarPanel;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 class AppServiceProvider extends ServiceProvider
 {
