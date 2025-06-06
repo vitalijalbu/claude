@@ -8,18 +8,15 @@ use Lunar\Models\Discount;
 
 class ShowDiscount
 {
-    public function execute(Discount $discount)
+    public function execute(Discount $discount): Discount
     {
-        // $discount->load([
-        //     'images',
-        //     'prices',
-        //     'thumbnail',
-        //     'urls',
-        //     'brand',
-        //     'collections',
-        //     'variants',
-        //     'tags'
-        // ]);
+        $discount->load([
+            'brands',
+            'collections',
+            'customerGroups',
+            'purchasableRewards',
+            'purchasableConditions',
+        ]);
 
         return $discount;
     }

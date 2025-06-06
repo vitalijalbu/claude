@@ -4,20 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Actions\Product\IndexProducts;
 use App\Actions\Product\ShowProduct;
+use App\Http\Resources\ProductResource;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Lunar\Models\Product;
 
 class ProductController extends Controller
 {
-    public function index(Request $request, IndexProducts $action)
+    public function index(Request $request, IndexProducts $action): AnonymousResourceCollection
     {
         $data = $action->execute($request);
 
-        return response()->json($data);
+        return ProductResource::collection($data);
     }
 
-    public function show(Product $product, ShowProduct $action)
+    public function show(Product $product, ShowProduct $action): ProductResource
     {
-        return $action->execute($product);
+        $data = $action->execute($product);
+
+        return ProductResource::make($data);
     }
 }

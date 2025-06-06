@@ -1,58 +1,53 @@
 <?php
+
 declare(strict_types=1);
-namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers;
+
+use App\Actions\Discount\IndexDiscounts;
+use App\Actions\Discount\ShowDiscount;
+use App\Actions\Discount\ValidateCoupon;
 use App\Http\Resources\DiscountResource;
-use App\Actions\Discounts\IndexDiscountsAction;
-use App\Actions\Discounts\ShowDiscountAction;
-use App\Actions\Discounts\ValidateCouponAction;
-use Lunar\Models\Discount;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Lunar\Models\Cart;
+use Lunar\Models\Discount;
 
-final class DiscountController extends Controller
+class DiscountController extends Controller
 {
-    public function index(IndexDiscountsAction $action): JsonResponse
+    public function index(Request $request, IndexDiscounts $action)
     {
-        $discounts = $action->execute(['per_page' => request('per_page', 15)]);
-        
-        return response()->json([
-            'data' => DiscountResource::collection($discounts->items()),
-            'meta' => [
-                'current_page' => $discounts->currentPage(),
-                'last_page' => $discounts->lastPage(),
-                'per_page' => $discounts->perPage(),
-                'total' => $discounts->total()
-            ]
-        ]);
+        $data = $action->execute($request);
+
+        return DiscountResource::collection($data);
     }
 
-    public function show(Discount $discount, ShowDiscountAction $action): JsonResponse
+    public function show(Discount $discount, ShowDiscount $action)
     {
-        $discount = $action->execute($discount);
-        return response()->json(['data' => new DiscountResource($discount)]);
+        return $action->execute($discount);
     }
 
-    public function validateCoupon(Request $request, ValidateCouponAction $action): JsonResponse
+    public function validateCoupon(Request $request, ValidateCoupon $action)
     {
         $request->validate([
-            'coupon' => 'required|string'
+            'coupon_code' => 'required|string',
+            'cart_id' => 'nullable|exists:carts,id',
         ]);
 
-        $result = $action->execute($request->coupon);
+        $cart = null;
+        if ($request->cart_id) {
+            $cart = Cart::find($request->cart_id);
+        }
 
-        if (!$result['valid']) {
-            return response()->json([
-                'valid' => false,
-                'message' => $result['message']
-            ], 400);
+        $result = $action->execute($request->coupon_code, $cart);
+
+        if (! $result['valid']) {
+            return response()->json($result, 400);
         }
 
         return response()->json([
             'valid' => true,
-            'data' => new DiscountResource($result['discount']),
-            'message' => $result['message']
+            'discount' => new DiscountResource($result['discount']),
+            'message' => $result['message'],
         ]);
     }
 }

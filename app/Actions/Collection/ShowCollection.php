@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace App\Actions\Collection;
 
 use App\Http\Resources\CollectionResource;
-use Lunar\Models\Contracts\CollectionGroup;
+use Lunar\Models\Collection;
 
 class ShowCollection
 {
-    public function execute(CollectionGroup $collection)
+    public function execute(Collection $collection)
     {
-        // $collection->load([
-        //     'collections',
-        // ]);
+        $collection->load([
+            'thumbnail',
+            'children',
+            'products',
+        ]);
 
         return new CollectionResource($collection);
     }

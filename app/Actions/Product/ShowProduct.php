@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Actions\Product;
 
-use App\Http\Resources\ProductResource;
 use Lunar\Models\Product;
 
 class ShowProduct
@@ -18,10 +17,11 @@ class ShowProduct
             'urls',
             'brand',
             'collections',
-            'variants',
+            'variants.prices',
+            'variants.images',
             'tags',
         ]);
 
-        return new ProductResource($product);
+        return $product;
     }
 }
