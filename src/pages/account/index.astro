@@ -1,0 +1,21 @@
+---
+
+const authCookie = Astro.cookies.get('auth');
+
+if (!authCookie || !authCookie.value) {
+  return Astro.redirect('/login');
+}
+
+import Result from '@/components/result.astro';
+import { fetchData } from '@/lib/api';
+import ListingCard from '@/shared/snippets/listing-card.astro';
+import AccountContainer from '@/containers/account-container.astro';
+const data = await fetchData('/explore');
+
+---
+	<AccountContainer title="Il mio account">
+		<section class="container py-10">
+				Benvenuto nel tuo account! Qui puoi visualizzare le tue informazioni personali e gestire le tue impostazioni.
+		</section>
+	</AccountContainer>
+

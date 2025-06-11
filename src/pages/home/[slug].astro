@@ -19,7 +19,7 @@ if (categoryError && !category) {
 
 // SEO
 const pageTitle = category ? `${category.title} - OnlyEscort` : `Categoria ${slug} - OnlyEscort`;
-const pageDescription = category?.description || `Trova le migliori escort nella categoria ${category?.title || slug}. Annunci verificati e recensioni reali.`;
+const pageDescription = category?.description || `Trova le migliori escort nella categoria ${category?.name || slug}. Annunci verificati e recensioni reali.`;
 
 const breadcrumbs = category ? [
   { name: "Home", url: "/" },
@@ -54,10 +54,10 @@ const schemaORG = {
 <MainLayout title={pageTitle} metaDescription={pageDescription} schema={schemaORG}>
   
   {!categoryError && category ? (
-    <div class="container mx-auto px-4 py-8">
+    <div class="container px-4 py-8">
       
       <!-- Breadcrumbs -->
-      <div class="breadcrumbs text-sm mb-6">
+      <div class="breadcrumbs mb-6">
         <ul>
           {breadcrumbs.map((crumb) => (
             <li>
@@ -190,14 +190,14 @@ const schemaORG = {
                       </a>
                     </h3>
                     
-                    <p class="text-sm text-base-content/70 line-clamp-3">{listing.description}</p>
+                    <p class="text-base-content/70 line-clamp-3">{listing.description}</p>
                     
                     <!-- Tags -->
                     <div class="flex flex-wrap gap-2 mt-2">
                       {listing.age && (
                         <div class="badge badge-outline badge-sm">{listing.age} anni</div>
                       )}
-                      {listing.city?.name && (
+                      {listing.province?.name && (
                         <div class="badge badge-outline badge-sm">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -228,7 +228,7 @@ const schemaORG = {
                           </div>
                         </div>
                         <div class="ml-2 flex-1">
-                          <div class="text-sm font-medium">{listing.profile.name}</div>
+                          <div class="font-medium">{listing.profile.name}</div>
                           {listing.profile.rating > 0 && (
                             <div class="flex items-center text-xs text-base-content/70">
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 24 24">
@@ -249,7 +249,7 @@ const schemaORG = {
             {meta && meta.last_page > 1 && (
               <div class="mt-12">
                 <nav class="flex flex-col items-center space-y-4" aria-label="Paginazione">
-                  <div class="text-sm text-base-content/70">
+                  <div class="text-base-content/70">
                     Risultati {meta.from}-{meta.to} di {meta.total}
                   </div>
                   
@@ -332,7 +332,7 @@ const schemaORG = {
                 <div class="card-body p-4 text-center">
                   <h3 class="card-title text-lg justify-center">{relatedCategory.title}</h3>
                   {relatedCategory.listings_count && (
-                    <p class="text-sm text-base-content/70">
+                    <p class="text-base-content/70">
                       {relatedCategory.listings_count} annunci
                     </p>
                   )}
@@ -344,7 +344,7 @@ const schemaORG = {
       )}
     </div>
   ) : (
-    <div class="container mx-auto px-4 py-16">
+    <div class="container px-4 py-16">
       <div class="text-center max-w-lg mx-auto">
         <div class="text-8xl font-bold text-primary mb-4">404</div>
         <h1 class="text-3xl font-bold mb-4">Categoria non trovata</h1>

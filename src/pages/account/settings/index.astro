@@ -1,0 +1,55 @@
+---
+const authCookie = Astro.cookies.get('auth');
+
+if (!authCookie || !authCookie.value) {
+  return Astro.redirect('/login');
+}
+
+import AccountContainer from '@/containers/account-container.astro';
+---
+<AccountContainer title="Impostazioni Account">
+
+
+  <!-- Form profilo -->
+  <section class="mb-4">
+    <h2 class="text-xl font-semibold">Dettagli Profilo</h2>
+    <form action="/api/account/update-profile" method="POST">
+       <div class="mb-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+        <label for="name">Nome</label>
+        <input class="input" class="input" type="text" id="name" name="name" required />
+      </div>
+
+      <div class="mb-2">
+        <label for="email">Email</label>
+        <input class="input" type="email" id="email" name="email" required />
+      </div>
+      </div>
+
+      <button class="btn btn-primary" type="submit">Aggiorna Profilo</button>
+    </form>
+  </section>
+
+  <!-- Form password -->
+  <section style="margin-top: 2rem;">
+    <h2 class="text-xl font-semibold">Cambia Password</h2>
+    <form action="/api/account/change-password" method="POST">
+      <div>
+        <label for="current_password">Password attuale</label>
+        <input class="input" type="password" id="current_password" name="current_password" required />
+      </div>
+
+      <div>
+        <label for="new_password">Nuova password</label>
+        <input class="input" type="password" id="new_password" name="new_password" required />
+      </div>
+
+      <div>
+        <label for="confirm_password">Conferma nuova password</label>
+        <input class="input" type="password" id="confirm_password" name="confirm_password" required />
+      </div>
+
+      <button class="btn btn-primary" type="submit">Aggiorna Password</button>
+    </form>
+  </section>
+</AccountContainer>

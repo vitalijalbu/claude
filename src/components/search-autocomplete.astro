@@ -1,18 +1,13 @@
----
-// index.astro
-import { API_URL } from '../utils/constants.js';
----
-
 <div 
   id="search-container" 
-  class={`relative`}
+  class={`relative w-full max-w-[500px]`}
   data-search-component
 >
   <input 
     id="search-input"
     type="text" 
     placeholder="Cerca profili, città o annunci..."
-    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+    class="input w-full px-4 py-3"
     autocomplete="off"
   />
   
@@ -25,6 +20,6 @@ import { API_URL } from '../utils/constants.js';
   
   <ul
     id="autocomplete-results"
-    class="absolute z-50 w-full bg-white border border-gray-200 rounded-lg mt-1 shadow-lg max-h-96 overflow-y-auto hidden"
+    class="absolute z-50 w-full bg-white border border-gray-200 rounded-xl mt-1 shadow-lg max-h-96 overflow-y-auto hidden"
   ></ul>
 </div>

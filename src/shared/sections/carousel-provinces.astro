@@ -10,17 +10,30 @@ import { IconChevron } from '@/icons/index';
 		as="h2"
 		title="Annunci simili"
 		subtitle="Scopri altri annunci che potrebbero interessarti.">
+		<div
+			slot="extra"
+			class="flex gap-1">
+			<button class="btn btn-primary"
+				class="carousel-prev"
+				><IconChevron class='-rotate-90'/></button
+			>
+			<button class="btn btn-primary"
+				class="carousel-next"
+				><IconChevron class='rotate-90'/></button
+			>
+		</div>
 	</PageHeader>
 	{
 		data && data.length > 0 ?
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+			<div class="swiper carousel-listings">
+				<div class="swiper-wrapper">
 					{data.map((listing) => (
 						<div class="swiper-slide">
 							<ListingCard data={listing} />
 						</div>
 					))}
 				</div>
-			
+			</div>
 		:	<Result
 				title="Nessun annuncio disponibile"
 				description="Attualmente non ci sono annunci simili da mostrare. Riprova più tardi!"

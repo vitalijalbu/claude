@@ -1,0 +1,33 @@
+---
+
+const authCookie = Astro.cookies.get('auth');
+
+if (!authCookie || !authCookie.value) {
+  return Astro.redirect('/login');
+}
+
+import { Result } from '@/components/index';
+import AccountContainer from '@/containers/account-container.astro';
+import { fetchData } from '@/lib/api';
+import ListingCard from '@/shared/snippets/listing-card.astro';
+const { data, isError, isLoading } = await fetchData('/home');
+---
+
+<AccountContainer title="Annunci preferiti">
+	<section>
+		<div title="{{__('site.listings_spotlight_title')}}"></div>
+		{isError && (
+			<Result title="Errore nel caricamento dei dati"/>
+		  )}
+		<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+			{
+				data?.listings.map((post) => (
+					<ListingCard
+						href={`/annuncio/${post?.slug}`}
+						data={post}
+					/>
+				))
+			}
+		</div>
+	</section>
+</AccountContainer>

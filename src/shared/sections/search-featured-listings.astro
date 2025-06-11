@@ -1,0 +1,22 @@
+---
+const { data } = Astro.props;
+import ListingItemSm from '../snippets/listing-item-sm.astro';
+---
+
+<section class="container py-4 bg-zinc-100 rounded-xl">
+  <h2 class="text-lg font-semibold mb-4">Annunci in evidenza</h2>
+
+  {data && data.length > 0 ? (
+    <div class="overflow-x-auto">
+      <div class="flex gap-4 pb-2" style="width: max-content;">
+        {data.map((city) => (
+          <div class="flex-shrink-0 w-72">
+            <ListingItemSm data={city} key={city.id}/>
+          </div>
+        ))}
+      </div>
+    </div>
+  ) : (
+    <p class="text-gray-600">No data</p>
+  )}
+</section>

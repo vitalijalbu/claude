@@ -4,57 +4,103 @@ import MainLayout from '@/layouts/main-layout.astro';
 import { fetchData } from '@/lib/api';
 import ListingItem from '@/shared/snippets/listing-item.astro';
 import { Result, PageHeader, Breadcrumb } from '@/components/index';
-
+import SearchFeaturedListings from '@/shared/sections/search-featured-listings.astro';
+import Filters from '@/shared/search/filters.astro';
+import FeaturedCities from '@/shared/sections/featured-cities.astro';
 
 // Fetch data - Laravel handles everything!
-const { data, isLoading, isError } = await fetchData(Astro.url.pathname, {
-  method: 'GET',
-  headers: { 'Content-Type': 'application/json' }
-});
+const { data, isLoading, isError, errorCode, is404 } = await fetchData(Astro.url.pathname);
 
-const { data: listings } = data || {};
+const { data: listings, featured_listings, featured_cities } = data || {};
 const { meta, route } = data || {};
 
 // Use data returned by Laravel
 const breadcrumbs = route?.breadcrumbs || [{ name: 'Home', url: '/' }];
-const pageTitle = route?.title || 'Listings';
+const pageTitle = route?.title || 'Nessun risultato di ricerca per ' + (Astro.url.pathname || '');
 
-console.log('Astro.url.pathname', Astro.url.pathname);
-console.log('listings', listings);
+// Set response status for 404
+if (is404) {
+  Astro.response.status = 404;
+  Astro.response.statusText = 'Not Found';
+}
+console.log('is404:', is404);
 ---
 
 <MainLayout title={pageTitle} description={`Risultati per ${pageTitle}`}>
-  <div class="container max-w-6xl">
-    <section class="container py-10">
-      {isLoading && (
-        <p class="text-center text-gray-400 py-6">Caricamento in corso...</p>
-      )}
+  <div class="container">
+    <!-- Loading State -->
+    {isLoading && (
+      <section class="flex items-center justify-center min-h-[50vh]" aria-live="polite">
+        <div class="text-center space-y-4">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p class="text-muted-foreground text-sm sm:text-base">Caricamento in corso...</p>
+        </div>
+      </section>
+    )}
 
-      {isError && (
-        <Result code={500} title="Errore nel caricamento dei dati" />
-      )}
+    <!-- 404 State -->
+    {is404 && (
+      <section class="min-h-[50vh] flex items-center justify-center" role="alert">
+        <Result 
+          code={404} 
+          title="Pagina non trovata" 
+          description="La pagina che stai cercando non esiste o è stata spostata."
+        />
+      </section>
+    )}
 
-      {!isLoading && !isError && (
-        <>
-          <Breadcrumb links={breadcrumbs} />
+    <!-- Main Content -->
+    {!isLoading && !isError && !is404 && (
+      <>
+        <Breadcrumb links={breadcrumbs} />
+        <section class="mb-6 sm:mb-8" aria-label="Filtri di ricerca">
+          <Filters />
+        </section>
+
+        {featured_listings && featured_listings.length > 0 && (
+            <SearchFeaturedListings data={featured_listings} />
+        )}
+
+        <!-- Page Header -->
+        <div class="mb-6 sm:mb-8">
           <PageHeader title={pageTitle} />
-
-          <div class="relative grid grid-cols-1 gap-4">
-            {listings?.length ? (
-              listings.map((listing) => (
-                <ListingItem
-                  href={`/annuncio/${listing?.slug}`}
-                  data={listing}
-                />
-              ))
-            ) : (
-              <Result title="Nessun risultato disponibile" />
-            )}
-          </div>
-          
-          <Pagination data={meta?.pagination} />
-        </>
-      )}
-    </section>
-  </div>
+          {meta?.pagination?.total && (
+            <p class="text-sm text-muted-foreground mt-2">
+              Trovati {meta.pagination.total} risultat{meta.pagination.total === 1 ? 'o' : 'i'}
+            </p>
+          )}
+        </div>
+          {listings?.length ? (
+            <section aria-labelledby="listings-title">
+              <h2 id="listings-title" class="sr-only">Elenco annunci</h2>
+              <div class="grid grid-cols-1 gap-3 sm:gap-4 md:gap-6">
+                {listings.map((listing, index) => (
+                  <article class="w-full">
+                    <ListingItem
+                      href={`/annuncio/${listing?.slug}`}
+                      data={listing}
+                    />
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : (
+            <section class="flex items-center justify-center min-h-[40vh]" role="status">
+              <Result 
+                title="Nessun risultato trovato" 
+                description="Prova a modificare i filtri di ricerca o esplorare altre categorie."
+              />
+            </section>
+          )}
+          {meta?.pagination && meta.pagination.total > 0 && (
+              <Pagination data={meta.pagination} />
+          )}
+      </>
+    )}
+</div>
+    <!-- Featured Cities - Always shown -->
+    {featured_cities && featured_cities.length > 0 && (
+        <FeaturedCities data={featured_cities} />
+    )}
+  
 </MainLayout>

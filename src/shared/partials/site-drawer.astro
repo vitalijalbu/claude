@@ -1,26 +1,146 @@
+---
+import { IconX, IconHeart, IconMap } from "@/icons/index";
+
+// Dynamic navigation data
+const navigationSections = [
+	{
+		id: 'main',
+		label: 'Navigazione principale',
+		items: [
+			{ href: '/', label: 'Home', icon: null, current: Astro.url.pathname === '/' },
+			{ href: '/home/escort', label: 'Escort', icon: null, current: Astro.url.pathname.includes('/escort') },
+			{ href: '/home/massaggi', label: 'Massaggi', icon: null, current: Astro.url.pathname.includes('/massaggi') },
+			{ href: '/home/trans', label: 'Trans', icon: null, current: Astro.url.pathname.includes('/trans') },
+		]
+	},
+	{
+		id: 'cities',
+		label: 'Cerca per Città',
+		items: [
+			{ href: '/milano', label: 'Milano', icon: IconMap, current: Astro.url.pathname.includes('/milano') },
+			{ href: '/roma', label: 'Roma', icon: IconMap, current: Astro.url.pathname.includes('/roma') },
+			{ href: '/torino', label: 'Torino', icon: IconMap, current: Astro.url.pathname.includes('/torino') },
+			{ href: '/napoli', label: 'Napoli', icon: IconMap, current: Astro.url.pathname.includes('/napoli') },
+			{ href: '/tutte-le-citta', label: 'Tutte le città', icon: null, current: Astro.url.pathname === '/tutte-le-citta', highlight: true },
+		]
+	},
+	{
+		id: 'account',
+		label: 'Account',
+		items: [
+			{ href: '/accedi', label: 'Accedi', icon: null, current: Astro.url.pathname === '/accedi' },
+			{ href: '/registrati', label: 'Registrati', icon: null, current: Astro.url.pathname === '/registrati' },
+			{ href: '/account/preferiti', label: 'Annunci preferiti', icon: IconHeart, current: Astro.url.pathname === '/account/preferiti' },
+			{ href: '/account/profilo', label: 'Il mio profilo', icon: null, current: Astro.url.pathname === '/account/profilo' },
+		]
+	}
+];
+---
+
 <aside
 	id="mobile-menu"
-	class="overlay overlay-open:translate-x-0 drawer drawer-start hidden max-w-72"
-	tabindex="-1">
-	<div class="drawer-header">
-		<h3 class="drawer-title">Menu</h3>
-		<button class="btn btn-primary"
+	class="overlay overlay-open:translate-x-0 drawer drawer-end hidden max-w-90"
+	role="dialog"
+	aria-modal="true"
+	aria-labelledby="drawer-title"
+	aria-describedby="drawer-description">
+	
+	<header class="drawer-header">
+		<div id="drawer-title" class="drawer-title">Menu</div>
+		<p id="drawer-description" class="sr-only">
+			Menu principale per navigare nel sito
+		</p>
+		<button
+			class="btn btn-text btn-circle absolute end-3 top-3"
 			type="button"
-			class="btn btn-text btn-circle btn-sm absolute end-3 top-3"
-			aria-label="Close"
+			aria-label="Chiudi menu di navigazione"
 			data-overlay="#mobile-menu">
-			<span class="icon-[tabler--x] size-4"></span>
+			<IconX width={20} height={20} aria-hidden="true" />
 		</button>
-	</div>
+	</header>
 
-	<div class="drawer-body justify-start pb-6">
-		<ul class="menu space-y-0.5 p-0">
-			<li><a href="/account">Home</a></li>
-			<div class="divider py-6">Account</div>
-			<li><a href="/account">Il mio account</a></li>
-			<li><a href="/account/favorites">Annunci preferiti</a></li>
-			<li><a href="/account/reviews">Le mie recensioni</a></li>
-			<li><a href="/account/settings">Impostazioni</a></li>
-		</ul>
+	<div class="drawer-body justify-start pb-6" role="main">
+		<nav aria-label="Menu principale">
+			{navigationSections.map((section) => (
+				<section key={section.id} aria-labelledby={`section-${section.id}`}>
+					{section.id !== 'main' && (
+						<div class="divider py-3" role="separator">
+							<h3 id={`section-${section.id}`} class="text-sm font-medium text-muted-foreground">
+								{section.label}
+							</h3>
+						</div>
+					)}
+					
+					<ul 
+						class="menu space-y-0.5 p-0" 
+						role="list"
+						aria-labelledby={section.id === 'main' ? 'drawer-title' : `section-${section.id}`}>
+						{section.items.map((item) => {
+							const IconComponent = item.icon || null;
+							return (
+								<li role="none">
+									<a
+										href={item.href}
+										class={`flex items-center gap-3 py-2 px-3 rounded-lg transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+											item.current 
+												? 'bg-primary/10 text-primary font-medium' 
+												: 'text-gray-700'
+										} ${
+											item.highlight 
+												? 'text-blue-600 hover:text-blue-700' 
+												: ''
+										}`}
+										aria-current={item.current ? 'page' : undefined}
+										role="menuitem"
+										tabindex="0">
+										{item?.icon &&<IconComponent 
+											width={20} 
+											height={20} 
+											aria-hidden="true"
+											class="shrink-0"
+										/>}
+										<span class="truncate">{item.label}</span>
+										{item.current && (
+											<span class="sr-only">(pagina corrente)</span>
+										)}
+									</a>
+								</li>
+							);
+						})}
+					</ul>
+				</section>
+			))}
+		</nav>
+
+		<!-- Footer Section -->
+		<footer class="mt-auto pt-6 border-t border-gray-200" role="contentinfo">
+			<div class="px-3">
+				<p class="text-xs text-gray-500 mb-2">
+					Versione 2.1.0
+				</p>
+				<div class="flex gap-2">
+					<a 
+						href="/privacy" 
+						class="text-xs text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+						tabindex="0">
+						Privacy
+					</a>
+					<span class="text-xs text-gray-300">•</span>
+					<a 
+						href="/termini" 
+						class="text-xs text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+						tabindex="0">
+						Termini
+					</a>
+					<span class="text-xs text-gray-300">•</span>
+					<a 
+						href="/contatti" 
+						class="text-xs text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+						tabindex="0">
+						Contatti
+					</a>
+				</div>
+			</div>
+		</footer>
 	</div>
 </aside>

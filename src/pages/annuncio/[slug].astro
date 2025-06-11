@@ -1,5 +1,5 @@
 ---
-import { Card, Breadcrumb, Separator, ReportCard, User, Result, Badge } from '@/components/index';
+import { Breadcrumb, Separator, User, Result, Badge } from '@/components/index';
 import { IconWhatsapp, IconPhone, IconHeart } from '@/icons/index';
 import MainLayout from '@/layouts/main-layout.astro';
 import { fetchData } from '@/lib/api';
@@ -7,7 +7,7 @@ import Gallery from '@/shared/listings/gallery.astro';
 import SimilarListings from '@/shared/sections/similar-listings.astro';
 import { getBreadcrumbSchema } from '@/utils/schema/page';
 import Map from '@/components/map.astro';
-import Taxonomies from '@/shared/tags.astro';
+import Tags from '@/shared/tags.astro';
 import ShareButton from '@/components/share-button.astro';
 
 const { params } = Astro;
@@ -33,7 +33,7 @@ const breadcrumbs =
 		[
 			{ name: 'Home', url: '/' },
 			{ name: listing?.province?.name || 'Province', url: `/${listing?.province?.slug || ''}` },
-			{ name: listing?.category?.title || 'Category', url: `/${listing?.province?.slug || ''}/${listing?.category?.slug || ''}` },
+			{ name: listing?.category?.name || 'Category', url: `/${listing?.province?.slug || ''}/${listing?.category?.slug || ''}` },
 			{ name: listing?.title || 'Listing', url: listing?.slug || '' },
 		]
 	:	[];
@@ -48,7 +48,7 @@ const schemaORG = getBreadcrumbSchema([
 <MainLayout
 	title={listing?.title ?? 'Annuncio'}
 	schema={schemaORG}>
-	<div class="container mx-auto px-4 py-6">
+	<div class="container px-4 py-6">
 		{
 			isLoading && (
 				<div class="flex justify-center items-center py-12">
@@ -74,27 +74,26 @@ const schemaORG = getBreadcrumbSchema([
 		{
 			data && (
 				<>
-					<div class="mb-6 flex justify-between items-center">
-						<Breadcrumb links={breadcrumbs} />
-						<div class="flex items-center gap-2 self-start sm:self-center mt-2 sm:mt-0">
-							<button class="btn btn-outline btn-outline-ghost"
-								class="text-sm sm:text-base">
-								<IconHeart/>
-								Salva
-							</button>
-							<ShareButton 
-								title="Guarda questo annuncio incredibile!" 
-								text="Ho trovato questo annuncio e penso possa interessarti." 
-								url={currentPath}
-								/>
-						</div>
+				<div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
+					<Breadcrumb links={breadcrumbs} />
+					<div class="flex items-center gap-2 self-start sm:self-end">
+						<button class="btn btn-outline btn-outline-ghost sm:text-base">
+							<IconHeart/>
+							Salva
+						</button>
+						<ShareButton 
+							title="Guarda questo annuncio incredibile!" 
+							text="Ho trovato questo annuncio e penso possa interessarti." 
+							url={currentPath}
+						/>
 					</div>
-					<Separator />
+				</div>
+									<Separator />
 					<div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
 						<div>
 							<div class="flex flex-wrap gap-2 mb-2">
-								{listing?.category?.title && <Badge>{listing?.category?.title}</Badge>}
-								{listing?.city?.name && <Badge>{listing?.city?.name}</Badge>}
+								{listing?.category?.name && <Badge>{listing?.category?.name}</Badge>}
+								{listing?.province?.name && <Badge>{listing?.province?.name}</Badge>}
 							</div>
 							<h1 class="text-2xl md:text-3xl font-bold">{listing?.title}</h1>
 						</div>
@@ -127,12 +126,12 @@ const schemaORG = getBreadcrumbSchema([
 							<Separator />
 
 							{/* Details Section */}
-							{listing?.tags.length > 0 && (
+							{listing?.tags?.length > 0 && (
 								<section
 									id="listing-details"
 									class="mb-6">
 									<span class="text-xl block font-semibold mb-4">Dettagli</span>
-									{listing?.tags && <Taxonomies data={listing?.tags} />}
+									{listing?.tags && <Tags data={listing?.tags} />}
 								</section>
 							)}
 
@@ -152,7 +151,8 @@ const schemaORG = getBreadcrumbSchema([
 
 						{/* Right Side (Sticky Card) */}
 						<div class="lg:sticky top-6 self-start flex flex-col space-y-4">
-							<Card>
+							<div class="card">
+							<div class="card-body">
 								<div slot="title">
 									<span class="text-lg font-bold">Informazioni sul profilo</span>
 								</div>
@@ -167,29 +167,18 @@ const schemaORG = getBreadcrumbSchema([
 										/>
 									)}
 									<Separator />
-									<button class="btn btn-primary"
-										as="a"
+									<a class="btn btn-primary"
 										href={`tel:${listing?.phone_number || ''}`}>
 										<IconPhone />
 										{listing?.phone_number || 'Chiama ora'}
 									</button>
-									<button class="btn btn-primary"
-										variant="whatsapp"
-										as="a"
+									<a class="btn btn-whatsapp w-full"
 										href={`https://api.whatsapp.com/send/?phone_number=${listing?.whatsapp_number || ''}&text=Ciao ho visto il tuo annuncio su ${encodeURIComponent(currentPath)}&type=phone_number&app_absent=0`}>
 										<IconWhatsapp />
 										Whatsapp
-									</button>
-									{/* <button class="btn btn-primary" 
-                  variant="secondary" 
-                  as="a" 
-                  href={`/profilo/${listing?.phone_number || ""}/recensioni`}
-                >
-                  <IconStarBold color="#FFBF00" />Recensioni
-                </button> */}
+									</a>
 								</div>
-							</Card>
-							<ReportCard />
+							</div>
 						</div>
 					</section>
 

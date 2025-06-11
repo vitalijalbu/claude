@@ -7,92 +7,126 @@ const descriptionId = `listing-description-${data?.id}`;
 ---
 
 <article
-	class="group flex flex-col md:flex-row w-full overflow-hidden rounded-lg border border-outline bg-white"
+	class="group flex flex-row w-full overflow-hidden rounded-xl border border-outline bg-white cursor-pointer hover:shadow-sm transition-shadow"
 	aria-labelledby={titleId}
-	aria-describedby={descriptionId}
-	itemtype="https://schema.org/Product">
+	aria-describedby={descriptionId}>
 	<!-- Media Section -->
 	<a
 		href={`/annuncio/${data?.slug}`}
-		class="relative w-full md:w-[420px] aspect-square md:aspect-square shrink-0 overflow-hidden"
+		class="relative w-[50%] sm:w-40 md:w-48 lg:w-[420px] aspect-square shrink-0 overflow-hidden"
 		aria-label={`Visualizza l'annuncio: ${data?.title}`}>
 		<GalleryItem
 			images={data?.images}
 			slug={data?.slug}
 			alt={data?.title}
-			class="!h-full !w-full object-cover transition duration-200 ease-out"
+			class="!h-full !w-full object-cover transition duration-200 ease-out group-hover:scale-105"
 		/>
 
 		<div class="absolute top-2 left-2 z-10 space-y-1">
 			{
 				data?.images_count > 0 && (
 					<Badge
-						class="badge-light flex items-center gap-1"
+						class="badge-light flex items-center gap-1 text-xs"
 						aria-label={`Contiene ${data?.images_count} immagini`}>
-						<img src="/images/icons/camera.svg" alt="Tot foto" width={18} height={18} />
+						<img src="/images/icons/camera.svg" alt="Tot foto" width={14} height={14} />
 						{data?.images_count}
 					</Badge>
 				)
 			}
+			{
+				data?.is_featured && (
+					<Badge
+						class="badge-warning flex items-center gap-1 text-xs hidden sm:flex"
+						aria-label="Annuncio in evidenza">
+						<img src="/images/icons/star.svg" alt="In evidenza" width={12} height={12} />
+						<span class="hidden md:inline">Featured</span>
+					</Badge>
+				)
+			}
 		</div>
-			<button class="btn btn-primary"
-				variant="outline"
-				size="icon"
-				class="absolute right-2 top-2 z-10"
-				aria-label="Salva annuncio"
-			>
-				<img src="/images/icons/heart.svg" alt="Salva annuncio" width={18} height={18} />
-			</button>
+		<button class="btn btn-text btn-circle waves waves-primary absolute right-1 top-1 sm:right-2 sm:top-2 z-10 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10"
+			aria-label="Salva annuncio"
+		>
+			<img src="/images/icons/heart.svg" alt="Salva annuncio" width={14} height={14} class="sm:w-4 sm:h-4 md:w-[18px] md:h-[18px]" />
+		</button>
 	</a>
 
 	<!-- Content Section -->
-	<div class="flex flex-col flex-1 p-4 space-y-2">
-		{data?.category && <Badge size="lg" aria-label={`Categoria: ${data?.category?.name}`}>{data?.category?.name}</Badge>}
-		<a
-			href={`/annuncio/${data?.slug}`}
-			aria-labelledby={titleId}
-			aria-describedby={descriptionId}
-			aria-label={`Dettagli annuncio: ${data?.title}`}
-			class="relative overflow-hidden">
-			<div
-				id={titleId}
-				class="text-3xl font-semibold leading-snug line-clamp-2 mb-4">
-				{data?.title}
-			</div>
-			<p
-				id={descriptionId}
-				class="text-sm text-muted-foreground line-clamp-4 mb-4 break-all">
-				{data?.description}
-			</p>
+	<div class="flex flex-col flex-1 p-2 sm:p-3 md:p-4 space-y-1 sm:space-y-2 min-w-0">
+		<div class="flex flex-wrap items-center gap-1 sm:gap-2 mb-1">
+			{data?.category && <Badge size="sm" class="font-medium text-xs" aria-label={`Categoria: ${data?.category?.name}`}>{data?.category?.name}</Badge>}
+			{data?.is_verified && <Badge class="badge-success text-xs hidden md:inline-flex">Verificato</Badge>}
+		</div>
+		
+			<a
+		href={`/annuncio/${data?.slug}`}>
+	<h2
+			id={titleId}
+			class="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-semibold leading-tight line-clamp-2 mb-1">
+			{data?.title}
+		</h2>
+		
+		<p
+			id={descriptionId}
+			class="text-xs sm:text-sm text-muted-foreground line-clamp-2 sm:line-clamp-3 mb-1 sm:mb-2 break-words">
+			{data?.description}
+		</p>
 		</a>
-		<section
-			class="flex-col flex-wrap"
-			aria-label="Informazioni aggiuntive">
-			<div class="flex flex-wrap gap-2 pt-1 mb-2">
-				<Badge aria-label={`Età dell'inserzionista: ${data?.age} anni`}>{`${data?.age} anni`}</Badge>
-				<Badge aria-label={`Nazionalità dell'inserzionista: ${data?.nationality}`}>{data?.nationality}</Badge>
+		<!-- Tags Section - Hidden on mobile and extra tags hidden -->
+		{data?.tags && data?.tags.length > 0 && (
+			<div class="hidden sm:flex flex-wrap gap-1 mb-2">
+				{data?.tags.slice(0, 2).map(tag => (
+					<Badge class="badge-outline text-xs">{tag?.name}</Badge>
+				))}
+				{data?.tags.length > 2 && (
+					<Badge class="badge-outline text-xs">+{data?.tags.length - 2}</Badge>
+				)}
 			</div>
-		</section>
-		<div class="mt-auto flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center text-xs text-muted-foreground pt-2">
-			<div
-				class="flex gap-4"
-				aria-label="Dettagli geografici e temporali">
-				{
-					data?.city?.name && (
-						<div
-							class="flex items-center gap-1"
-							aria-label={`Luogo: ${data?.city?.name}`}>
-							<img src="/images/icons/map-point.svg" alt="Mappa" width={18} height={18} />
-							{data?.city?.name}
-						</div>
-					)
-				}
-				<Badge>{data?.nationality}</Badge>
+		)}
+		
+		<!-- Info Badges -->
+		<div class="flex flex-wrap gap-1 mb-1 sm:mb-2">
+			<Badge class="text-xs bg-blue-50 text-blue-700 border-blue-200" aria-label={`Età: ${data?.age} anni`}>
+				{data?.age} anni
+			</Badge>
+			{data?.nationality_name && (
+				<Badge class="text-xs bg-green-50 text-green-700 border-green-200 hidden sm:inline-flex" aria-label={`Nazionalità: ${data?.nationality_name}`}>
+					<img src="/images/icons/flag.svg" alt="Nazionalità" width={12} height={12} class="mr-1" />
+					{data?.nationality_name}
+				</Badge>
+			)}
+			{data?.location && (
+				<Badge class="text-xs bg-purple-50 text-purple-700 border-purple-200 hidden md:inline-flex" aria-label={`Zona: ${data?.location}`}>
+					<img src="/images/icons/map-point.svg" alt="Zona" width={12} height={12} class="mr-1" />
+					{data?.location}
+				</Badge>
+			)}
+		</div>
+		<div class="flex items-center gap-2 text-xs text-muted-foreground mb-1 sm:mb-2">
+			{data?.whatsapp_number && (
+				<div class="flex items-center gap-1">
+					<img src="/images/icons/whatsapp.svg" alt="WhatsApp" width={12} height={12} />
+					<span class="text-green-600 text-xs">WhatsApp</span>
+				</div>
+			)}
+			{data?.phone_number && (
+				<div class="hidden sm:flex items-center gap-1">
+					<img src="/images/icons/phone.svg" alt="Telefono" width={12} height={12} />
+					<span class="font-mono text-xs">{data?.phone_number}</span>
+				</div>
+			)}
+		</div>
+		<div class="mt-auto flex flex-col sm:flex-row gap-1 sm:gap-2 justify-between items-start sm:items-center text-xs text-muted-foreground pt-1 sm:pt-2 border-t border-outline/20">
+			<div class="flex items-center gap-2 sm:gap-3">
+				{data?.province?.name && (
+					<div class="flex items-center gap-1" aria-label={`Provincia: ${data?.province?.name}`}>
+						<img src="/images/icons/map-point.svg" alt="Provincia" width={12} height={12} class="sm:w-[14px] sm:h-[14px]" />
+						<span class="font-medium text-xs">{data?.province?.name}</span>
+					</div>
+				)}
 			</div>
 
-			<div
-				class="flex items-center gap-1.5"
-				aria-label="Profilo inserzionista">
+			<div class="flex items-center gap-1.5 shrink-0 self-end sm:self-auto" aria-label="Profilo inserzionista">
 				<User
 					withRating={true}
 					data={data?.profile}

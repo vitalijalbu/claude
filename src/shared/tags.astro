@@ -14,7 +14,7 @@ const { data = [] } = Astro.props;
             {group.name}
           </h3>
           <Separator/>
-          <ul class="flex flex-wrap gap-2 text-sm text-gray-700">
+          <ul class="flex flex-wrap gap-2 text-gray-700">
             {group.children.map((item) => (
               <li class="py-2"><Badge>{item.name}</Badge></li>
             ))}

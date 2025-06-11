@@ -1,10 +1,17 @@
 ---
-export interface DalleImage {
+export interface PictureProps {
   url: string;
-  srcset: {
-    webp: string[];
-    jpg: string[];
-  };
+  srcset: Array<{
+    url: string;
+    width: number;
+    type: string;
+  }>;
+}
+
+export interface Props {
+  image: PictureProps | string | null | undefined;
+  alt: string;
+  class?: string;
 }
 
 const {
@@ -14,32 +21,80 @@ const {
 } = Astro.props;
 
 const mediaUrl = import.meta.env.MEDIA_URL;
+const placeholderImage = '/images/placeholder.svg';
 
-// Crea srcset per webp e jpg
-const webpSrcset = image.srcset.webp?.map(url => `${mediaUrl}${url}`).join(', ') || '';
-const jpgSrcset = image.srcset.jpg?.map(url => `${mediaUrl}${url}`).join(', ') || '';
+// Controlla se l'immagine è valida
+let hasValidImage = false;
+let imageUrl = '';
+let webpSrcset = '';
+let jpegSrcset = '';
+
+if (image) {
+  if (typeof image === 'string') {
+    // Se è una stringa
+    hasValidImage = true;
+    imageUrl = image.startsWith('http') ? image : mediaUrl + image;
+  } else if (image.url) {
+    // Se è un oggetto con url
+    hasValidImage = true;
+    imageUrl = mediaUrl + image.url;
+    
+    if (image.srcset) {
+      const webpSources = image.srcset.filter(source => source.type === 'image/webp');
+      const jpegSources = image.srcset.filter(source => source.type === 'image/jpeg');
+      
+      webpSrcset = webpSources.map(source => `${mediaUrl}${source.url} ${source.width}w`).join(', ');
+      jpegSrcset = jpegSources.map(source => `${mediaUrl}${source.url} ${source.width}w`).join(', ');
+    }
+  }
+}
 ---
 
-<picture>
-  {webpSrcset && (
-    <source
-      srcset={webpSrcset}
-      type="image/webp"
+{hasValidImage ? (
+  (webpSrcset || jpegSrcset) ? (
+    <picture>
+      {webpSrcset && (
+        <source
+          srcset={webpSrcset}
+          sizes="(max-width: 480px) 100vw, (max-width: 768px) 100vw, (max-width: 1280px) 100vw, 1280px"
+          type="image/webp"
+        />
+      )}
+      
+      {jpegSrcset && (
+        <source
+          srcset={jpegSrcset}
+          sizes="(max-width: 480px) 100vw, (max-width: 768px) 100vw, (max-width: 1280px) 100vw, 1280px"
+          type="image/jpeg"
+        />
+      )}
+      
+      <img
+        src={imageUrl}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        sizes="(max-width: 480px) 100vw, (max-width: 768px) 100vw, (max-width: 1280px) 100vw, 1280px"
+        class={className}
+        onerror={`this.src='${placeholderImage}'`}
+      />
+    </picture>
+  ) : (
+    <img
+      src={imageUrl}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      class={className}
+      onerror={`this.src='${placeholderImage}'`}
     />
-  )}
-  
-  {jpgSrcset && (
-    <source
-      srcset={jpgSrcset}
-      type="image/jpeg"
-    />
-  )}
-  
+  )
+) : (
   <img
-    src={mediaUrl + image.url}
-    alt={alt}
+    src={placeholderImage}
+    alt={alt || 'Placeholder image'}
     loading="lazy"
     decoding="async"
     class={className}
   />
-</picture>
+)}

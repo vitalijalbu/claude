@@ -1,6 +1,6 @@
 ---
 import SearchAutocomplete from '@/components/search-autocomplete.astro';
-import { IconChevron, IconHeart, IconLogout, IconSettings, IconStar, IconUserCircle } from '@/icons/index';
+import { IconChevron, IconHeart, IconLogout, IconMenu, IconSettings, IconStar, IconUserCircle } from '@/icons/index';
 import SiteDrawer from './site-drawer.astro';
 
 const isHomePage = Astro.url.pathname === '/';
@@ -8,8 +8,8 @@ const isAuthenticated = true;
 ---
 
 <header class="relative flex flex-none items-center bg-white border-b border-outline">
-	<div class="container mx-auto w-full px-4">
-		<nav class="navbar w-full flex items-center justify-between gap-4 lg:grid lg:grid-cols-3 lg:items-center">
+	<div class="container">
+		<nav class="navbar px-0 w-full flex items-center justify-between gap-1 lg:grid lg:grid-cols-3 lg:items-center">
 			<div class="flex items-center gap-2">
 				<a
 					href="/"
@@ -22,33 +22,32 @@ const isAuthenticated = true;
 			<div class="hidden lg:flex flex-1 justify-center">
 				{!isHomePage && <SearchAutocomplete />}
 			</div>
-			<div class="flex items-center justify-end gap-4">
+			<div class="flex items-center justify-end gap-2">
+				<a
+					href="/favorites"
+					class="btn btn-text">
+					<IconHeart />
+					<span class="hidden sm:inline">Preferiti</span>
+				</a>
 				<div class="z-10 dropdown relative inline-flex [--auto-close:inside] [--offset:8] [--placement:bottom-end]">
-					<button
+					<a
 						class="btn btn-text"
-						id="dropdown-scrollable"
-						type="button"
-						class="dropdown-toggle flex items-center"
-						aria-haspopup="menu"
-						aria-expanded="false"
-						aria-label="User menu">
-						Menu <IconChevron class="rotate-180" />
-					</button>
-					<ul
-						class="dropdown-menu dropdown-open:opacity-100 hidden min-w-60"
-						role="menu"
-						aria-orientation="vertical"
-						aria-labelledby="dropdown-scrollable">
-						<li
-							><a
-								class="dropdown-item"
-								href="/"
-								>Home</a
-							></li
-						>
-					</ul>
+						href="/login"
+						aria-label="Accedi">
+						<IconUserCircle /> Accedi
+					</a>
 				</div>
+				<button
+					class="btn btn-text"
+					aria-haspopup="dialog"
+					aria-expanded="false"
+					aria-controls="mobile-menu"
+					data-overlay="#mobile-menu"
+					aria-label="Menu">
+					<IconMenu />Menu
+				</button>
 			</div>
 		</nav>
 	</div>
 </header>
+<SiteDrawer />

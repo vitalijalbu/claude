@@ -1,7 +1,7 @@
 ---
 const { title } = Astro.props;
 import Sidebar from '@/shared/account/sidebar.astro';
-import { Card, PageHeader } from '../components';
+import { PageHeader } from '../components';
 import MainLayout from '@/layouts/main-layout.astro';
 ---
 
@@ -11,11 +11,11 @@ import MainLayout from '@/layouts/main-layout.astro';
 			<div
 				x-bind:class="{ 'hidden': !sideContentOpen }"
 				class="order-first lg:col-span-3 lg:block hidden">
-				<Card>
-					<div slot="content">
+				<div class="card">
+				<div class="card-body">
 						<Sidebar />
 					</div>
-				</Card>
+				</div>
 			</div>
 			<div class="w-full lg:order-first lg:col-span-9">
                 <PageHeader title={title} as="h1"/>

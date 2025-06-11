@@ -1,0 +1,64 @@
+---
+import { Picture } from '@/components/index';
+const { data } = Astro.props;
+const titleId = `listing-title-${data?.id}`;
+const descriptionId = `listing-description-${data?.id}`;
+---
+
+<article
+	class="group flex w-full h-24 overflow-hidden rounded-xl border border-gray-200 bg-white cursor-pointer hover:shadow-sm transition-shadow"
+	aria-labelledby={titleId}
+	aria-describedby={descriptionId}>
+	
+	<!-- Image Section -->
+	<a
+		href={`/annuncio/${data?.slug}`}
+		class="relative w-24 h-24 shrink-0 overflow-hidden"
+		aria-label={`Visualizza l'annuncio: ${data?.title}`}>
+		<Picture
+			image={data?.images?.[0]}
+			alt={data?.title}
+			class="object-cover !h-full !w-full"
+		/>
+	</a>
+
+	<!-- Content Section -->
+	<div class="flex flex-col flex-1 p-3 justify-between min-w-0">
+		<!-- Top Section -->
+		<div class="flex-1">
+			<a
+				href={`/annuncio/${data?.slug}`}
+				class="block">
+				<h3
+					id={titleId}
+					class="font-semibold leading-tight line-clamp-1 text-gray-900 hover:text-blue-600 transition-colors text-sm mb-1">
+					{data?.title}
+				</h3>
+			</a>
+			
+			<div class="flex items-center gap-1.5">
+				<span class="text-yellow-500 text-xs">★</span>
+				<span class="text-xs font-medium text-gray-700">
+					{data?.rating || '4.5'}
+				</span>
+				<span class="text-xs text-gray-500">
+					{data?.category?.name || 'Categoria'} ({data?.reviews_count || '0'})
+				</span>
+			</div>
+		</div>
+		
+		<!-- Bottom Section - Space Between -->
+		<div class="flex justify-between items-center mt-auto">
+			<div class="text-xs text-gray-500 flex items-center gap-1">
+				<img src="/images/icons/map-point.svg" alt="Provincia" width={12} height={12} />
+				<span class="truncate">{data?.province?.name}</span>
+			</div>
+			
+			{data?.age && (
+				<div class="text-xs text-gray-600 font-medium shrink-0">
+					{data?.age} anni
+				</div>
+			)}
+		</div>
+	</div>
+</article>

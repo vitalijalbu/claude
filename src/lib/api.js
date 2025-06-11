@@ -15,6 +15,7 @@ export async function fetchData(endpoint, options = {}) {
 		isLoading: true,
 		isError: false,
 		errorCode: null,
+		is404: false,
 	};
 
 	try {
@@ -26,6 +27,7 @@ export async function fetchData(endpoint, options = {}) {
 			result.isError = true;
 			result.isLoading = false;
 			result.errorCode = response.status;
+			result.is404 = response.status === 404;
 			return result;
 		}
 
@@ -38,6 +40,7 @@ export async function fetchData(endpoint, options = {}) {
 		result.isError = true;
 		result.isLoading = false;
 		result.errorCode = error.code || 'UNKNOWN_ERROR';
+		result.is404 = error.status === 404 || false;
 		return result;
 	} finally {
 		result.isLoading = false;

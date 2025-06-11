@@ -17,12 +17,12 @@ const dayLabels = {
     {data.map((day) => (
       <li class="py-2" role="listitem">
         <div class="flex justify-between items-center" aria-label={`Orari del ${dayLabels[day.day]}`}>
-          <span class="font-medium text-sm text-on-surface">
+          <span class="font-medium text-on-surface">
             {dayLabels[day.day]}
           </span>
 
           {day.hours.length > 0 ? (
-            <span class="text-sm text-on-surface/90" aria-hidden="true">
+            <span class="text-on-surface/90" aria-hidden="true">
               {day.hours.map((interval, i) => (
                 <time datetime={`${interval.open}-${interval.close}`} class="not-sr-only">
                   {interval.open} - {interval.close}{i < day.hours.length - 1 ? ', ' : ''}

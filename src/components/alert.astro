@@ -7,7 +7,7 @@ const {
 } = Astro.props;
 
 const baseClasses =
-  "relative w-full rounded-lg border px-4 py-3 text-sm grid grid-cols-[0_1fr] gap-y-0.5 items-start";
+  "relative w-full rounded-xl border px-4 py-3 grid grid-cols-[0_1fr] gap-y-0.5 items-start";
 const variantClasses = {
   default: "bg-white text-black",
   destructive: "bg-white text-red-600",
@@ -15,7 +15,7 @@ const variantClasses = {
 
 const alertClass = `${baseClasses} ${variantClasses[variant] || ""} ${className}`;
 const titleClass = `col-start-2 font-semibold text-base tracking-tight ${className}`;
-const descriptionClass = `col-start-2 text-sm text-gray-700 ${className}`;
+const descriptionClass = `col-start-2 text-gray-700 ${className}`;
 const headingTag = props.as ?? "h3";
 ---
 

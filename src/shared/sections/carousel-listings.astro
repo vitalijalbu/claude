@@ -1,7 +1,7 @@
 ---
 const { data } = Astro.props;
 import ListingCard from '../snippets/listing-card.astro';
-import { Button, Result, PageHeader } from '@/components/index';
+import { Result, PageHeader } from '@/components/index';
 import { IconChevron } from '@/icons/index';
 ---
 
@@ -14,14 +14,10 @@ import { IconChevron } from '@/icons/index';
 			slot="extra"
 			class="flex gap-1">
 			<button class="btn btn-primary"
-				variant="outline"
-				size="icon"
 				class="carousel-prev"
 				><IconChevron class='-rotate-90'/></button
 			>
 			<button class="btn btn-primary"
-				variant="outline"
-				size="icon"
 				class="carousel-next"
 				><IconChevron class='rotate-90'/></button
 			>

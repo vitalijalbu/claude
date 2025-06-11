@@ -8,9 +8,9 @@ const { data, size = 'md', class: className, withRating } = Astro.props;
 <a
 	target="_blank"
 	href={`/profilo/${data?.phone_number}`}
-	class={`user-link flex items-center justify-between ${size === 'sm' ? 'text-base' : ''}`}
+	class={`user-link flex items-center justify-between ${size === 'sm' ? 'text-xs sm:text-sm' : 'text-sm'}`}
 	aria-label={`Vai al profilo di ${data?.name || 'utente'}`}>
-	<div class={`flex gap-2 items-center ${size === 'sm' ? 'text-base' : ''}`}>
+	<div class={`flex gap-1 sm:gap-2 items-center ${size === 'sm' ? 'text-xs sm:text-sm' : 'text-sm'}`}>
 		<Avatar
 			src={data?.avatar || '/images/placeholder.svg'}
 			size={size}
@@ -18,7 +18,7 @@ const { data, size = 'md', class: className, withRating } = Astro.props;
 			alt={data?.phone_number || 'Avatar utente'}
 			role="img"
 		/>
-		<span class={size === 'sm' ? 'text-base' : ''}>
+		<span class={`${size === 'sm' ? 'text-xs sm:text-sm truncate max-w-[60px] sm:max-w-none' : 'text-sm'}`}>
 			{data?.name}
 		</span>
 	</div>
@@ -26,15 +26,17 @@ const { data, size = 'md', class: className, withRating } = Astro.props;
 	{
 		withRating && data?.rating > 0 && (
 			<span
-				class={`flex gap-1 items-center ${size === 'sm' ? 'text-base' : ''}`}
+				class={`flex gap-0.5 sm:gap-1 items-center ${size === 'sm' ? 'text-xs sm:text-sm' : 'text-sm'} shrink-0`}
 				aria-label={`Valutazione utente: ${data?.rating} stelle`}
 				title={`Valutazione: ${data?.rating} stelle`}>
 				<IconStarBold
-					width={size === 'sm' ? 16 : 18}
+					width={size === 'sm' ? 12 : 16}
+					height={size === 'sm' ? 12 : 16}
 					color="#FFBF00"
 					aria-hidden="true"
+					class="sm:w-4 sm:h-4"
 				/>
-				{data?.rating}
+				<span class="text-xs sm:text-sm">{data?.rating}</span>
 			</span>
 		)
 	}

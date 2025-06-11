@@ -12,35 +12,21 @@ const { images = [], slug, alt = 'Image' } = Astro.props;
 				images.map((image) => (
 					<div
 						class="swiper-slide">
-						  <Picture
-							src={MEDIA_URL + image.url}
+						    <Picture
+							image={image}
 							alt={alt}
-							sources={image.srcset.map(src => ({
-							url: MEDIA_URL + src.url,
-							width: src.width,
-							format: src.format || (src.url.includes('.webp') ? 'webp' : 'jpg')
-							}))}
-							width={1200}
-							height={800}
-							loading="lazy"
-							decoding="async"
 							class="object-cover transition duration-300 ease-out !h-full !w-full"
-							sizes="(max-width: 600px) 480px, (max-width: 1200px) 800px, 1200px"
-							breakpoints={[600, 1200]}
 						/>
 					</div>
 				))
 			:	<div class="swiper-slide">
-					<Picture
-						loading="lazy"
-          				decoding="async"
-						class="object-cover transition duration-300 !h-full !w-full ease-out"
+					<img
 						src="/images/placeholder.svg"
 						alt={alt}
-						height={500}
-						width={500}
-						
-					/>
+						loading="lazy"
+						decoding="async"
+						class="object-cover transition duration-300 ease-out !h-full !w-full"
+						/>
 				</div>
 		}
 	</div>

@@ -1,9 +1,8 @@
 ---
-import Button from "./button.astro";
 import { IconShare } from "../icons";
 
 const { 
-  title = document.title,
+  title,
   text = "Guarda questo contenuto interessante!",
   url = Astro.url.href,
   class: className = "",
@@ -11,9 +10,8 @@ const {
 } = Astro.props;
 ---
 
-<button class="btn btn-outline btn-outline-ghost"
-  class={`share-button ${className}`}
-  data-title={title}
+<button class={`btn btn-text share-button ${className}`}
+  data-title={title || ''}
   data-text={text}
   data-url={url}
 >
@@ -27,48 +25,39 @@ const {
     
     shareButtons.forEach(button => {
       button.addEventListener('click', async () => {
-        const title = button.getAttribute('data-title');
+        const title = button.getAttribute('data-title') || document.title;
         const text = button.getAttribute('data-text');
         const url = button.getAttribute('data-url');
         
-        // Verifica se l'API di condivisione è supportata
         if (navigator.share) {
           try {
-            await navigator.share({
-              title,
-              text,
-              url
-            });
+            await navigator.share({ title, text, url });
           } catch (error) {
             if (error.name !== 'AbortError') {
               console.error('Errore durante la condivisione:', error);
-              // Mostra un fallback in caso di errore (opzionale)
               fallbackShare(url);
             }
           }
         } else {
-          // Fallback per browser che non supportano l'API Share
           fallbackShare(url);
         }
       });
     });
     
-    // Funzione di fallback che copia l'URL negli appunti
     function fallbackShare(url) {
-      // Crea un elemento di input temporaneo
-      const input = document.createElement('input');
-      input.style.position = 'fixed';
-      input.style.opacity = '0';
-      input.value = url;
-      document.body.appendChild(input);
-      
-      // Seleziona e copia il testo
-      input.select();
-      document.execCommand('copy');
-      document.body.removeChild(input);
-      
-      // Mostra una notifica all'utente (potrebbe essere sostituita con un toast o una notifica più elegante)
-      alert('URL copiato negli appunti!');
+      navigator.clipboard.writeText(url).then(() => {
+        alert('URL copiato negli appunti!');
+      }).catch(() => {
+        const input = document.createElement('input');
+        input.style.position = 'fixed';
+        input.style.opacity = '0';
+        input.value = url;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        alert('URL copiato negli appunti!');
+      });
     }
   });
 </script>

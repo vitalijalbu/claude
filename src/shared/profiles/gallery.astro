@@ -1,9 +1,8 @@
 ---
-import Button from '@/components/button.astro';
 import { IconCamera, IconX } from '@/icons/index';
-import { Picture } from 'astro:assets';
 import Carousel from '../carousel.astro';
 import { MEDIA_URL } from '@/utils/constants';
+import { Picture } from '@/components/index';
 
 const { images = [], alt = '' } = Astro.props;
 ---
@@ -17,12 +16,8 @@ const { images = [], alt = '' } = Astro.props;
 				x-on:click="modalIsOpen = true">
 				<Picture
 					class="w-full h-full object-cover transition duration-100 ease-out rounded-2xl"
-					src={`${MEDIA_URL}${images?.[0]?.url}`  || '/images/placeholder.svg'}
-					alt={alt}
-					width={500}
-					height={500}
-					loading="lazy"
-					
+					image={images[0]}
+					alt={alt}					
 				/>
 			</div>
 
@@ -31,12 +26,8 @@ const { images = [], alt = '' } = Astro.props;
 				x-on:click="modalIsOpen = true">
 				<Picture
 					class="w-full h-full object-cover transition duration-100 ease-out rounded-2xl"
-					src={`${MEDIA_URL}${images?.[1]?.url}` || '/images/placeholder.svg'}
+					image={images[1]}
 					alt={alt}
-					width={500}
-					height={500}
-					loading="lazy"
-					
 				/>
 			</div>
 
@@ -45,18 +36,13 @@ const { images = [], alt = '' } = Astro.props;
 				x-on:click="modalIsOpen = true">
 				<Picture
 					class="w-full h-full object-cover transition duration-100 ease-out rounded-2xl"
-					src={`${MEDIA_URL}${images?.[2]?.url}` || '/images/placeholder.svg'}
+					image={images[2]}
 					alt={alt}
-					width={500}
-					height={500}
-					loading="lazy"
-					
 				/>
 			</div>
 
 			<div class="absolute bottom-0 right-0 z-10 p-3">
-				<button class="btn btn-primary"
-					variant="outline"
+				<button class="btn btn-soft btn-primary rounded-full"
 					x-on:click="modalIsOpen = true">
 					<IconCamera />
 					Vedi tutte le foto
@@ -84,9 +70,6 @@ const { images = [], alt = '' } = Astro.props;
 				<!-- Close Button (top-right) -->
 				<div class="absolute top-4 right-4 z-10">
 					<button class="btn btn-primary"
-						type="button"
-						size="icon"
-						variant="outline"
 						x-on:click="modalIsOpen = false"
 						aria-label="Close gallery">
 						<IconX />

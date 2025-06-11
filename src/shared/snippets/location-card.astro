@@ -1,12 +1,11 @@
 ---
 import { IconHeart } from "@/icons/index";
-
 const { data } = Astro.props;
 const titleId = `fav-title-${data?.id}`;
 ---
 
 <article
-  class="group flex w-full flex-col overflow-hidden border rounded-lg border-outline bg-white hover:shadow-sm"
+  class="group flex w-full flex-col overflow-hidden border rounded-xl border-outline bg-white hover:shadow-sm"
   aria-labelledby={titleId}
 >
   <a

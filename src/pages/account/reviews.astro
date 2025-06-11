@@ -1,0 +1,38 @@
+---
+const authCookie = Astro.cookies.get('auth');
+
+if (!authCookie || !authCookie.value) {
+  return Astro.redirect('/login');
+}
+
+import Result from '@/components/result.astro';
+import { fetchData } from '@/lib/api';
+import ListingCard from '@/shared/snippets/listing-card.astro';
+import AccountContainer from 'containers/account-container.astro';
+const data = await fetchData('/explore');
+
+const menuItems = [
+	{ href: '/dashboard', label: 'Dashboard' },
+	{ href: '/messages', label: 'Messages' },
+	{ href: '/profile', label: 'Profile' },
+];
+
+
+---
+
+<AccountContainer title="Le mie recensioni">
+	<section class="container py-10">
+		{
+			data?.listings?.length ?
+				<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+					{data.listings.map((post) => (
+						<ListingCard
+							href={`/annuncio/${post?.slug}`}
+							data={post}
+						/>
+					))}
+				</div>
+			:	<Result title="Nessun dato disponibile" />
+		}
+	</section>
+</AccountContainer>

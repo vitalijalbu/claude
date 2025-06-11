@@ -11,13 +11,13 @@ import { Picture } from 'astro:assets';
           <a href={`/annuncio/${listing?.slug}`} target="_blank">
             <div class="flex items-center space-x-4 rtl:space-x-reverse">
               <div class="shrink-0">
-                <Picture class="w-30 h-30 rounded-lg object-cover" width={200} height={200} src={listing?.images?.[0]?.url || '/images/placeholder.svg'} alt={listing?.title} />
+                <Picture class="w-30 h-30 rounded-xl object-cover" width={200} height={200} src={listing?.images?.[0]?.url || '/images/placeholder.svg'} alt={listing?.title} />
               </div>
               <div class="flex-1 min-w-0">
                 <h5 class="mb-2 font-semibold text-gray-900 truncate">
                   {listing?.title}
                 </h5>
-                <p class="text-sm text-gray-500 truncate">
+                <p class="text-gray-500 truncate">
                   {listing?.description}
                 </p>
               </div>

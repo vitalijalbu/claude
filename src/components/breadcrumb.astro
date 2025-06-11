@@ -2,7 +2,7 @@
 const { links } = Astro.props;
 ---
 
-<nav class="my-4 text-sm font-medium text-on-surface" aria-label="breadcrumb">
+<nav class="my-4 font-medium text-on-surface" aria-label="breadcrumb">
   <ol class="flex flex-wrap items-center gap-1">
     {links.map((link, index: number) => (
       <li class="flex items-center breadcrumb-item">

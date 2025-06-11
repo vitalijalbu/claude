@@ -1,0 +1,242 @@
+---
+import MainLayout from '@/layouts/main-layout.astro';
+
+// Check if user is already logged in
+const token = Astro.cookies.get('auth_token')?.value;
+if (token) {
+	return Astro.redirect('/account');
+}
+
+// Variabili per eventuali messaggi di errore o successo
+let formMessage = '';
+let formSuccess = false;
+let formErrors = {};
+
+if (Astro.request.method === 'POST') {
+	try {
+		const data = await Astro.request.formData();
+		const email = data.get('email');
+		const password = data.get('password');
+
+		// Validazione base
+		if (!email || !password) {
+			formSuccess = false;
+			formMessage = 'Email e password sono obbligatorie';
+		} else {
+			const apiUrl = import.meta.env.API_URL || 'http://localhost:8000';
+			
+			// Step 1: Get CSRF token
+			const csrfResponse = await fetch(`${apiUrl}/sanctum/csrf-cookie`, {
+				method: 'GET',
+				credentials: 'include',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json',
+				},
+			});
+
+			if (!csrfResponse.ok) {
+				throw new Error('Failed to get CSRF token');
+			}
+
+			// Extract CSRF token from cookies
+			const setCookieHeader = csrfResponse.headers.get('set-cookie');
+			let xsrfToken = '';
+			
+			if (setCookieHeader) {
+				const xsrfMatch = setCookieHeader.match(/XSRF-TOKEN=([^;]+)/);
+				if (xsrfMatch) {
+					xsrfToken = decodeURIComponent(xsrfMatch[1]);
+				}
+			}
+
+			// Step 2: Login with CSRF token
+			const loginResponse = await fetch(`${apiUrl}/api/login`, {
+				method: 'POST',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+					'X-XSRF-TOKEN': xsrfToken,
+					'Referer': Astro.url.origin,
+				},
+				body: JSON.stringify({
+					email: email,
+					password: password,
+				}),
+			});
+
+			const result = await loginResponse.json();
+
+			if (loginResponse.ok && result.success) {
+				// Login successful
+				formSuccess = true;
+				formMessage = 'Login effettuato con successo!';
+				
+				// Set authentication token from Laravel Sanctum
+				if (result.token) {
+					Astro.cookies.set('auth_token', result.token, {
+						httpOnly: true,
+						secure: import.meta.env.PROD,
+						sameSite: 'lax',
+						maxAge: 60 * 60 * 24 * 30, // 30 days
+						path: '/',
+					});
+				}
+
+				// Set session cookies from Laravel
+				const responseSetCookie = loginResponse.headers.get('set-cookie');
+				if (responseSetCookie) {
+					// Parse and set Laravel session cookies
+					const cookies = responseSetCookie.split(',');
+					cookies.forEach(cookie => {
+						const [nameValue, ...options] = cookie.trim().split(';');
+						const [name, value] = nameValue.split('=');
+						
+						if (name && value && (name.includes('session') || name.includes('sanctum'))) {
+							Astro.cookies.set(name, value, {
+								httpOnly: true,
+								secure: import.meta.env.PROD,
+								sameSite: 'lax',
+								path: '/',
+							});
+						}
+					});
+				}
+
+				// Set user data
+				if (result.user) {
+					Astro.cookies.set('user_data', JSON.stringify(result.user), {
+						httpOnly: false,
+						secure: import.meta.env.PROD,
+						sameSite: 'lax',
+						maxAge: 60 * 60 * 24 * 30,
+						path: '/',
+					});
+				}
+
+				// Redirect to account page
+				return Astro.redirect('/account');
+			} else {
+				// Login failed
+				formSuccess = false;
+				formMessage = result.message || 'Credenziali non valide';
+				
+				// Handle Laravel validation errors
+				if (result.errors) {
+					formErrors = result.errors;
+				}
+			}
+		}
+	} catch (error) {
+		formSuccess = false;
+		if (error.code === 'ENOTFOUND' || error.cause?.code === 'ENOTFOUND') {
+			formMessage = 'Impossibile connettersi al server. Riprova più tardi.';
+		} else {
+			formMessage = 'Si è verificato un errore durante il login. Riprova più tardi.';
+		}
+		console.error('Errore durante il login:', error);
+	}
+}
+---
+
+<MainLayout title="Accedi al tuo account">
+	<div class="min-h-screen flex items-center justify-center bg-base-200 py-12 px-4 sm:px-6 lg:px-8">
+		<div class="max-w-md w-full space-y-8">
+			<div class="text-center">
+				<h1 class="text-3xl font-bold">Bentornato</h1>
+				<p class="mt-2 text-base-content/70">Accedi al tuo account OnlyEscort</p>
+			</div>
+
+			<div class="card bg-base-100">
+				<div class="card-body">
+					{formMessage && (
+						<div class={`alert mb-4 ${formSuccess ? 'alert-success' : 'alert-error'}`}>
+							{formSuccess ? (
+								<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+								</svg>
+							) : (
+								<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+								</svg>
+							)}
+							<span>{formMessage}</span>
+						</div>
+					)}
+
+					<form method="POST">
+						<!-- Email Field -->
+						<div class="form-control w-full">
+							<label class="label">
+								<span class="label-text">Email <span class="text-error">*</span></span>
+							</label>
+							<input
+								id="email"
+								name="email"
+								type="email"
+								placeholder="m@example.com"
+								class={`input input-bordered w-full ${formErrors?.email ? 'input-error' : ''}`}
+								required
+							/>
+							{formErrors?.email && (
+								<label class="label">
+									<span class="label-text-alt text-error">{formErrors.email[0]}</span>
+								</label>
+							)}
+						</div>
+
+						<!-- Password Field -->
+						<div class="form-control w-full">
+							<label class="label">
+								<span class="label-text">Password <span class="text-error">*</span></span>
+							</label>
+							<input
+								id="password"
+								name="password"
+								type="password"
+								placeholder="Inserisci la tua password"
+								class={`input input-bordered w-full ${formErrors?.password ? 'input-error' : ''}`}
+								required
+							/>
+							{formErrors?.password && (
+								<label class="label">
+									<span class="label-text-alt text-error">{formErrors.password[0]}</span>
+								</label>
+							)}
+						</div>
+
+						<!-- Remember Me -->
+						<div class="flex items-center justify-between mt-4">
+						<div class="form-control flex items-center gap-1">
+								<input type="checkbox" name="remember" class="checkbox checkbox-sm" />
+								<label class="label-text">Ricordami</label>
+						</div>
+						<!-- Forgot Password Link -->
+						<div class="text-right">
+							<a href="/forgot-password" class="link link-primary text-sm">
+								Password dimenticata?
+							</a>
+						</div>
+						</div>
+
+						<!-- Submit Button -->
+						<div class="form-control mt-6">
+							<button type="submit" class="btn btn-primary w-full">
+								Accedi
+							</button>
+						</div>
+
+						<!-- Register Link -->
+						<div class="text-center mt-4">
+							<p class="text-sm">
+								Non hai un account?
+								<a href="/register" class="link link-primary">Creane uno</a>
+							</p>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</MainLayout>

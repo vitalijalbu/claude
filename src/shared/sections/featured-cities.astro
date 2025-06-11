@@ -1,0 +1,18 @@
+---
+import CityCard from '../snippets/city-card.astro';
+const { data } = Astro.props; 
+---
+
+<section class="my-4 container">
+  <span class="text-xl font-semibold mb-4 block">Città in evidenza</span>
+
+  {data && data.length > 0 ? (
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+      {data.map((city) => (
+        <CityCard data={city} key={city.id || city.name}/>
+      ))}
+    </div>
+  ) : (
+    <p class="text-gray-600">No data</p>
+  )}
+</section>

@@ -13,21 +13,10 @@ const hasMedia = Array.isArray(images) && images.length > 0;
       <div class="swiper-wrapper">
         {images.map((image) => (
           <div class="swiper-slide">
-            <Picture
-            src={MEDIA_URL + image.url}
+             <Picture
+            image={image}
             alt={alt}
-            sources={image.srcset.map(src => ({
-              url: MEDIA_URL + src.url,
-              width: src.width,
-              format: src.format || (src.url.includes('.webp') ? 'webp' : 'jpg')
-            }))}
-            width={1200}
-            height={800}
-            loading="lazy"
-            decoding="async"
             class="object-cover transition duration-300 ease-out !h-full !w-full"
-            sizes="(max-width: 600px) 480px, (max-width: 1200px) 800px, 1200px"
-            breakpoints={[600, 1200]}
           />
           </div>
         ))}
@@ -38,7 +27,6 @@ const hasMedia = Array.isArray(images) && images.length > 0;
     </div>
 
     <div
-      thumbsSlider
       class="swiper gallery-thumbs mt-4 px-1 w-full max-w-full overflow-hidden"
     >
       <div class="swiper-wrapper">

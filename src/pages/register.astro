@@ -1,0 +1,181 @@
+---
+import MainLayout from '@/layouts/main-layout.astro';
+import { actions } from 'astro:actions';
+import { IconEye } from '../icons';
+
+// Check if user is already logged in
+const token = Astro.cookies.get('auth_token')?.value;
+if (token) {
+	return Astro.redirect('/account');
+}
+
+// Handle form submission
+const result = Astro.getActionResult(actions.register);
+const formErrors = result?.error?.fields;
+const generalError = result?.error?.message;
+
+if (result?.data?.success) {
+	return Astro.redirect('/account');
+}
+---
+
+<MainLayout title="Crea un account">
+	<div class="min-h-screen flex items-center justify-center bg-zinc-100 py-12 px-4 sm:px-6 lg:px-8">
+		<div class="max-w-md w-full space-y-8">
+			<div class="text-center">
+				<h1 class="text-3xl font-bold">Crea Account</h1>
+				<p class="mt-2 text-base-content/70">Registrati su OnlyEscort</p>
+			</div>
+
+			<div class="card bg-base-100">
+				<div class="card-body">
+					{generalError && (
+						<div class="alert alert-error mb-4">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="stroke-current shrink-0 h-6 w-6"
+								fill="none"
+								viewBox="0 0 24 24">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+								/>
+							</svg>
+							<span>{generalError}</span>
+						</div>
+					)}
+
+					<form method="POST" action={actions.register}>
+						<!-- Name Field -->
+						<div class="form-control w-full">
+							<label class="label">
+								<span class="label-text">Nome <span class="text-error">*</span></span>
+							</label>
+							<input
+								type="text"
+								name="name"
+								placeholder="Il tuo nome"
+								class={`input input-bordered w-full ${formErrors?.name ? 'input-error' : ''}`}
+								required
+							/>
+							{formErrors?.name && (
+								<label class="label">
+									<span class="label-text-alt text-error">{formErrors.name[0]}</span>
+								</label>
+							)}
+						</div>
+
+						<!-- Email Field -->
+						<div class="form-control w-full">
+							<label class="label">
+								<span class="label-text">Email <span class="text-error">*</span></span>
+							</label>
+							<input
+								type="email"
+								name="email"
+								placeholder="m@example.com"
+								class={`input input-bordered w-full ${formErrors?.email ? 'input-error' : ''}`}
+								required
+							/>
+							{formErrors?.email && (
+								<label class="label">
+									<span class="label-text-alt text-error">{formErrors.email[0]}</span>
+								</label>
+							)}
+						</div>
+
+						<!-- Password Field -->
+						<div class="form-control w-full">
+							<label class="label">
+								<span class="label-text">Password <span class="text-error">*</span></span>
+							</label>
+							<div class="relative">
+								<input
+									id="password"
+									type="password"
+									name="password"
+									placeholder="Inserisci password"
+									class={`input input-bordered w-full pr-12 ${formErrors?.password ? 'input-error' : ''}`}
+									required
+								/>
+								<button
+									type="button"
+									class="absolute inset-y-0 right-0 flex items-center pr-3"
+									onclick="togglePassword('password')"
+									aria-label="Mostra/nascondi password">
+									<IconEye class="h-5 w-5 text-base-content/60" />
+								</button>
+							</div>
+							{formErrors?.password && (
+								<label class="label">
+									<span class="label-text-alt text-error">{formErrors.password[0]}</span>
+								</label>
+							)}
+						</div>
+
+						<!-- Confirm Password Field -->
+						<div class="form-control w-full">
+							<label class="label">
+								<span class="label-text">Conferma Password <span class="text-error">*</span></span>
+							</label>
+							<div class="relative">
+								<input
+									id="password_confirmation"
+									type="password"
+									name="password_confirmation"
+									placeholder="Conferma password"
+									class={`input input-bordered w-full pr-12 ${formErrors?.password_confirmation ? 'input-error' : ''}`}
+									required
+								/>
+								<button
+									type="button"
+									class="absolute inset-y-0 right-0 flex items-center pr-3"
+									onclick="togglePassword('password_confirmation')"
+									aria-label="Mostra/nascondi conferma password">
+									<IconEye class="h-5 w-5 text-base-content/60" />
+								</button>
+							</div>
+							{formErrors?.password_confirmation && (
+								<label class="label">
+									<span class="label-text-alt text-error">{formErrors.password_confirmation[0]}</span>
+								</label>
+							)}
+						</div>
+
+						<!-- Submit Button -->
+						<div class="form-control mt-6">
+							<button type="submit" class="btn btn-primary w-full">
+								Registrati
+							</button>
+						</div>
+
+						<!-- Login Link -->
+						<div class="text-center mt-4">
+							<p class="text-sm">
+								Hai già un account?
+								<a href="/login" class="link link-primary">Accedi</a>
+							</p>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function togglePassword(inputId) {
+			const input = document.getElementById(inputId);
+			const icon = input.nextElementSibling.querySelector('svg');
+			
+			if (input.type === 'password') {
+				input.type = 'text';
+				icon.style.opacity = '0.8';
+			} else {
+				input.type = 'password';
+				icon.style.opacity = '0.6';
+			}
+		}
+	</script>
+</MainLayout>

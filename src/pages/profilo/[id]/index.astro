@@ -1,21 +1,25 @@
 ---
 import Map from '@/components/map.astro';
 import MainLayout from '@/layouts/main-layout.astro';
-import { Button, Breadcrumb, Card, ReportCard, Result } from '@/components/index';
+import { Breadcrumb, Result } from '@/components/index';
 import { fetchData } from '@/lib/api';
 import Avatar from '@/components/avatar.astro';
 import Listings from '@/shared/profiles/listings.astro';
-import { IconStarBold, IconPhone, IconWhatsapp } from '@/icons/index';
+import { IconPhone, IconWhatsapp } from '@/icons/index';
 import Gallery from '@/shared/profiles/gallery.astro';
 import WorkingHours from '@/shared/profiles/working-hours.astro';
-import Taxonomies from '@/shared/tags.astro';
 import ShareButton from '@/components/share-button.astro';
+import Tags from '@/shared/tags.astro';
+import CarouselProfiles from '@/shared/sections/carousel-profiles.astro';
 
 const { id } = Astro.params;
 const currentPath = Astro.url.pathname;
 
 // Fetch profile data
 const { data, isLoading, isError, errorCode } = await fetchData(`/profiles/${id}`);
+
+const profile = data?.data || null;
+
 // Set HTTP status code based on error condition
 if (isError) {
   Astro.response.status = errorCode && typeof errorCode === 'number' ? errorCode : 404;
@@ -26,14 +30,14 @@ const breadcrumbs =
 	data ?
 		[
 			{ name: 'Home', url: '/' },
-			{ name: data?.province?.name, url: `/${data?.province?.slug}` },
-			{ name: data?.category?.name, url: `/${data?.province?.slug}/${data?.category?.slug}` },
-			{ name: data?.name || id, url: currentPath },
+			{ name: profile?.province?.name, url: `/${profile?.province?.slug}` },
+			{ name: profile?.category?.name, url: `/${profile?.province?.slug}/${profile?.category?.slug}` },
+			{ name: profile?.name || id, url: currentPath },
 		]
 	:	[];
 ---
 
-<MainLayout title={data?.name ?? 'Profilo'}>
+<MainLayout title={profile?.name ?? 'Profilo'}>
 	<div class="container">
 		{isLoading && <p class="text-center text-gray-400 py-6">Caricamento in corso...</p>}
 		{
@@ -56,8 +60,8 @@ const breadcrumbs =
 				<div class="flex justify-between items-center mb-4">
 					<Breadcrumb links={breadcrumbs} />
 					<ShareButton
-						title={data?.name}
-						text={`Guarda il profilo di ${data?.name} su OnlyEscort`}
+						title={profile?.name}
+						text={`Guarda il profilo di ${profile?.name} su OnlyEscort`}
 						url={currentPath}
 					/>
 				</div>
@@ -66,62 +70,50 @@ const breadcrumbs =
 					<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 						{/* Right Section: Profile Card */}
 						<div class="lg:col-span-1">
-							<Card className="mb-4">
+							<div class="card shadow-none border border-zinc-200">
+							<div class="card-body">
 								<div
 									class="flex items-center space-x-4 mb-6"
 									slot="content">
 									<Avatar
-										src={data?.avatar}
+										src={profile?.avatar}
 										size="lg"
 									/>
 									<div>
-										<h1 class="text-3xl font-semibold text-gray-800">{data?.name}</h1>
-										<p class="font-medium text-gray-500">{`Età: ${data?.age}`}</p>
-										<p class="font-medium text-gray-500">Nazionalità: IT</p>
+										<h1 class="text-3xl font-semibold text-gray-800">{profile?.name}</h1>
+										<p class="font-medium text-gray-500">{`Età: ${profile?.age}`}</p>
+										<p class="font-medium text-gray-500">Nazionalità: {profile?.nationality_name}</p>
 									</div>
 								</div>
 
 								<div
 									class="flex flex-col space-y-4"
 									slot="footer">
-									<button class="btn btn-primary"
-										as="a"
-										href={`tel:${data?.phone_number}`}
+									<a class="btn btn-primary"
+										target="_blank"
+										href={`tel:${profile?.phone_number}`}
 										class="w-full">
 										<IconPhone />
-										{data?.phone_number || 'Chiama ora'}
-									</button>
-									<button class="btn btn-primary"
-										variant="whatsapp"
-										as="a"
-										href={`https://api.whatsapp.com/send/?phone_number=${data?.whatsapp_number}&text=Ciao ho visto il tuo profilo su ${encodeURIComponent(currentPath)}&type=phone_number&app_absent=0`}
-										class="w-full">
+										{profile?.phone_number || 'Chiama ora'}
+									</a>
+									<a class="btn btn-whatsapp w-full"
+										target="_blank"
+										href={`https://api.whatsapp.com/send/?phone_number=${profile?.whatsapp_number}&text=Ciao ho visto il tuo profilo su ${encodeURIComponent(currentPath)}&type=phone_number&app_absent=0`}>
 										<IconWhatsapp />
 										Whatsapp
-									</button>
-									{/* <button class="btn btn-primary"
-										variant="secondary"
-										as="a"
-										href="#reviews"
-										class="w-full">
-										<IconStarBold
-											width="18"
-											color="#FFBF00"
-										/>
-										Recensioni
-									</button> */}
+									</a>
 								</div>
-							</Card>
-							<ReportCard type="profile" />
+							</div>
+							</div>
 						</div>
 						{/* Left Section */}
 						<div class="lg:col-span-2 space-y-6">
 							{/* Media */}
-							{data?.images && (
+							{profile?.images && (
 								<section id="profile-gallery">
 									<Gallery
-										images={data?.images}
-										alt={data?.title}
+										images={profile?.images}
+										alt={profile?.title}
 										meta={data}
 									/>
 								</section>
@@ -130,38 +122,38 @@ const breadcrumbs =
 							<section
 								id="profile-details"
 								class="py-4 text-gray-500">
-								<p>{data?.bio}</p>
+								<p>{profile?.bio}</p>
 							</section>
-							{/* Taxonomies */}
-							{data?.tags.length > 0 && <section id="profile-details">
+							{/* Tags */}
+							{profile?.tags?.length > 0 && <section id="profile-details">
 								<span class="text-xl block font-semibold mb-2">Dettagli</span>
-								<Taxonomies data={data?.tags} />
+								<Tags data={profile?.tags} />
 							</section>}
 							{/* Working Hours */}
-							{data?.working_hours && (
+							{profile?.working_hours && (
 								<section id="profile-details">
 									<span class="text-xl block font-semibold mb-2">Disponibilità</span>
-									<WorkingHours data={data?.working_hours} />
+									<WorkingHours data={profile?.working_hours} />
 								</section>
 							)}
 							{/* Listings */}
-							{data?.listings &&
+							{profile?.listings &&
 							<section
 								id="profile-listings"
 								class="py-4">
 								<span class="text-xl block font-semibold mb-2">Annunci</span>
-								<Listings data={data?.listings} />
+								<Listings data={profile?.listings} />
 							</section>
 							}
 							{/* Map */}
-							{data?.lon && data?.lat && (
+							{profile?.lon && profile?.lat && (
 								<section
 									id="profile-map"
 									class="py-6">
 									<span class="text-xl block font-semibold mb-2">Location</span>
 									<Map
-										lat={data?.lat}
-										lon={data?.lon}
+										lat={profile?.lat}
+										lon={profile?.lon}
 									/>
 								</section>
 							)}
@@ -171,4 +163,7 @@ const breadcrumbs =
 			)
 		}
 	</div>
+	<CarouselProfiles 	
+		data={data?.similar_profiles}
+	/>
 </MainLayout>

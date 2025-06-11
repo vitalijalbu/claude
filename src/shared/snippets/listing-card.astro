@@ -19,14 +19,13 @@ const titleId = `listing-title-${data?.id}`;
 		{data?.images?.length}
 	</Badge>}
 
-	<button
-		class="btn btn-white absolute right-2 top-2 z-10"
+	<button class="btn btn-text btn-circle waves waves-primary absolute right-2 top-2 z-10"
 		aria-label="Salva annuncio"
 	>
 		<img src="/images/icons/heart.svg" alt="Salva annuncio" width={18} height={18} />
 	</button>
 
-	<div class="h-[380px] md:h-[380px] overflow-hidden border rounded-lg border-outline relative">
+	<div class="h-[380px] md:h-[380px] overflow-hidden border rounded-xl border-outline relative">
 		<a
 			href={`/annuncio/${data?.slug}`}
 			class="relative !h-full !w-full"
@@ -51,7 +50,7 @@ const titleId = `listing-title-${data?.id}`;
 
 		<div class="mt-2 flex items-center text-xs text-muted-foreground">
 			<IconMap class="mr-1 h-3.5 w-3.5" aria-hidden="true" focusable="false" />
-			<span>{data?.city?.name}</span>
+			<span>{data?.province?.name}</span>
 		</div>
 
 		<div class="mt-3">

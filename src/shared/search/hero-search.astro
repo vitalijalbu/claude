@@ -4,24 +4,46 @@ import { Image } from 'astro:assets';
 ---
 
 {/* Hero Section */}
-<section class="relative">
-	<div class="absolute inset-0 z-1 bg-black/15"></div>
+<section class="relative min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] flex items-center">
+	<!-- Background Image -->
 	<Image
 		src="/images/bg-home.jpg"
 		alt="Hero background"
 		width={1200}
 		height={600}
-		class="w-full absolute h-full object-cover"
+		class="absolute inset-0 w-full h-full object-cover z-0"
 		priority
 	/>
-	<div class="container relative mx-auto py-24 lg:flex lg:h-[500px] lg:items-center text-center">
-		<div class="max-w-4xl text-center mx-auto">
-			<h1 class="text-white text-4xl font-bold tracking-tight sm:text-5xl md:text-5xl">Benvenuto su ONLYESCORT Italia</h1>
-			<p class="text-white mt-4 text-xl">Naviga la nostra selezione di Annunci di Escort</p>
-			<div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-				<div class="relative w-full mx-auto">
-					<SearchAutocomplete/>
+	
+	<!-- Overlay -->
+	<div class="absolute inset-0 bg-black/40 z-1"></div>
+	
+	<!-- Content -->
+	<div class="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24">
+		<div class="max-w-4xl mx-auto text-center">
+			<h1 class="text-white text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight">
+				Benvenuto su <span class="block sm:inline">ONLYESCORT Italia</span>
+			</h1>
+			
+			<p class="text-white/90 mt-4 sm:mt-6 text-lg sm:text-xl lg:text-2xl max-w-2xl mx-auto">
+				Naviga la nostra selezione di Annunci di Escort
+			</p>
+			
+			<!-- Search Section -->
+			<div class="mt-8 sm:mt-10 lg:mt-12">
+				<div class="w-full max-w-2xl mx-auto">
+					<SearchAutocomplete />
 				</div>
+			</div>
+			
+			<!-- Optional CTA Buttons -->
+			<div class="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
+				<a href="/milano" class="btn btn-primary btn-lg">
+					Esplora Annunci
+				</a>
+				<a href="/register" class="btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-black">
+					Crea Account
+				</a>
 			</div>
 		</div>
 	</div>

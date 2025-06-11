@@ -1,0 +1,34 @@
+---
+import { Result, PageHeader } from '@/components/index';
+import MainLayout from '@/layouts/main-layout.astro';
+import { fetchData } from '@/lib/api';
+import HeroSearch from '@/shared/search/hero-search.astro';
+import Categories from '@/shared/sections/categories.astro';
+import Provinces from '@/shared/sections/provinces.astro';
+import ListingCard from '@/shared/snippets/listing-card.astro';
+import { IconChevron } from '../icons';
+
+const { data, isError, isLoading } = await fetchData('/home');
+const { categories, regions, listings } = data?.data;
+
+
+// SEO
+const schemaORG = {
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@id": "https://it.onlyescort.vip/#organization",
+            "@type": "Organization",
+            "name": "OnlyEscort",
+            "logo": "/images/logo.svg",
+            "url": "https://it.onlyescort.vip/",
+            "slogan": "Il 1° sito con annunci e profili di Escort",
+            "description": "OnlyEscort è il primo sito che permette agli utenti di trovare le migliori escort da incontrare, attraverso gli annunci e le recensioni sui profili"
+        }
+    ]
+};
+---
+
+<MainLayout title="Tutte le città | OnlyEscort" schema={schemaORG} metaDescription="Il 1° sito con annunci e profili">
+        {regions?.length && <Provinces data={regions} />}
+</MainLayout>

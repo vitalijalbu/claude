@@ -1,0 +1,47 @@
+---
+const { data } = Astro.props;
+import { Result, PageHeader } from '@/components/index';
+import { IconChevron } from '@/icons/index';
+import ProfileCard from '../snippets/profile-card.astro';
+---
+
+<section class="container">
+	<div class="flex justify-between items-center mb-4">
+		<div>
+			<div>Profili simili</div>
+			<p>Scopri altri annunci che potrebbero interessarti.</p>
+		</div>
+		<div
+			slot="extra"
+			class="flex gap-1">
+			<button
+				class="btn btn-circle btn-text"
+				class="carousel-prev"
+				><IconChevron class="-rotate-90" /></button
+			>
+			<button
+				class="btn btn-circle btn-text"
+				class="carousel-next"
+				><IconChevron class="rotate-90" /></button
+			>
+		</div>
+	</div>
+	{
+		data && data.length > 0 && (
+			<div class="swiper carousel-listings">
+				<div class="swiper-wrapper">
+					{data.map((listing) => (
+						<div class="swiper-slide">
+							<ProfileCard data={listing} />
+						</div>
+					))}
+				</div>
+			</div>
+		)
+	}
+</section>
+
+<script type="module">
+import { initProfileCarousels } from "@/lib/modules/carousel";
+initProfileCarousels();
+</script>
